@@ -83,7 +83,7 @@ table.fin td:first-child,table.fin th:first-child{text-align:left}
 .btn:active{transform:scale(.98)} .btn:hover{border-color:var(--amber)}
 .btn small{display:block;font-weight:400;font-size:12px;color:var(--dim);margin-top:2px}
 .btn.main{background:linear-gradient(#2a5038,#1f3f2c);border-color:#3c6a4c;text-align:center}
-.btn.warn{border-color:#6a3c3c}
+.btn.warn{border-color:#77726a}.btn.risk{border-color:#b75a50}
 /* 骰子 */
 #dice{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .die{width:44px;height:44px;border-radius:9px;background:var(--chalk);color:#12251a;font-family:var(--mono);
@@ -177,8 +177,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 .btn{border-radius:13px;padding:14px 15px;background:linear-gradient(145deg,#1a3b2e,#142e24);transition:.2s ease}
 .btn:hover{transform:none;box-shadow:0 8px 18px #0005;border-color:var(--amber)}
 .btn.main{background:linear-gradient(135deg,#315f45,#214733);border-color:#5c916e;box-shadow:0 8px 20px #0a120d88}
-.btn.warn{background:linear-gradient(135deg,#422821,#2b1d19);border-color:#875048}
+.btn.warn{background:linear-gradient(135deg,#292b29,#1d201e);border-color:#77726a}
+.btn.risk{background:linear-gradient(135deg,#4b2722,#2d1917);border-color:#b75a50}
 .btn.choice-card{display:grid;grid-template-columns:34px minmax(0,1fr) 20px;gap:11px;align-items:center;text-align:left}.choice-key{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#081912;border:1px solid #3c654f;font:800 12px var(--mono);color:var(--amber)}.choice-content b{display:block;font-size:15px;line-height:1.35}.choice-content small{font-size:12.5px;line-height:1.55;margin-top:4px;color:#abc0b3}.choice-arrow{font-size:24px;color:var(--dim);text-align:right}.btn.choice-card.main .choice-key{background:#ffc857;color:#102017;border-color:#ffe29c}.btn.choice-card.warn .choice-key{border-color:#a85e56;color:#ff948c}
+.btn.choice-card.warn .choice-key{border-color:#77726a;color:#c9c5bc}.btn.choice-card.risk .choice-key{border-color:#d66b5f;color:#ff9f94}
+.choice-risk-badge,.choice-cost-badge{display:inline-block;margin:7px 7px 0 0;padding:3px 7px;border:1px solid;font:800 11px/1.3 var(--mono);font-style:normal;letter-spacing:.04em}.choice-risk-badge{border-color:#bd655a;color:#ff9d92;background:#321a18}.choice-cost-badge{border-color:#77726a;color:#c9c5bc;background:#222522}
 .event-stage{--event-color:var(--blue);position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--event-color) 60%,#254535);border-radius:14px;padding:14px 15px;margin-bottom:10px;background:linear-gradient(135deg,color-mix(in srgb,var(--event-color) 17%,#0a1c15),#081711);letter-spacing:normal;color:var(--chalk);font-weight:400}
 .event-stage::after{content:'';position:absolute;width:150px;height:150px;right:-65px;top:-80px;border-radius:50%;background:var(--event-color);filter:blur(45px);opacity:.18}.event-top{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}.event-kind{font:700 9px var(--mono);letter-spacing:.18em;color:var(--event-color)}.event-count{font:700 9px var(--mono);color:var(--dim)}
 .event-name{font-size:21px;font-weight:900;line-height:1.2;margin-top:5px;position:relative;z-index:1}.event-summary{font-size:11px;color:var(--dim);margin-top:5px;position:relative;z-index:1}.event-impact{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;position:relative;z-index:1}.event-impact span{font:700 9px var(--mono);padding:3px 7px;border-radius:99px;background:#06120d;border:1px solid #294a39}
@@ -341,13 +344,14 @@ body{font-size:16px}
 .decision-heading span{font:800 12px var(--mono);letter-spacing:.16em;color:var(--amber)}.decision-heading b{font-size:20px}
 #act.decision-modal>.btn{height:auto;min-height:92px;margin:0;padding:18px 18px;border-width:2px;background:#102b20;touch-action:manipulation}
 #act.decision-modal>.btn:hover,#act.decision-modal>.btn:focus-visible{border-color:var(--amber);background:#183b2c;outline:2px solid #ffc85755;outline-offset:1px}
-#act.decision-modal>.btn.main{background:#204b35;border-color:#6ba07d}#act.decision-modal>.btn.warn{background:#35231d;border-color:#a45f50}
+#act.decision-modal>.btn.main{background:#204b35;border-color:#6ba07d}#act.decision-modal>.btn.warn{background:#202320;border-color:#77726a}#act.decision-modal>.btn.risk{background:#3b211e;border-color:#c46b60}
 #act.decision-modal .choice-card{grid-template-columns:42px minmax(0,1fr) 24px;gap:13px}.choice-key{width:38px;height:38px;font-size:15px}.choice-content b{font-size:17px;line-height:1.4}.choice-content small{font-size:14px;line-height:1.55;color:#c0d0c7}.choice-arrow{font-size:27px}
 #act.decision-modal.event-actions>.btn{min-height:126px;align-content:center}
 #act.result-continue{display:grid;place-items:center;padding:12px 14px;background:#0b1d16;border-color:#365b48}#act.result-continue .btn{min-height:62px;max-width:620px;margin:0;padding:16px 20px;text-align:center;font-size:17px;border-width:2px;touch-action:manipulation}
 .btn.event-choice{grid-template-columns:44px minmax(0,1fr) 112px;gap:13px}.event-key{width:40px;height:40px;display:grid;place-items:center;border:1px solid #648c75;background:#071710;color:var(--amber);font:900 16px var(--mono)}
 .event-choice .event-copy b{display:block;font-size:17px;line-height:1.4}.event-choice .event-copy small{display:block;margin-top:5px;color:#c0d0c7;font-size:14px;line-height:1.5}
 .event-choice .chance-num{padding:8px 9px;border-left:3px solid var(--amber);background:#091a13;color:#ffe2a1;font:900 14px/1.3 var(--sans);text-align:left}.event-choice .chance-num small{display:block;margin-top:4px;color:#a9bdb1;font:600 11px/1.35 var(--sans);letter-spacing:0}.event-choice .chance-num.direct{border-left-color:#72c69a;color:#a9e4c2}
+.event-choice .chance-num.risk{border-left-color:#d66b5f;background:#281816;color:#ffaaa1}.event-choice .chance-num.risk small{color:#e8b3ad}
 .event-stage{padding:16px 17px;margin:0;border-width:2px;background:linear-gradient(135deg,color-mix(in srgb,var(--event-color) 15%,#0a1c15),#081711)}
 .event-stage::after{display:none}.event-kind,.event-count{font-size:12px}.event-name{font-size:25px;margin-top:7px}.event-summary{font-size:14px;line-height:1.55;color:#c2d1c8}.event-impact{gap:7px;margin-top:12px}.event-impact span{font:700 12px var(--sans);padding:5px 8px;border-color:#456b58;background:#071710}.case-source{font-size:12px}
 .team-relation-status{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;margin-top:12px;padding:9px 11px;border-left:4px solid var(--event-color);background:#071710}.team-relation-status span{font-size:13px;color:#b9cbc0}.team-relation-status b{font:900 20px var(--mono);color:var(--amber)}.team-relation-status em{min-width:76px;font-style:normal;font-size:13px;font-weight:800;color:var(--chalk)}.team-relation-status.good b,.team-relation-status.good em{color:var(--good)}.team-relation-status.bad b,.team-relation-status.bad em{color:var(--bad)}
@@ -703,7 +707,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v2.3.5';
+const APP_VER='v2.3.6';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -969,7 +973,7 @@ function tjGamble(cont){ /* 量表達上限:先扣 -5,再對賭 */
               board(1);
               card('gold','手術成功',`手術很順利。漫長復健後，你的球威煥然一新——球速 <b class="up">+${gv}</b>、變化球 <b class="up">+${gb}</b>。（本季報銷）`);
               afterGamble('surgery',cont); }},
-            {t:'打針硬撐這一季',warn:true,s:`${chanceBand(succP)}｜失敗＝TJ 大傷（隔年報銷、能力再崩）`,f:()=>{
+            {t:'打針硬撐這一季',risk:true,probability:succP,s:`成功機會 ${succP}%｜成功＝球速、變化球各 +5；失敗＝TJ 大傷（隔年報銷、能力再崩）`,f:()=>{
               if(chance(succP)){ S.tj=Math.max(0,S.tj-20); 
                 /* 【修正】打針成功也是直接給予絕對能力值 */
                 S.ab.vel = clamp(S.ab.vel + 5, 1, RATING_MAX);
@@ -1599,7 +1603,7 @@ function highSchoolSeasonChoice(done){
   const level=({1:'全國強權',2:'中堅校隊',3:'挑戰者'})[S.hsTier||2];
   const plans=[
     {id:'steady',t:'照教練課表穩定備戰',main:true,s:'大賽準備 +1｜沒有額外代價',summary:'按部就班完成整季訓練',fx:()=>{S.hsCupBonus+=1;}},
-    {id:'starter',t:S.pos==='P'?'爭取先發與關鍵局數':'爭取先發與中心棒次',warn:true,s:'大賽準備 +3｜傷病風險 +4%',summary:'用更高負荷換取大賽角色',fx:()=>{S.hsCupBonus+=3;S.tmpInj+=4;}},
+    {id:'starter',t:S.pos==='P'?'爭取先發與關鍵局數':'爭取先發與中心棒次',risk:true,s:'大賽準備 +3｜傷病風險 +4%',summary:'用更高負荷換取大賽角色',fx:()=>{S.hsCupBonus+=3;S.tmpInj+=4;}},
     {id:'team',t:'和隊友加練戰術配合',s:'大賽準備 +2｜團隊關係 +1｜訓練骰 −1 顆',summary:'把時間投資在團隊默契',fx:()=>{S.hsCupBonus+=2;S.chemistry=clamp((S.chemistry||0)+1,-5,5);S.hsTrainingDiceMod-=1;}},
     {id:'individual',t:'把重心放在個人技術',s:'訓練骰 +1 顆｜大賽準備 −2｜團隊關係 −1',summary:'強化自己，但減少團隊演練',fx:()=>{S.hsTrainingDiceMod+=1;S.hsCupBonus-=2;S.chemistry=clamp((S.chemistry||0)-1,-5,5);}},
     {id:'scout',t:'參加職棒球探測試會',s:'選秀評價累積 +2｜大賽準備 −1',summary:'提前讓球探建立追蹤資料',fx:()=>{S.hsScout=clamp((S.hsScout||0)+2,0,6);S.hsCupBonus-=1;}},
@@ -1607,12 +1611,12 @@ function highSchoolSeasonChoice(done){
     {id:'recovery',t:'保護身體並兼顧課業',s:'傷病風險 −6%｜訓練骰 −1 顆',summary:'犧牲部分訓練量換取健康',fx:()=>{S.tmpInj-=6;S.hsTrainingDiceMod-=1;}},
     {id:'captain',t:'主動承擔隊長工作',s:'大賽準備 +2｜團隊關係 +1｜傷病風險 +2%',summary:'扛起溝通與場上責任',fx:()=>{S.hsCupBonus+=2;S.chemistry=clamp((S.chemistry||0)+1,-5,5);S.tmpInj+=2;}},
     {id:'versatile',t:'接受多守位與替補調度',s:'大賽準備 +1｜選秀評價累積 +1｜傷病風險 +2%',summary:'用角色彈性爭取更多出賽',fx:()=>{S.hsCupBonus+=1;S.hsScout=clamp((S.hsScout||0)+1,0,6);S.tmpInj+=2;}},
-    {id:'extra',t:'每天加練到最後一班車',warn:true,s:'訓練骰 +1 顆｜大賽準備 +1｜傷病風險 +5%',summary:'高負荷追求個人與大賽成長',fx:()=>{S.hsTrainingDiceMod+=1;S.hsCupBonus+=1;S.tmpInj+=5;}}
+    {id:'extra',t:'每天加練到最後一班車',risk:true,s:'訓練骰 +1 顆｜大賽準備 +1｜傷病風險 +5%',summary:'高負荷追求個人與大賽成長',fx:()=>{S.hsTrainingDiceMod+=1;S.hsCupBonus+=1;S.tmpInj+=5;}}
   ];
   const steady=plans[0],pool=plans.slice(1).filter(x=>S.stageYr>=2||x.id!=='captain');
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   const shown=[steady,...pool.slice(0,4)];
-  choose(`高中球季計畫｜${S.team} · ${level} · 高${['一','二','三'][S.stageYr-1]}`,shown.map(p=>({t:p.t,s:p.s,main:p.main,warn:p.warn,f:()=>{
+  choose(`高中球季計畫｜${S.team} · ${level} · 高${['一','二','三'][S.stageYr-1]}`,shown.map(p=>({t:p.t,s:p.s,main:p.main,warn:p.warn,risk:p.risk,f:()=>{
     p.fx();S.hsPlan=p.t;card('info','本季高中計畫',`${p.summary}。<div class="statline">校隊定位：${level}｜大賽準備 ${S.hsCupBonus>=0?'+':''}${S.hsCupBonus}｜球探追蹤 ${S.hsScout||0}/6｜團隊關係 ${teamRelationView().value>=0?'+':''}${teamRelationView().value}</div>`);board(0);continueAction('看完本季計畫結果，進入訓練 ▸',done);
   }})));
 }
@@ -1936,9 +1940,11 @@ function choose(title,opts){
   else a.innerHTML=tools+'<div class="title decision-heading"><span>下一步</span><b>選擇你的行動</b></div>';
   if(hasEvent){const dock=a.querySelector('.decision-dock');dock.onclick=()=>{a.classList.remove('decision-modal');a.classList.add('decision-docked');a.removeAttribute('role');a.removeAttribute('aria-modal');if(career)career.classList.remove('decision-open');if(backdrop){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');}dock.textContent='選項保留在下方｜可先查看生涯播報';};}
   opts.forEach((o,idx)=>{ const b=document.createElement('button');
-    b.className='btn'+(o.main?' main':'')+(o.warn?' warn':'')+(o.event?' event-choice':' choice-card');
+    b.className='btn'+(o.main?' main':'')+(o.risk?' risk':'')+(o.warn?' warn':'')+(o.event?' event-choice':' choice-card');
     const impact=choiceImpactText(o);
-    b.innerHTML=o.event?`<span class="event-key">${String.fromCharCode(65+idx)}</span><span class="event-copy"><b>${o.t}</b><small><strong>影響｜</strong>${impact}</small></span><span class="chance-num${o.direct?' direct':''}">${o.direct?'直接執行':chanceBand(o.probability)}<small>${o.direct?'不進行成敗判定':'結果之後揭曉'}</small></span>`:`<span class="choice-key">${String.fromCharCode(65+idx)}</span><span class="choice-content"><b>${o.t}</b><small><strong>影響｜</strong>${impact}</small></span><span class="choice-arrow">›</span>`;
+    const badge=o.risk?`<em class="choice-risk-badge">${Number.isFinite(o.probability)?`成功機會 ${Math.round(o.probability)}%｜`:''}高風險・高報酬</em>`:o.warn?'<em class="choice-cost-badge">重大代價</em>':'';
+    const chanceTitle=o.direct?'直接執行':`成功 ${Math.round(o.probability)}%`,chanceNote=o.direct?'不進行成敗判定':o.risk?'成功 ×3｜失敗 ×2':o.mode==='safe'?'保守回報｜不加永久能力':chanceBand(o.probability);
+    b.innerHTML=o.event?`<span class="event-key">${String.fromCharCode(65+idx)}</span><span class="event-copy"><b>${o.t}</b><small><strong>影響｜</strong>${impact}</small></span><span class="chance-num${o.direct?' direct':''}${o.risk?' risk':''}">${chanceTitle}<small>${chanceNote}</small></span>`:`<span class="choice-key">${String.fromCharCode(65+idx)}</span><span class="choice-content"><b>${o.t}</b><small><strong>影響｜</strong>${impact}${badge}</small></span><span class="choice-arrow">›</span>`;
     b.onclick=()=>{_choiceResultCapture={choice:o.t,before:choiceStateSnapshot(),entries:[]};actClear();o.f();};a.appendChild(b); });
   actToggleSync(); scrollBottom();requestAnimationFrame(()=>{const first=a.querySelector('button');if(first)first.focus({preventScroll:true});});
 }
@@ -2116,8 +2122,9 @@ function phasePreContinue(){
   const preAsk=afterAsk;
   if(S.pos==='P'&&S.stage==='PRO'&&!S.skipMid){
     afterAsk=()=>{
+      const fullLoad=(oldRating(S.ab.vel)+oldRating(S.ab.brk))/19*1.25*(S.tjCount>=1?1.15:1),fullPct=Math.round((S.tj+fullLoad)/tjCap()*100),healthP=injuryProb();
       choose(`開季投球規劃（手臂狀況：${(function(){const r=S.tj/tjCap();return S.rehab>0?'復健中':r>=0.85?'手肘隱隱作痛':r>=0.6?'手臂略感疲勞':r>=0.35?'狀況尚可':'手感輕盈';})()}）`,[
-        {t:'全力投',warn:true,s:'成績最佳｜手臂負荷最大（TJ 累積 ×1.25）',f:()=>{S.effort='全力投';preAsk();}},
+        {t:'全力投',risk:true,s:`成績最佳｜本季重大傷病率目前 ${healthP}%｜球季後手肘負荷預估 ${fullPct}%（達 100% 觸發警報）`,f:()=>{S.effort='全力投';preAsk();}},
         {t:'普通投',main:true,s:'標準強度｜TJ 累積正常',f:()=>{S.effort='普通投';preAsk();}},
         {t:'養生球',s:'成績保守｜省手臂（TJ 累積 ×0.65）',f:()=>{S.effort='養生球';preAsk();}}]);
     };
@@ -2206,10 +2213,11 @@ function eventChoices(ev,meta,after){
   };
   let s=sets[meta.kind]||sets['訓練挑戰'];const titles=(variants[meta.kind]||variants['訓練挑戰'])[stableIndex(ev.n,3)];
   s={norm:[titles[0],s.norm[1],s.norm[2]],bold:[titles[1],s.bold[1],s.bold[2]],safe:[titles[2],s.safe[1],s.safe[2]],alt:[titles[3],s.alt[1]]};
+  const normalP=eventChance('norm'),boldP=eventChance('bold'),safeP=eventChance('safe');
   return [
-    {t:s.norm[0],icon:s.norm[1],event:true,main:true,probability:eventChance('norm'),s:s.norm[2],f:()=>resolveEvent(ev,'norm',after)},
-    {t:s.bold[0],icon:s.bold[1],event:true,warn:true,probability:eventChance('bold'),s:s.bold[2],f:()=>resolveEvent(ev,'bold',after)},
-    {t:s.safe[0],icon:s.safe[1],event:true,probability:eventChance('safe'),s:s.safe[2],f:()=>resolveEvent(ev,'safe',after)},
+    {t:s.norm[0],icon:s.norm[1],event:true,main:true,mode:'norm',probability:normalP,s:`${s.norm[2]}｜成功與失敗皆為標準效果`,f:()=>resolveEvent(ev,'norm',after)},
+    {t:s.bold[0],icon:s.bold[1],event:true,risk:true,mode:'bold',probability:boldP,s:`${s.bold[2]}｜成功效果 ×3；失敗代價 ×2`,f:()=>resolveEvent(ev,'bold',after)},
+    {t:s.safe[0],icon:s.safe[1],event:true,mode:'safe',probability:safeP,s:`${s.safe[2]}｜只影響本季狀態，不直接升降永久能力`,f:()=>resolveEvent(ev,'safe',after)},
     {t:s.alt[0],s:s.alt[1],event:true,direct:true,f:()=>eventAlternative(meta,after)}
   ];
 }
@@ -2246,7 +2254,7 @@ function teammateChoice(done){
     {t:'主動請教並一起訓練',main:true,s:`${chanceBand(p)}｜成功提升能力與默契`,f:()=>quickRoll({sides:100,title:`隊友互動｜${t.name}`,probability:p,modifiers:['主動建立關係']}).then(r=>{
       so.playerActs++;if(r.success){const k=pick(POS_AB[S.pos]),g=addAb(k,1);S.chemistry=clamp((S.chemistry||0)+1,-5,5);so.playerRep=clamp(so.playerRep+1,-20,20);card('good','隊友連線',`${t.name} 願意分享自己的準備流程——<b class="up">${ABL[k]} +${g||1}</b>，更衣室默契與球員聲望小幅提升。`);}
       else{S.chemistry=clamp((S.chemistry||0)-1,-5,5);so.playerRep=clamp(so.playerRep-1,-20,20);card('bad','頻率不合',`你們的訓練節奏完全不同，勉強湊在一起反而互相干擾。`);}dynamicSocialTraitAudit();board(0);continueAction('看完隊友互動結果，繼續 ▸',done);})},
-    {t:'正面競爭先發位置',warn:true,s:'成功＝球季狀態加成｜失敗＝疲勞與關係惡化',f:()=>animatedRoll({sides:100,title:'隊內競爭',probability:50,modifiers:[t.role]}).then(r=>{
+    {t:'正面競爭先發位置',risk:true,probability:50,s:'成功機會 50%｜成功＝球季狀態加成；失敗＝疲勞與關係惡化',f:()=>animatedRoll({sides:100,title:'隊內競爭',probability:50,modifiers:[t.role]}).then(r=>{
       so.playerActs++;if(r.success){addSeasonState(r.critical?2:1);S.chemistry=clamp((S.chemistry||0)+1,-5,5);so.playerRep=clamp(so.playerRep+1,-20,20);card('good','競爭讓人變強','你們把彼此的標準往上推，教練說這是他想看到的競爭。');}
       else{S.injNext+=3;S.chemistry=clamp((S.chemistry||0)-2,-5,5);so.playerRep=clamp(so.playerRep-2,-20,20);card('bad','競爭失控','加練變成消耗，彼此開始不說話，下季負荷也被墊高。');}dynamicSocialTraitAudit();board(0);continueAction('看完隊友互動結果，繼續 ▸',done);})},
     {t:'保持專業，當可靠的隊友',s:'不冒險｜默契與球員聲望小幅提升，但不增加能力',f:()=>{so.playerActs++;so.playerRep=clamp(so.playerRep+1,-20,20);S.chemistry=clamp((S.chemistry||0)+1,-5,5);card('info','穩定關係','不必成為摯友，準時補位、坦白溝通就足以建立信任；這能改善團隊氣氛，但不能代替場上的訓練。');dynamicSocialTraitAudit();board(0);continueAction('看完隊友互動結果，繼續 ▸',done);}},
@@ -2299,7 +2307,7 @@ function fanPlayerInteraction(st,done){
     `${fan} 從客場看台遞來一面寫滿隊友名字的旗子`,
     `社區棒球隊的 ${fan} 問你，低潮時怎麼還願意上場`,
     `${fan} 在社群整理了你整季每一次全力跑壘的影片`
-  ]),perf=Math.round(st.d||0),fanP=clamp(67+perf*2+Math.round(so.fanRep*.35)+(S.traits.fanhero?5:0)-(S.traits.booed?6:0),28,92),communityCost=Math.round(clamp(Math.max(0,S.finance.netWorth)*.008,10,320));
+  ]),perf=Math.round(st.d||0),fanP=clamp(67+perf*2+Math.round(so.fanRep*.35)+(S.traits.fanhero?5:0)-(S.traits.booed?6:0),28,92),communityCost=Math.round(clamp(Math.max(0,S.finance.netWorth)*.008,10,320)),liveP=clamp(55+perf*2+(S.traits.fanhero?6:0),25,92);
   choose(`球季後互動｜${scene}`,[
     {t:'留下來替每一位球迷簽名',main:true,s:`${chanceBand(fanP)}｜球迷聲望提升；下季傷病風險 +1%`,f:()=>quickRoll({sides:100,title:'球員與球迷｜簽名到最後',probability:fanP,modifiers:[`本季表現 ${perf>=0?'+':''}${perf}`]}).then(r=>{
       so.fanActs++;S.injNext+=1;if(r.success){const g=r.critical?2:1;so.fanRep=clamp(so.fanRep+g,-20,20);card('good','最後一筆簽名',`最後一位球迷 <b class="hl">${fan}</b> 拿到簽名後滿足離開。你留下來協助工作人員收拾場地，球迷聲望 <b class="up">+${g}</b>。`);}
@@ -2307,7 +2315,7 @@ function fanPlayerInteraction(st,done){
     {t:'邀隊友一起辦社區棒球日',s:`支出 ${fmtMoney(communityCost)}｜同時影響球迷與球員聲望`,f:()=>quickRoll({sides:100,title:'社區棒球日',probability:clamp(65+(S.chemistry||0)*4+(S.traits.leader?8:0),35,92),modifiers:['球迷＋隊友共同事件']}).then(r=>{
       spendMoney(communityCost,'family','社區棒球公益日');so.fanActs++;so.playerActs++;if(r.success){so.communityActs++;so.fanRep=clamp(so.fanRep+(r.critical?2:1),-20,20);so.playerRep=clamp(so.playerRep+1,-20,20);S.chemistry=clamp((S.chemistry||0)+1,-5,5);card('good','一整隊走進社區',`${S.teammate?S.teammate.name:'隊友'} 幫忙餵球，${fan} 第一次把球打過內野。活動支出 ${fmtMoney(communityCost)}，兩種聲望各小幅累積。`);}
       else{so.fanRep=clamp(so.fanRep+1,-20,20);so.playerRep=clamp(so.playerRep-1,-20,20);card('bad','安排失控','交通、媒體與隊友行程撞在一起；球迷仍然開心，休息室卻有人覺得自己被迫出席。');}dynamicSocialTraitAudit(st);board(2);continueAction('看完球迷互動結果，繼續 ▸',done);})},
-    {t:'開直播，直接回答球迷問題',warn:true,s:`${chanceBand(clamp(55+perf*2,25,88))}｜可能爆紅、也可能失言`,f:()=>animatedRoll({sides:100,title:'球迷直播｜沒有公關稿',probability:clamp(55+perf*2+(S.traits.fanhero?6:0),25,92),modifiers:['高波動公開互動']}).then(r=>{
+    {t:'開直播，直接回答球迷問題',risk:true,probability:liveP,s:`成功機會 ${liveP}%｜成功＝聲望、合作收入；失敗＝球迷與球員聲望下降`,f:()=>animatedRoll({sides:100,title:'球迷直播｜沒有公關稿',probability:liveP,modifiers:['高波動公開互動']}).then(r=>{
       so.fanActs++;if(r.success){const g=r.critical?2:1,bonus=Math.round(clamp((S.ct&&S.ct.annual||100)*.025,20,500));so.fanRep=clamp(so.fanRep+g,-20,20);so.viral++;bookIncome(bonus,'endorsement',S.org,S.orgTeam);card('gold','真誠變成熱搜',`你不迴避低潮，也把功勞分給隊友。球迷聲望 <b class="up">+${g}</b>，直播帶來 ${fmtMoney(bonus)} 合作收入。`);}
       else{so.fanRep=clamp(so.fanRep-2,-20,20);so.playerRep=clamp(so.playerRep-1,-20,20);card('bad','一句話被剪成十五秒','你對角色安排的抱怨在社群瘋傳，球迷與隊友都覺得被你拿來當藉口。');}dynamicSocialTraitAudit(st);board(2);continueAction('看完球迷互動結果，繼續 ▸',done);})},
     {t:'婉拒所有活動，立刻投入訓練',warn:true,s:'下季狀態 +1｜球迷聲望 −2；累積冷落紀錄',f:()=>{so.ignoredFans++;so.fanRep=clamp(so.fanRep-2,-20,20);addSeasonState(1);card('bad','沒有停下腳步',`${fan} 最後把球衣折回袋子。你多得到一段訓練時間，但球迷記得的也是一種數據。`);dynamicSocialTraitAudit(st);board(2);continueAction('看完球迷互動結果，繼續 ▸',done);}}
@@ -2474,7 +2482,7 @@ function statBonus(pts,out){ /* 能力已達潛力上限,獎勵轉成當季成�
 function eventChance(mode){
   let base=47+(S.traits.genius||S.traits.late?6:0);
   if(S.traits.thief)base-=6; /* 聲譽只微調機會，不蓋過準備與骰運。 */
-  const boldPen=S.traits.clutch?0:12;
+  const boldPen=S.traits.clutch?0:8;
   return clamp(mode==='safe'?base+15:mode==='bold'?base-boldPen:base,3,92);
 }
 function chanceBand(p){p=Number(p)||0;return p>=75?'把握很高':p>=60?'略有把握':p>=42?'勝負難料':p>=25?'風險偏高':'機會渺茫';}
@@ -2497,7 +2505,8 @@ function resolveEvent(ev,mode,done){
     if(mode==='safe'&&good)S.cntSaveWin=(S.cntSaveWin||0)+1;
     if((ev.n==='宵夜文化'||ev.n==='場外代言邀約')&&mode!=='safe'&&!good)S.cntSnack++;
     /* 永久能力以訓練為主：一般事件最多動一項，其他效果轉成本季狀態。 */
-    let mag=mode==='bold'?2:1;if(rr.critical)mag++;
+    /* 三條路線各有定位：保守只動當季狀態；一般效果 ×1；冒險成功 ×3、失敗 ×2。 */
+    const mag=mode==='bold'?(good?3:2):1;
     const fx=good?ev.g:ev.b; let out=[],touched=false,abilityApplied=false;
     const applyAbil=(k,dir)=>{ const step=dir*mag;
       if(dir>0){ let gained=0,overflow=0;
@@ -2510,14 +2519,15 @@ function resolveEvent(ev,mode,done){
       if(k==='inj'){const v=({1:4,2:7,3:10})[mag]||10;S.tmpInj+=v;out.push(`本季傷病負荷 <span class="dn">+${v}%</span>`);}
       else if(k==='rand'||k in S.ab){
         const key=k==='rand'?pick(POS_AB[S.pos]):k;
-        if(!abilityApplied){applyAbil(key,dir);abilityApplied=true;}
-        else{const shift=dir*(mode==='bold'?2:1);S.pendStat=clamp((S.pendStat||0)+shift,-4,4);out.push(`本季狀態 <span class="${dir>0?'up':'dn'}">${shift>0?'+':''}${shift}</span>`);}
+        if(mode==='safe'){
+          if(!abilityApplied){const shift=addSeasonState(dir);out.push(`本季狀態 <span class="${shift>=0?'up':'dn'}">${shift>0?'+':''}${shift}</span>`);abilityApplied=true;touched=true;}
+        }else if(!abilityApplied){applyAbil(key,dir);abilityApplied=true;}
+        else{const shift=addSeasonState(dir*mag);out.push(`本季狀態 <span class="${shift>=0?'up':'dn'}">${shift>0?'+':''}${shift}</span>`);}
       }}
     if(!touched&&!abilityApplied){const shift=good?1:-1;S.pendStat=clamp((S.pendStat||0)+shift,-4,4);out.push(`本季狀態 <span class="${shift>0?'up':'dn'}">${shift>0?'+':''}${shift}</span>`);}
-    const crit=rr.critical==='success'?'<b class="hl">超常發揮，效果加深。</b>':rr.critical==='failure'?'<b class="dn">意外失控，代價加深。</b>':'';
     const resultTitle=good?(mode==='bold'?'挑戰成功':mode==='safe'?'穩穩過關':'計畫奏效'):(mode==='bold'?'風險爆發':mode==='safe'?'仍有意外':'判斷失準');
     card(good?'good':'bad',`${eventMeta(ev).icon} ${ev.n}｜${resultTitle}`,
-      `<div class="event-outcome">${good?ev.gt:ev.bt}。</div><span class="tag">${resultTitle}</span>${crit?`<br>${crit}`:''}<div class="statline">${out.join('｜')||'沒有數值變動'}</div>`);
+      `<div class="event-outcome">${good?ev.gt:ev.bt}。</div><span class="tag">${resultTitle}</span><div class="statline">${out.join('｜')||'沒有數值變動'}</div>`);
     board(1);checkTraitsMid();done();
   });
 }
@@ -3221,7 +3231,7 @@ function termChoice(o,d,baseTitle,onPick,onReject,offerMultiplier){
   if(tp.longEligible){ /* 夠格才給長約選項 */
     opts.push({t:`接受長約（${tp.longY} 年）`,main:true,s:`${deal(tp.longY,tp.longM)}｜年薪係數 ×${tp.longM}`,
       f:()=>onPick(tp.longY,tp.longM)});
-    opts.push({t:`接受短約（${tp.shortY} 年）`,warn:true,s:`${deal(tp.shortY,tp.shortM)}｜賭下次身價`,
+    opts.push({t:`接受短約（${tp.shortY} 年）`,s:`${deal(tp.shortY,tp.shortM)}｜短期收入較高，保障較少；賭下次身價`,
       f:()=>onPick(tp.shortY,tp.shortM)});
     const optM=+(tp.longM*.95).toFixed(2);
     opts.push({t:`長約加入球員跳脫權`,s:`${deal(tp.longY,optM)}｜第 3 年後可自行重返市場`,f:()=>onPick(tp.longY,optM,'第 3 年後球員跳脫權')});
@@ -3231,7 +3241,7 @@ function termChoice(o,d,baseTitle,onPick,onReject,offerMultiplier){
   }
   { const cy=tp.longEligible?tp.longY:tp.shortY,cm=tp.longEligible?tp.longM:tp.shortM;
     const p=clamp(42+d*4+(S.marketHeat||0),12,85);
-    opts.push({t:'讓經紀人反提案：年薪再加 12%',warn:true,s:`${chanceBand(p)}｜成功提高年薪；失敗可能降價或撤回`,f:()=>{
+    opts.push({t:'讓經紀人反提案：年薪再加 12%',risk:true,probability:p,s:`成功機會 ${p}%｜成功提高年薪；失敗可能降價或撤回`,f:()=>{
       animatedRoll({sides:100,title:'合約談判｜反提案',subtitle:'市場熱度、當季表現與球團耐心共同決定。',probability:p,modifiers:[`市場 ${S.marketHeat>=0?'+':''}${S.marketHeat||0}%`,`成績修正 ${d>=0?'+':''}${Math.round(d*4)}%`]}).then(r=>{
         if(r.success){const nm=+(cm*1.12).toFixed(2);card('gold','談判成功',`經紀人守住立場，球團把年薪係數提高到 <b class="hl">×${nm}</b>。`);onPick(cy,nm);}
         else{const reduced=+(cm*.95).toFixed(2);choose('球團拒絕反提案',[{t:'接受球團最後報價',main:true,s:`${deal(cy,reduced)}｜反提案失敗後降價 5%`,f:()=>onPick(cy,reduced)},{t:'離開談判桌',warn:true,s:'回到市場，這份報價失效',f:onReject||(()=>onPick(1,Math.max(.65,reduced-.15)))}]);}
@@ -3239,7 +3249,7 @@ function termChoice(o,d,baseTitle,onPick,onReject,offerMultiplier){
     }});
   }
   if(tp.longEligible&&d>=4){const ntM=+(tp.longM*.92).toFixed(2),ntP=clamp(38+d*4+(S.marketHeat||0),35,82);
-    opts.push({t:'要求完整不可交易條款',warn:true,s:`${chanceBand(ntP)}｜薪資略降，合約期間球團不能交易你`,f:()=>animatedRoll({sides:100,title:'合約談判｜不可交易條款',probability:ntP,modifiers:['明星球員談判籌碼']}).then(r=>{
+    opts.push({t:'要求完整不可交易條款',risk:true,probability:ntP,s:`成功機會 ${ntP}%｜薪資略降，成功後合約期間球團不能交易你`,f:()=>animatedRoll({sides:100,title:'合約談判｜不可交易條款',probability:ntP,modifiers:['明星球員談判籌碼']}).then(r=>{
       if(r.success)onPick(tp.longY,ntM,'完整不可交易條款');
       else choose('球團拒絕不可交易條款',[{t:'接受原本長約',main:true,s:deal(tp.longY,tp.longM),f:()=>onPick(tp.longY,tp.longM)},{t:'離開談判桌',warn:true,f:onReject||(()=>onPick(tp.shortY,tp.shortM))}]);
     })});
