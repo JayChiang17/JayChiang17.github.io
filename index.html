@@ -698,7 +698,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v2.3.3';
+const APP_VER='v2.3.4';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -1746,7 +1746,8 @@ function runSeasonAnimation(done){
   const routine=[{n:'正常賽程',d:'沒有額外插曲，表現由能力、對手與日常狀態累積',m:0},{n:'例行調整',d:'訓練、休息與比賽照球隊計畫推進',m:0},{n:'小幅波動',d:'幾場好壞互相抵銷，整體沒有明顯轉折',m:0}];
   const available=beats.slice(),timeline=months.map(()=>{if(chance(38))return {...pick(routine),pulse:ri(-1,1)};const bi=ri(0,available.length-1),b=available.splice(bi,1)[0];return {...b,pulse:clamp(b.m+ri(-1,1),-3,3)};});
   const momentum=timeline.reduce((n,x)=>n+x.pulse,0);S.seasonMomentum=clamp(+(momentum/months.length).toFixed(1),-3,3);
-  const finalStats=applySeasonAdjustments(simSeason(S.lv));S._pendingSeasonStats=finalStats;
+  /* 業餘階段沒有職業聯盟層級 S.lv；只有職業球季才建立個人職業數據預覽。 */
+  const finalStats=pro?applySeasonAdjustments(simSeason(S.lv)):null;if(pro)S._pendingSeasonStats=finalStats;
   const weights=timeline.map(x=>Math.max(.55,1+x.pulse*.09)),weightTotal=weights.reduce((a,b)=>a+b,0);let idx=0,usedWeight=0;
   $('month-feed').innerHTML='';$('sim-progress').style.width='0%';$('sim-games').textContent='0 場';$('sim-momentum').textContent='0.0';$('sim-form').textContent='準備開季';$('sim-impact').innerHTML='每月狀態會取平均，套用到最後的球季數據。';
   $('season-sim-title').textContent=`${S.year} ${pro?'職業球季':'業餘賽季'}模擬中`;
@@ -1756,13 +1757,13 @@ function runSeasonAnimation(done){
     if(idx>=months.length){
       $('sim-form').textContent=S.seasonMomentum>=1.2?'火燙收官':S.seasonMomentum<=-1.2?'艱難收官':'穩定完賽';
       $('sim-momentum').textContent=(S.seasonMomentum>0?'+':'')+S.seasonMomentum.toFixed(1);
-      $('sim-impact').innerHTML=`例行賽最終數據｜<b>${compactSeasonLine(finalStats)}</b>${Math.abs(S.seasonMomentum)<.05?'｜氣勢互相抵銷，沒有額外修正。':`｜氣勢 ${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)} 已進入數據公式。`}`;
+      $('sim-impact').innerHTML=pro?`例行賽最終數據｜<b>${compactSeasonLine(finalStats)}</b>${Math.abs(S.seasonMomentum)<.05?'｜氣勢互相抵銷，沒有額外修正。':`｜氣勢 ${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)} 已進入數據公式。`}`:`業餘賽季完成｜球季氣勢 <b>${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)}</b> 已加入年度大賽的臨場狀態。`;
       $('season-accept').style.display='block';$('season-accept').onclick=()=>{closeFx('season-overlay');done();};return;
     }
-    const beat=timeline[idx],pulse=beat.pulse;usedWeight+=weights[idx];const ratio=idx===months.length-1?1:usedWeight/weightTotal,games=Math.round(totalGames*(idx+1)/months.length),current=portionOf(finalStats,ratio),avg=timeline.slice(0,idx+1).reduce((n,x)=>n+x.pulse,0)/(idx+1);
-    const row=document.createElement('div');row.className='month-row';row.innerHTML=`<span>${months[idx]}</span><p><b>${beat.n}</b>｜${beat.d}<small>${compactSeasonLine(current)}</small></p>`;
+    const beat=timeline[idx],pulse=beat.pulse;usedWeight+=weights[idx];const ratio=idx===months.length-1?1:usedWeight/weightTotal,games=Math.round(totalGames*(idx+1)/months.length),current=pro?portionOf(finalStats,ratio):null,avg=timeline.slice(0,idx+1).reduce((n,x)=>n+x.pulse,0)/(idx+1);
+    const row=document.createElement('div');row.className='month-row';row.innerHTML=`<span>${months[idx]}</span><p><b>${beat.n}</b>｜${beat.d}<small>${pro?compactSeasonLine(current):`校隊賽程 ${games}/${totalGames}｜目前氣勢 ${avg>0?'+':''}${avg.toFixed(1)}`}</small></p>`;
     $('month-feed').appendChild(row);$('sim-progress').style.width=((idx+1)/months.length*100)+'%';$('sim-games').textContent=`${games}/${totalGames}`;
-    $('sim-momentum').textContent=(avg>0?'+':'')+avg.toFixed(1);$('sim-impact').innerHTML=`截至 ${months[idx]} 個人成績｜<b>${compactSeasonLine(current)}</b>`;$('sim-form').textContent=pulse>=2?'狀態火燙':pulse<=-2?'陷入低潮':'正常推進';idx++;
+    $('sim-momentum').textContent=(avg>0?'+':'')+avg.toFixed(1);$('sim-impact').innerHTML=pro?`截至 ${months[idx]} 個人成績｜<b>${compactSeasonLine(current)}</b>`:`截至 ${months[idx]}｜已完成 <b>${games}/${totalGames}</b> 場校隊賽程，氣勢將影響年度大賽。`;$('sim-form').textContent=pulse>=2?'狀態火燙':pulse<=-2?'陷入低潮':'正常推進';idx++;
     setTimeout(tick,window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?60:520);
   };
   setTimeout(tick,250);
