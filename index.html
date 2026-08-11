@@ -242,9 +242,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 .roll-slot-wrap{position:relative;z-index:3;display:flex;justify-content:center;gap:10px;margin:-20px auto 14px;min-height:96px;align-items:center}
 .slot-digit,.pool-die{width:82px;height:94px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(#f7f0d9,#d9cdaa);color:#102017;
   font:900 52px/1 var(--mono);border:3px solid #fff5d6;box-shadow:inset 0 -8px 0 #796f5444,0 12px 24px #0009;position:relative;overflow:hidden}
-.slot-digit::after,.pool-die::after{content:'';position:absolute;inset:7px;border:1px dashed #b65a3d88;border-radius:9px}
+.slot-digit::after,.pool-die::after{content:'';position:absolute;inset:7px;border:1px dashed #b65a3d88;border-radius:9px;pointer-events:none}
 .slot-digit.spinning,.pool-die.spinning{animation:slotShake .09s linear infinite}
-.slot-digit,.pool-die{cursor:default;transition:outline-color .2s,transform .2s,filter .2s}
+.slot-digit,.pool-die{cursor:default;transition:outline-color .2s,transform .2s,filter .2s;touch-action:manipulation;user-select:none;-webkit-user-select:none;pointer-events:auto}
 .slot-digit.ready,.pool-die.ready{cursor:pointer;outline:4px solid var(--amber);outline-offset:4px;animation:slotShake .09s linear infinite,readyPulse .75s ease-in-out infinite alternate}
 .slot-digit.stopped,.pool-die.stopped{filter:none;transform:none;animation:none}
 .slot-digit.braking,.pool-die.braking{outline-color:#fff2bd;filter:blur(1px) brightness(1.15);animation:reelBrake .055s linear infinite}
@@ -255,6 +255,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 .roll-readout{padding:0 22px 22px;position:relative;z-index:3}.roll-formula{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;font:700 11px var(--mono);color:var(--dim)}
 .roll-formula span{background:#07150f;border:1px solid #294b3a;border-radius:99px;padding:5px 9px}.roll-formula b{color:var(--chalk)}
 .roll-result{margin-top:12px;text-align:center;min-height:56px}.roll-result strong{display:block;font-size:23px}.roll-result small{color:var(--dim)}
+#roll-stop{display:none;max-width:300px;margin:10px auto 0;text-align:center;touch-action:manipulation}
 .roll-result.good strong{color:var(--good)}.roll-result.bad strong{color:var(--bad)}.roll-result.critical strong{animation:criticalGlow .75s ease-in-out infinite alternate}
 @keyframes criticalGlow{to{text-shadow:0 0 24px currentColor;transform:scale(1.035)}}
 #roll-overlay.finalizing .roll-machine{animation:machineTension .11s linear infinite}#roll-overlay.finalizing .fx-backdrop{background:#020906f3}
@@ -423,7 +424,8 @@ html *{border-radius:0!important}
     <div class="roll-readout">
       <div class="roll-formula" id="roll-formula"></div>
       <div class="roll-result" id="roll-result"><small>點擊亮起的格子</small></div>
-      <button class="btn main" id="roll-accept">繼續 ▸</button>
+      <button class="btn main" id="roll-stop" type="button">停下第一顆</button>
+      <button class="btn main" id="roll-accept" type="button">繼續 ▸</button>
     </div>
   </section>
 </div>
@@ -636,7 +638,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v2.3.1';
+const APP_VER='v2.3.2';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -1457,24 +1459,26 @@ function renderRails(){
     if($('rail-contract'))$('rail-contract').textContent=S.stage==='PRO'&&S.ct?`${S.ct.yrs} 年剩餘｜年薪 ${fmtLocalMoney(S.ct.annual||0,S.org)}｜保障 ${Math.round((S.ct.guaranteed||0)*100)}%`:'尚未進入職業';
   }
 }
-function openFx(id){ const el=$(id); el.classList.remove('finalizing','reveal-good','reveal-bad');el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'; }
-function closeFx(id){ const el=$(id); el.classList.remove('open','finalizing','reveal-good','reveal-bad');el.setAttribute('aria-hidden','true');document.body.style.overflow=''; }
+function openFx(id){ const el=$(id); el.classList.remove('finalizing','reveal-good','reveal-bad');el.classList.add('open');el.setAttribute('aria-hidden','false');const machine=el.querySelector('.roll-machine,.season-machine,.summary-machine');if(machine)machine.scrollTop=0;document.body.style.overflow='hidden'; }
+function closeFx(id){ const el=$(id); el.classList.remove('open','finalizing','reveal-good','reveal-bad');el.setAttribute('aria-hidden','true');if(id==='roll-overlay'&&$('roll-stop'))$('roll-stop').style.display='none';document.body.style.overflow=''; }
 let rollAudio=null;
 function playRollSound(kind){
   try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;rollAudio=rollAudio||new AC();const o=rollAudio.createOscillator(),g=rollAudio.createGain(),now=rollAudio.currentTime;o.connect(g);g.connect(rollAudio.destination);o.type=kind==='bad'?'sawtooth':'sine';o.frequency.setValueAtTime(kind==='stop'?180:kind==='good'?520:120,now);if(kind==='good')o.frequency.exponentialRampToValueAtTime(780,now+.16);if(kind==='bad')o.frequency.exponentialRampToValueAtTime(70,now+.2);g.gain.setValueAtTime(.045,now);g.gain.exponentialRampToValueAtTime(.001,now+(kind==='stop'?.08:.22));o.start(now);o.stop(now+(kind==='stop'?.09:.23));}catch(_){ }
 }
 function manualReels(els,values,spinValue,onStep,onDone){
-  let next=0,locked=false;const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let next=0,locked=false;const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches,unit=els[0]&&els[0].classList.contains('pool-die')?'顆':'格',stopBtn=$('roll-stop'),slotArea=$('roll-slots');
   const timer=reduced?null:setInterval(()=>els.forEach((e,i)=>{if(i>=next)e.textContent=spinValue();}),70);
-  const sync=()=>els.forEach((e,i)=>{e.classList.toggle('ready',!locked&&i===next);e.tabIndex=!locked&&i===next?0:-1;e.setAttribute('aria-label',i===next?`停下第 ${i+1} 格`:`第 ${i+1} 格`);});
+  const sync=()=>{els.forEach((e,i)=>{e.classList.toggle('ready',!locked&&i===next);e.tabIndex=!locked&&i===next?0:-1;e.setAttribute('aria-label',i===next?`停下第 ${i+1} ${unit}`:`第 ${i+1} ${unit}`);});if(stopBtn){stopBtn.style.display=next<els.length?'block':'none';stopBtn.disabled=locked;stopBtn.textContent=locked?`第 ${next+1} ${unit}減速中…`:`停下第 ${next+1} ${unit}`;}};
   const stop=i=>{
-    if(i!==next||locked)return;locked=true;const e=els[i];e.classList.remove('ready');e.classList.add('braking');onStep(next,els.length,true);playRollSound('stop');
+    if(i!==next||locked||i>=els.length)return;locked=true;const e=els[i];e.classList.remove('ready');e.classList.add('braking');sync();onStep(next,els.length,true);playRollSound('stop');
     setTimeout(()=>{e.textContent=values[i];e.classList.remove('spinning','ready','braking');e.classList.add('stopped');next++;locked=false;
-      if(next>=els.length){if(timer)clearInterval(timer);$('roll-overlay').classList.add('finalizing');onStep(next,els.length,false,true);if(navigator.vibrate)navigator.vibrate([25,45,35]);setTimeout(()=>{$('roll-overlay').classList.remove('finalizing');onDone();},reduced?120:650);return;}
+      if(next>=els.length){if(timer)clearInterval(timer);sync();$('roll-overlay').classList.add('finalizing');onStep(next,els.length,false,true);if(navigator.vibrate)navigator.vibrate([25,45,35]);setTimeout(()=>{$('roll-overlay').classList.remove('finalizing');onDone();},reduced?120:650);return;}
       onStep(next,els.length);sync();els[next].focus({preventScroll:true});
     },reduced?80:260+i*55);
   };
-  els.forEach((e,i)=>{e.setAttribute('role','button');e.onclick=()=>stop(i);e.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();stop(i);}};});
+  els.forEach((e,i)=>{e.setAttribute('role','button');e.onpointerdown=ev=>{ev.preventDefault();stop(i);};e.onclick=null;e.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();stop(i);}};});
+  if(stopBtn)stopBtn.onclick=()=>stop(next);
+  if(slotArea)slotArea.onpointerdown=ev=>{if(!ev.target.closest('.slot-digit,.pool-die')){ev.preventDefault();stop(next);}};
   sync();onStep(0,els.length);
 }
 function visualRi(a,b){return a+Math.floor(Math.random()*(b-a+1));}
@@ -1522,13 +1526,13 @@ function animatedDicePool(n,min,title){
   const dice=Array.from({length:n},()=>trainingRoll(min||1));
   return new Promise(resolve=>{
     $('roll-kicker').textContent='訓練拉霸';$('roll-title').textContent=title||'季初訓練';
-    $('roll-sub').textContent='依序點擊亮起的骰子，一顆一顆停下。';
+    $('roll-sub').textContent='依序點亮起的骰子，或按下方按鈕，一顆一顆停下。';
     $('roll-slots').innerHTML=`<div class="pool-dice">${dice.map(()=>'<div class="pool-die spinning">?</div>').join('')}</div>`;
     $('roll-formula').innerHTML=`<span><b>${n}</b> 顆訓練骰</span><span>每顆最低 <b>${min||1}</b> 點</span>`;
-    $('roll-result').className='roll-result';$('roll-result').innerHTML='<small>點擊第一顆開始</small>';$('roll-accept').style.display='none';
+    $('roll-result').className='roll-result';$('roll-result').innerHTML='<small>點第一顆，或按「停下第 1 顆」開始</small>';$('roll-accept').style.display='none';
     openFx('roll-overlay');if(window.DiceFX)window.DiceFX.begin(Math.min(2,n));
     const els=Array.from(document.querySelectorAll('#roll-slots .pool-die'));
-    manualReels(els,dice,()=>Math.max(min||1,visualRi(1,6)),(stopped,total,braking,final)=>{$('roll-result').innerHTML=`<small>${final?'訓練成果鎖定中…':braking?`第 ${stopped+1} 顆正在減速…`:stopped?`${stopped}/${total} 顆已停下${stopped===total-1?'｜最後一顆':''}`:'點擊第一顆開始'}</small>`;},()=>{
+    manualReels(els,dice,()=>Math.max(min||1,visualRi(1,6)),(stopped,total,braking,final)=>{$('roll-result').innerHTML=`<small>${final?'訓練成果鎖定中…':braking?`第 ${stopped+1} 顆正在減速…`:stopped?`${stopped}/${total} 顆已停下${stopped===total-1?'｜最後一顆':''}`:'點第一顆，或按下方按鈕開始'}</small>`;},()=>{
       if(window.DiceFX)window.DiceFX.settle(dice[0]);
       const sixes=dice.filter(v=>v===6).length,total=dice.reduce((a,b)=>a+b,0);
       $('roll-result').className='roll-result '+(sixes?'good':'');$('roll-result').innerHTML=`<strong>${dice.join(' · ')}</strong><small>合計 ${total} 點</small>`;
