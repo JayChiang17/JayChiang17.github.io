@@ -306,13 +306,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
   #act.event-actions>.btn{height:auto!important;min-height:78px}.btn.event-choice{grid-template-columns:32px minmax(0,1fr) 76px;gap:8px}.event-choice .event-icon{font-size:20px}.event-choice .chance-num{font-size:13px}.event-choice .event-copy b{font-size:13px}.event-choice .event-copy small{font-size:11px}
   #roll-rail .rail-card:last-child{display:none}.ability-list{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}
   #log{width:calc(100% - 24px);margin:0 12px;padding:6px 3px 0 0;overflow-y:scroll}#act{width:calc(100% - 24px);height:calc(100% - 8px);margin:0 12px 8px;bottom:auto;padding:11px}
-  .start-grid{grid-template-columns:1fr}#start .wrap{padding:38px 20px 54px}.slot-digit{width:70px;height:84px;font-size:46px}
+  .start-grid{grid-template-columns:1fr;min-width:0}#start .wrap{width:100%;max-width:100%;padding:38px 20px 54px;overflow-x:hidden}#start .field,.mode-panel,.seg{min-width:0;max-width:100%}.seg{grid-template-columns:repeat(4,minmax(0,1fr))}.seg.two{grid-template-columns:repeat(2,minmax(0,1fr))}.seg button{min-width:0}.slot-digit{width:70px;height:84px;font-size:46px}
   .stat-dashboard,.summary-machine .stat-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}.season-team-head{align-items:flex-start;flex-direction:column}
   .award-grid{grid-template-columns:1fr}
   .honor-groups{grid-template-columns:1fr}
   .standings-grid{grid-template-columns:1fr}.standings-table td:nth-child(2){max-width:155px}
   .draft-clock{grid-template-columns:1fr;padding:16px}.draft-pick-no{display:grid;grid-template-columns:1fr 1fr;align-items:center}.draft-pick-no b{font-size:34px;margin:3px}.draft-announcement h3{font-size:23px}.draft-ticker{padding:0 14px}.draft-row{grid-template-columns:62px 1fr 90px}.draft-row em{display:none}.draft-controls{padding:12px 14px 16px}
 }
+@media (max-width:480px){#seg-pos{grid-template-columns:repeat(2,minmax(0,1fr))}#seg-mode{grid-template-columns:minmax(0,1fr)}#start h1{font-size:42px}#start .sub{font-size:13px;letter-spacing:.04em}}
 
 /* ---------- v2.3.3 可讀性與決策彈窗 ---------- */
 body{font-size:16px}
@@ -720,7 +721,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v2.4.0';
+const APP_VER='v2.5.0';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -910,35 +911,38 @@ function newState(name,pos,role){
     ab,traits:{genius:false,glass:false,iron:false,scum:false,
       late:false,disc:false,academy:false,intlace:false,franchise:false,clutch:false,phoenix:false,combo:false,onetool:false,rubber:false,legend:false,
       yips:false,distract:false,cancer:false,ambience:false,goldcloth:false,thief:false,mrteam:false,confidante:false,smallschool:false,grinder:false,
-      ace:false,slugger:false,sparkplug:false,defchief:false,steady:false,fanhero:false,community:false,leader:false,mentor:false,island:false,booed:false},
+      ace:false,slugger:false,sparkplug:false,defchief:false,steady:false,fanhero:false,community:false,leader:false,mentor:false,island:false,booed:false,
+      fireball:false,command:false,workhorse:false,stopper:false,patient:false,basethief:false,october:false,moneywise:false,familyanchor:false,globetrotter:false},
     removed:[], /* 被覆蓋/解除的特性,結算畫刪除線 */
     cntSave:0,cntSaveWin:0,cntSnack:0,cntBoldWin:0,cntBoldFail:0,samePick:0,samePickKey:null,teamYears:0,
     six:0,bigInj:0,ironStreak:0,npbYears:0,hsCupBonus:0,hsTrainingDiceMod:0,hsScout:0,hsPlan:null,hsCupHistory:[],
     injNext:0,tmpInj:0,rehab:0,salary:0,pool:0,seasonFactor:1,
-    stats:{CPBL:null,NPB:null,MLB:null,MINOR:null},honors:[],awardWatch:[],intlCount:0,intlLock:null,intlStat:{G:0,PA:0,AB:0,H:0,HR:0,RBI:0,IP:0,SO:0,ER:0,W:0,SV:0},intlBest:null,dpos:null,dposYears:{},roleYears:{},tradeRefuse:0,champThisTeam:false,svc:0,service:{CPBL:0,NPB:0,MiLB:0},proEntry:null,svcOrg:null,faElig:false,tradeHeat:0,complainCount:0,demotionRefused:false,tj:0,tjCount:0,effort:'普通',tjSuccess:0,love:{st:'single',partner:null,partnerJob:null,affection:0,kids:0,caught:0,affairs:0,exes:[],dyrs:0,datedTimes:0},traits2:{},log:[],ct:null,done:false,
+    stats:{CPBL:null,NPB:null,MLB:null,MINOR:null},honors:[],awardWatch:[],intlCount:0,intlLock:null,intlStat:{G:0,PA:0,AB:0,H:0,HR:0,RBI:0,IP:0,SO:0,ER:0,W:0,SV:0},intlBest:null,dpos:null,dposYears:{},roleYears:{},tradeRefuse:0,champThisTeam:false,svc:0,service:{CPBL:0,NPB:0,MiLB:0},proEntry:null,draftDecision:null,svcOrg:null,faElig:false,tradeHeat:0,complainCount:0,demotionRefused:false,tj:0,tjCount:0,effort:'普通',tjSuccess:0,love:{st:'single',partner:null,partnerJob:null,affection:0,kids:0,caught:0,affairs:0,exes:[],dyrs:0,datedTimes:0},traits2:{},log:[],ct:null,done:false,
     rngMode:RNG_MODE,rolls:[],lastRoll:null,seasonContext:null,seasonLuck:10,seasonMomentum:0,teammate:null,chemistry:0,aging:{checks:0,declines:0,totalLoss:0,last:null},
     social:{fanRep:0,playerRep:0,fanActs:0,playerActs:0,communityActs:0,mentorActs:0,ignoredFans:0,ignoredPlayers:0,viral:0},
     eventProfile:{total:0,wins:0,fails:0,boldWins:0,teamWins:0,mediaWins:0,positionWins:0,positionFails:0,healthWins:0},
-    traitProgress:{elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0},potentialBreakthrough:{streaks:{},successes:{},history:[]},achievementQueue:[],standingsHistory:[],currentStandings:null,
-    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,netWorth:0,ledger:[],homeOwned:false,homeEquity:0,investmentYears:0},offseasonTrainingDice:0};
+    traitProgress:{elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0,velocity:0,command:0,workhorse:0,stopper:0,patience:0,speed:0,postseason:0},potentialBreakthrough:{streaks:{},successes:{},history:[]},achievementQueue:[],standingsHistory:[],currentStandings:null,
+    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,netWorth:0,ledger:[],homeOwned:false,homeEquity:0,investmentYears:0,discipline:0,crisesResolved:0},offseasonTrainingDice:0};
 }
-function blankStat(){return {yr:0,G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,AS:0,DEF:0};}
+function blankStat(){return {yr:0,G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,AS:0,DEF:0,VeloIP:0,avgVelo:0};}
 function bucketOf(lv){ const l=lv&&LV[lv]; return l&&l.top?l.top:'MINOR'; } /* 業餘引退時 lv 為空,歸類 MINOR */
 function traitCard(key,name,desc,tone){ S.traits[key]=true;
   card(tone||'gold','隱藏屬性解鎖：'+name,desc); board(0); }
 function removeTrait(key,label){ if(S.traits[key]){ S.traits[key]=false;
     if(!S.removed.includes(label))S.removed.push(label); } }
-const DYNAMIC_TRAIT_LABELS={ace:'王牌氣場',slugger:'重砲核心',sparkplug:'上壘發動機',defchief:'守備指揮官',steady:'穩定輸出',fanhero:'球迷寵兒',community:'公益隊長',leader:'更衣室領袖',mentor:'新秀導師',island:'孤島球員',booed:'噓聲纏身'};
+const DYNAMIC_TRAIT_LABELS={ace:'王牌氣場',slugger:'重砲核心',sparkplug:'上壘發動機',defchief:'守備指揮官',steady:'穩定輸出',fanhero:'球迷寵兒',community:'公益隊長',leader:'更衣室領袖',mentor:'新秀導師',island:'孤島球員',booed:'噓聲纏身',fireball:'火球製造機',command:'控球藝術家',workhorse:'吃局數機器',stopper:'牛棚拆彈手',patient:'好球帶獵人',basethief:'盜壘威脅',october:'季後賽強心臟',moneywise:'財務紀律',familyanchor:'家庭支柱',globetrotter:'跨國適應者'};
 const TRAIT_EFFECTS={
   genius:'每顆訓練成果最低 3；一般事件成功率 +6 個百分點。覺醒時兩項能力與潛力上限獲得提升。',late:'每顆訓練成果最低 2；一般事件成功率 +6 個百分點。',iron:'每季基礎傷病風險最高 6%。',glass:'每季基礎傷病風險至少 30%。',disc:'老化判定的有效年齡延後 2 年。',academy:'25 歲前基礎傷病風險 −3%。',clutch:'高風險事件不再承受 −12% 成功率；冠軍與國際賽 MVP 機會提高。',rubber:'TJ 負荷上限由 50 提高到 100，硬撐成功率由 55% 提高到 85%。',intlace:'國際賽能力點至少 2，且不增加下季傷病負荷。',franchise:'母隊續約年薪係數至少 1.20，並提高生涯評價。',smallschool:'生涯成就標記；不直接改變比賽數值。',grinder:'生涯成就標記；不直接改變比賽數值。',goldcloth:'生涯忠誠成就；不直接改變單季數值。',mrteam:'長期效力同隊的稱號；不直接改變單季數值。',confidante:'家庭／關係故事特性；不直接改變球場能力。',phoenix:'解除玻璃人傷病懲罰，並在解鎖時獲得能力點。',onetool:'突出工具提高特殊代打／代跑／代守出賽機會。',legend:'首輪名人堂成就；不再改變已結束的生涯數值。',
   ace:'ERA −0.08、三振 +2%、球季修正 +0.30、合約行情約 +4%。',slugger:'全壘打 +5%、打點 +3%、合約行情約 +4%。',sparkplug:'保送約 +3%、盜壘 +5%。',defchief:'單季守備貢獻 +1，並緩慢增加球員聲望。',steady:'球季綜合修正 +0.25。',fanhero:'明星票選 +7%、球迷互動小幅提高、合約行情約 +2%，並增加代言收入。',community:'明星票選 +3%、增加公益合作收入，並可競逐年度公益獎。',leader:'球季修正 +0.30、隊友互動 +5%、交易風險 −5%。',mentor:'球季修正 +0.15、隊友互動 +4%。',island:'球季修正 −0.45、隊友互動 −8%、交易風險 +10%。',booed:'球季修正 −0.30、明星票選 −8%、球迷互動 −6%、合約行情約 −5%。',
+  fireball:'平均球速 +0.3 mph、三振約 +2%；高球速仍會照常累積手臂負荷。',command:'單季保送約 −4%，WHIP 隨實際被安打與保送重算。',workhorse:'每季基礎傷病風險 −2 個百分點；不保證先發場次。',stopper:'後援 ERA −0.08，中繼／救援產量約 +2%。',patient:'保送約 +4%，打席與上壘數同步增加。',basethief:'盜壘產量約 +6%；速度老化後仍可能失去威脅。',october:'季後賽短期成績約 +4%；例行賽不加成。',moneywise:'突發財務事件預估成本 −5%，代表準備金與議價能力。',familyanchor:'婚姻穩定時球季修正 +0.15；家庭關係轉差就不再提供加成。',globetrotter:'跨國移動適應帶來球季修正 +0.15。',
   cancer:'交易風險 +25%、FA 報價數 −1、續約行情上限受壓，且可能被母隊拒絕續約。',yips:'系統評價暫時 −3，直到升級或取得主要年度獎項。',distract:'場外活動造成的負面特性；部分訓練與評價會受影響。',ambience:'交易風險 +20%。',thief:'一般事件成功率 −6%。',scum:'再次感情事件被抓時會承受額外全能力損失。'
 };
-const STATIC_TRAIT_LABELS={genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',onetool:'只會這個',rubber:'橡膠手臂',goldcloth:'黃金聖衣',mrteam:'球隊先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',legend:'歷史級球星',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫'};
+const STATIC_TRAIT_LABELS={genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',combo:'無巧不工',onetool:'只會這個',rubber:'橡膠手臂',goldcloth:'黃金聖衣',mrteam:'球隊先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',legend:'歷史級球星',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫'};
 const TRAIT_ORIGINS={
   genius:'22 歲前，公平訓練骰累積 6 次最高點數。',clutch:'25 歲前至少 6 次高風險事件成功，且已有一季強勢成績。',disc:'25 歲前長期保守成功、少宵夜且沒有感情失控。',
   ace:'連續兩季達王牌成績，並累積投手職責事件成功。',slugger:'連續兩季達聯盟長打門檻。',sparkplug:'連續兩季高上壘並具速度／安打產量。',defchief:'連續兩季守備貢獻出色，並累積守位專屬事件成功。',steady:'連續三季維持正向成績。',
-  leader:'團隊事件多次成功、團隊關係良好，且球季成績能服眾。',mentor:'27 歲後多次成功協助年輕隊友。',fanhero:'球迷／媒體事件累積成功，且球季成績出色。',community:'長期公益參與與球迷信任。',island:'多次拒絕隊友或團隊事件處理失敗。',booed:'低潮期間持續失去球迷信任。'
+  leader:'團隊事件多次成功、團隊關係良好，且球季成績能服眾。',mentor:'27 歲後多次成功協助年輕隊友。',fanhero:'球迷／媒體事件累積成功，且球季成績出色。',community:'長期公益參與與球迷信任。',island:'多次拒絕隊友或團隊事件處理失敗。',booed:'低潮期間持續失去球迷信任。',
+  fireball:'連續兩季平均球速至少 98.0 mph，且 K/9 至少 9.0。',command:'連續三季 BB/9 不高於 2.2，並達到最低投球局數。',workhorse:'先發投手連續三季達聯盟吃局數門檻。',stopper:'後援投手連續兩季至少 25 次中繼／救援且 ERA 2.75 以下。',patient:'連續三季保送率至少 10%，且維持規則性打席。',basethief:'連續兩季達聯盟盜壘威脅門檻。',october:'兩次在實際季後賽出賽中繳出強勢短期成績。',moneywise:'至少四年選擇穩健現金流、保險或專業稅務規劃。',familyanchor:'已婚、家庭關係長期良好，且願意承擔實際家庭支出。',globetrotter:'在兩個以上國家的頂級聯盟留下球季，且團隊關係不差。'
 };
 const NEGATIVE_TRAITS=new Set(['glass','scum','yips','distract','cancer','ambience','thief','island','booed']);
 function traitTagHTML(key,label,style){
@@ -948,7 +952,7 @@ function traitTagHTML(key,label,style){
 function socialState(){return S.social||(S.social={fanRep:0,playerRep:0,fanActs:0,playerActs:0,communityActs:0,mentorActs:0,ignoredFans:0,ignoredPlayers:0,viral:0});}
 function eventProfile(){return S.eventProfile||(S.eventProfile={total:0,wins:0,fails:0,boldWins:0,teamWins:0,mediaWins:0,positionWins:0,positionFails:0,healthWins:0});}
 function addSeasonState(amt){const before=S.pendStat||0;S.pendStat=clamp(before+amt,-4,4);return S.pendStat-before;}
-function traitProgress(){return S.traitProgress||(S.traitProgress={elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0});}
+function traitProgress(){return S.traitProgress||(S.traitProgress={elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0,velocity:0,command:0,workhorse:0,stopper:0,patience:0,speed:0,postseason:0});}
 function unlockDynamicTrait(key,desc,tone){
   if(S.traits[key])return false;
   const label=DYNAMIC_TRAIT_LABELS[key];S.removed=S.removed.filter(x=>x!==label);
@@ -1127,6 +1131,7 @@ function injuryProb(){ /* 只計需要缺席比賽的傷勢；一般痠痛不另
   let p=8;
   if(S.age>=35)p+=10; else if(S.age>=32)p+=5;
   if(S.traits.academy&&S.age<25)p-=3; /* 學院派:25歲前科學化管理 */
+  if(S.traits.workhorse)p-=2; /* 吃局數機器:長期負荷管理經驗 */
   /* 體質特性:先套用在「基礎體質風險」上(不含額外自找的風險) */
   if(S.traits.iron&&S.traits.glass)p=18;
   else if(S.traits.iron)p=Math.min(p,6); /* 鐵人:基礎風險上限 6% */
@@ -1143,6 +1148,35 @@ function amateurSeasonConfig(){
   if(S.stage==='U')return {name:'大專球季',games:46,par:r99(41),maxStarts:15,reliefGames:25};
   return {name:'成棒球季',games:60,par:r99(47),maxStarts:19,reliefGames:34};
 }
+/* 投手平均球速：能力是主因，牛棚角色、投球策略、健康與當季狀態只做有限修正；硬上限 105 mph。 */
+function pitcherAvgVelocityMph(form){
+  if(!S||S.pos!=='P')return 0;
+  const ability=clamp(Number(S.ab.vel)||1,1,RATING_MAX),effort={'全力投':1.15,'普通投':0,'養生球':-1.05}[S.effort]||0;
+  const relief=S.stage==='PRO'&&!isSP()?.65:0,health=-Math.max(0,1-clamp(Number(S.seasonFactor)||0,0,1))*2.8;
+  const ageAdj=S.age<18?-.45:S.age>=37?-(S.age-36)*.12:0,formAdj=clamp(Number(form)||0,-5,5)*.12;
+  return +clamp(72.7+ability*.303+effort+relief+health+ageAdj+formAdj+(S.traits.fireball?.3:0)+N0(.28),70,105).toFixed(1);
+}
+const veloText=st=>st&&st.avgVelo?`${Number(st.avgVelo).toFixed(1)} mph`:'—';
+/* 厚尾球季：官方紀錄證明極端年確實存在，但只能由頂尖工具＋火燙狀態低機率觸發；崩盤尾端也同樣存在。 */
+function seasonOutlierProfile(lv){
+  const L=LV[lv]||amateurSeasonConfig(),par=L.par,luck=Number.isFinite(S.seasonLuck)?S.seasonLuck:10;
+  const out={power:1,speed:1,avg:0,era:0,k:1,label:'',kind:''},hot=luck>=18,cold=luck<=3;
+  if(S.pos==='P'){
+    const stuff=ratingGap((S.ab.vel+S.ab.brk)/2,par);
+    if(hot&&stuff>=5&&chance(clamp(8+(luck-17)*9+stuff*1.1,12,48))){out.era=-(.22+R()*.38);out.k=1.06+R()*.10;out.label='歷史級壓制波動';out.kind='hot';}
+    else if(cold&&chance(38)){out.era=.48+R()*.72;out.k=.84+R()*.10;out.label='罕見崩盤波動';out.kind='cold';}
+  }else{
+    const pg=ratingGap(S.ab.pow,par),sg=ratingGap(S.ab.spd,par),cg=ratingGap(S.ab.con,par),labels=[];
+    if(hot&&pg>=6&&chance(clamp(7+(luck-17)*8+pg*1.05+(S.traits.slugger?5:0),10,52))){out.power=1.18+R()*.34;labels.push('長打爆發');}
+    else if(cold&&chance(34)){out.power=.58+R()*.22;labels.push('長打失速');}
+    if(hot&&sg>=7&&chance(clamp(5+(luck-17)*7+sg*.9,8,46))){out.speed=1.16+R()*.34;labels.push('跑壘爆發');}
+    else if(cold&&chance(30)){out.speed=.56+R()*.25;labels.push('跑壘停滯');}
+    if(hot&&cg>=5&&chance(clamp(8+(luck-17)*7+cg*.8,10,42)))out.avg=.012+R()*.020;
+    else if(cold&&chance(38))out.avg=-(.016+R()*.026);
+    out.label=labels.join('＋')||(Math.abs(out.avg)>=.012?(out.avg>0?'罕見打擊高潮':'罕見打擊低潮'):'');out.kind=hot&&out.label?'hot':cold&&out.label?'cold':'';
+  }
+  return out;
+}
 function simAmateurSeason(){
   const C=amateurSeasonConfig(),a=S.ab,par=C.par,scheduleF=(S.seasonContext&&S.seasonContext.scheduleF)||1,f=clamp(S.seasonFactor*scheduleF,0,1),swing=seasonSwing();
   const st={G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,avg:0,era:0,WHIP:0,DEF:0,d:0,luck:swing.luck,swing:+swing.total.toFixed(1),scheduled:C.games,availability:Math.round(f*100),usageRole:'未定'};
@@ -1150,6 +1184,7 @@ function simAmateurSeason(){
   const talent=ratingGap(ovr(),par),plan=S.stage==='HS'?clamp((S.hsCupBonus||0)*.25,-1,1.5):0;
   if(S.pos==='P'){
     const stuff=ratingGap(a.vel,par)*.52+ratingGap(a.brk,par)*.48,prevention=ratingGap(a.vel,par)*.30+ratingGap(a.brk,par)*.35+ratingGap(a.ctl,par)*.35,d=prevention+swing.total+plan;st.d=d;
+    st.avgVelo=pitcherAvgVelocityMph(swing.total+plan);
     const starter=ratingGap(a.sta,par)>=-2||talent>=2;
     if(starter){const share=clamp(.70+talent*.025+swing.total*.015,.35,1);st.G=clamp(Math.round(C.maxStarts*f*share*(.94+R()*.12)),1,Math.round(C.maxStarts*f));const ipg=clamp(4.3+d*.06+ratingGap(a.sta,par)*.025+N0(.18),3.2,6.8);st.IP=+(st.G*ipg).toFixed(1);st.usageRole=talent>=5?'校隊王牌':'主要先發';}
     else{const share=clamp(.62+talent*.03+swing.total*.015,.25,1);st.G=clamp(Math.round(C.reliefGames*f*share*(.9+R()*.2)),1,Math.round(C.reliefGames*f));st.IP=+(st.G*clamp(1.05+ratingGap(a.sta,par)*.012,.75,1.8)).toFixed(1);st.usageRole=talent>=1?'主力後援':'牛棚輪替';}
@@ -1171,7 +1206,7 @@ function defRunsAmateur(par,f){
 function simSeason(lv){
   if(S.pos==='P'&&!S.role)S.role=pitcherRole();
   const L=LV[lv], par=L.par, a=S.ab, scheduleF=(S.seasonContext&&S.seasonContext.scheduleF)||1,f=clamp(S.seasonFactor*scheduleF,0,1);
-  const swing=seasonSwing();
+  const swing=seasonSwing(),tail=seasonOutlierProfile(lv),npbForeign=lv==='NPB1'&&npbRosterStatus().foreign;
   const st={G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,avg:0,era:0,d:0,luck:swing.luck,swing:+swing.total.toFixed(1),scheduled:L.g,availability:Math.round(f*100),usageRole:'未定'};
   if(f<=0) return st;
   if(S.pos==='P'){
@@ -1179,6 +1214,7 @@ function simSeason(lv){
     const stuff=ratingGap(a.vel,par)*.52+ratingGap(a.brk,par)*.48;
     const prevention=ratingGap(a.vel,par)*.30+ratingGap(a.brk,par)*.35+ratingGap(a.ctl,par)*.35;
     const d=prevention+swing.total; st.d=d;
+    st.avgVelo=pitcherAvgVelocityMph(swing.total);
     /* 出賽量按真實輪值／牛棚角色決定；能力與球季狀態影響名單地位，但健康本身不再把主力壓成半季球員。 */
     const talent=ratingGap(ovr(),par),formAdj=clamp(swing.total*.012,-.07,.07);
     let perfF=1;
@@ -1189,7 +1225,8 @@ function simSeason(lv){
       else if(talent>=-1){roleShare=.89;st.usageRole='固定先發輪值';}
       else if(talent>=-4){roleShare=.72;st.usageRole='後段輪值';}
       else{roleShare=.46;st.usageRole='臨時先發／長中繼';}
-      const workload=clamp(.93+ratingGap(a.sta,r99(52))*.009,.82,1.04),share=clamp(roleShare+formAdj,.28,1);
+      const foreignPenalty=npbForeign?(talent>=6?.02:talent>=1?.07:.13):0;
+      const workload=clamp(.93+ratingGap(a.sta,r99(52))*.009,.82,1.04),share=clamp(roleShare+formAdj-foreignPenalty,.28,1);
       perfF=share;const gs=Math.round(maxStarts*f*share*workload*(.975+R()*.05));
       st.G=clamp(gs,1,Math.round(maxStarts*f));
       /* IP/GS:聯盟平均~5.0、優質先發5.2-6.0、工作馬6.1-6.5;由 d 值(綜合實力)決定,控球差略減 */
@@ -1202,14 +1239,14 @@ function simSeason(lv){
       else if(talent>=0){roleShare=.88;st.usageRole=S.role==='CL'?'終結者':'主要中繼';}
       else if(talent>=-4){roleShare=.69;st.usageRole='一般中繼';}
       else{roleShare=.43;st.usageRole='接駁／敗戰處理';}
-      const share=clamp(roleShare+formAdj,.25,1);perfF=share;
+      const foreignPenalty=npbForeign?(talent>=6?.02:talent>=1?.07:.13):0,share=clamp(roleShare+formAdj-foreignPenalty,.25,1);perfF=share;
       st.G=clamp(Math.round(fullLoad*f*share*(.96+R()*.08)),1,Math.round(fullLoad*f));
       const staGap=ratingGap(a.sta,r99(45)),ipg=S.role==='CL'?clamp(.94+staGap*.004,.88,1.08):clamp(1.02+staGap*.008,.92,1.28);
       st.IP=+(st.G*ipg).toFixed(1);
     }
-    st.era=clamp(4.38-d*0.16+N0(0.34),1.40,9.90);
+    st.era=clamp(4.38-d*0.16+N0(0.34)+tail.era,tail.kind==='hot'?.90:1.30,11.50);
     st.ER=Math.round(st.era*st.IP/9);
-    const k9=clamp(6.2+ratingGap(a.vel,par)*.105+ratingGap(a.brk,par)*.075+N0(0.45),3.5,13.5);
+    const k9=clamp((6.2+ratingGap(a.vel,par)*.105+ratingGap(a.brk,par)*.075+N0(0.45))*tail.k,2.8,16.2);
     st.SO=Math.round(st.IP/9*k9);
     /* 保送由控球決定；被安打由球威、變化球與當季狀態決定；WHIP 再由 H+BB 計算。 */
     const bb9=clamp(4.6-ratingGap(a.ctl,par)*.14+N0(0.34),1.2,7.5);
@@ -1249,16 +1286,17 @@ function simSeason(lv){
     if(d>=10&&rest>=.08&&S.dpos!=='DH'&&S.dpos!=='C'){
       rest=Math.max(.025,rest-.07);dhThisYear=true;paPerGame=4.3;st.usageRole='主力指定打擊';
     }
-    const share=clamp(roleShare+formAdj-rest,.12,1);
+    const foreignPenalty=npbForeign?(talent>=7?.02:talent>=2?.08:.15):0,share=clamp(roleShare+formAdj-rest-foreignPenalty,.12,1);
     st.G=clamp(Math.round(L.g*f*share*(.98+R()*.04)),1,Math.round(L.g*f));
     st.PA=Math.round(st.G*paPerGame);
     st._dh=dhThisYear; /* 供 accStat 記 DH 年 */
     st.BB=Math.round(st.PA*clamp(0.062+ratingGap(a.eye,par)*0.0034,0.045,0.17));
     st.AB=st.PA-st.BB;
-    st.avg=clamp(0.252+d*0.0058+ratingGap(a.sta,r99(50))*0.0003+ratingGap(a.spd,par)*0.0006+N0(0.014),0.140,0.380);
+    st.avg=clamp(0.252+d*0.0058+ratingGap(a.sta,r99(50))*0.0003+ratingGap(a.spd,par)*0.0006+N0(0.014)+tail.avg,0.105,0.415);
     st.H=Math.round(st.AB*st.avg); st.avg=st.AB?st.H/st.AB:0;
-    st.HR=Math.round(st.AB*clamp(0.010+ratingGap(a.pow,par)*0.0022,0.001,0.075)*(0.85+R()*0.3));
-    st.SB=Math.round(clamp(ratingGap(a.spd,r99(45))*0.5+ratingGap(a.spd,par)*1.3+N0(4),0,70)*f);
+    const hrCap={MLB:75,NPB1:62,CPBL1:45,A3:48,A2:45,A1:42,R:25}[lv]||40,sbCap={MLB:95,NPB1:110,CPBL1:75,A3:80,A2:75,A1:70,R:45}[lv]||70;
+    st.HR=clamp(Math.round(st.AB*clamp(0.010+ratingGap(a.pow,par)*0.0022,0.001,0.075)*(0.85+R()*0.3)*tail.power),0,hrCap);
+    st.SB=Math.round(clamp((ratingGap(a.spd,r99(45))*0.5+ratingGap(a.spd,par)*1.3+N0(4))*tail.speed,0,sbCap)*f);
     st.RBI=Math.round(st.HR*2.1+(st.H-st.HR)*0.30);
     st.DEF=defRuns(lv);
   }
@@ -1278,11 +1316,20 @@ function simSeason(lv){
   }
   /* 已形成的動態特性會反過來影響下一季數據，但幅度保持在可被運氣翻轉的範圍。 */
   if(S.pos==='P'&&S.traits.ace){st.era=clamp(st.era-.08,1.30,9.90);st.SO=Math.round(st.SO*1.02);st.ER=Math.round(st.era*st.IP/9);}
+  if(S.pos==='P'&&S.traits.fireball)st.SO=Math.round(st.SO*1.02);
+  if(S.pos==='P'&&S.traits.command){st.BB=Math.max(0,Math.round(st.BB*.96));st.WHIP=st.IP>0?+((st.H+st.BB)/st.IP).toFixed(2):0;}
+  if(S.pos==='P'&&S.traits.stopper&&!isSP()){st.era=clamp(st.era-.08,.90,9.90);st.ER=Math.round(st.era*st.IP/9);if(S.role==='CL')st.SV=Math.round(st.SV*1.02);else{st.HLD=Math.round(st.HLD*1.02);st.HP=st.HLD+st.W;}}
   if(S.pos!=='P'){
     if(S.traits.slugger){st.HR=Math.min(st.H,Math.round(st.HR*1.05));st.RBI=Math.round(st.RBI*1.03);}
     if(S.traits.sparkplug){const extraBB=Math.max(1,Math.round(st.BB*.03));st.BB+=extraBB;st.PA+=extraBB;st.SB=Math.round(st.SB*1.05);}
+    if(S.traits.patient){const extraBB=Math.max(1,Math.round(st.BB*.04));st.BB+=extraBB;st.PA+=extraBB;}
+    if(S.traits.basethief)st.SB=Math.round(st.SB*1.06);
     if(S.traits.defchief)st.DEF=(st.DEF||0)+1;
+    const finalHrCap={MLB:78,NPB1:63,CPBL1:46,A3:50,A2:47,A1:44,R:27}[lv]||42,finalSbCap={MLB:100,NPB1:112,CPBL1:78,A3:84,A2:80,A1:75,R:48}[lv]||74;
+    if(st.HR>finalHrCap){const cut=st.HR-finalHrCap;st.HR=finalHrCap;st.RBI=Math.max(st.HR,st.RBI-cut*2);}
+    st.SB=Math.min(st.SB,finalSbCap);
   }
+  st.outlierLabel=tail.label;st.outlierKind=tail.kind;
   return st;
 }
 /* 守備分(近似 defensive runs):守位難度權重 × 守備工具相對聯盟基準的幅度 × 出賽比重 */
@@ -1306,10 +1353,12 @@ function accStat(bucket,st){
   else if(S.role){ S.roleYears[S.role]=(S.roleYears[S.role]||0)+1; }
   ['G','PA','AB','H','HR','RBI','SB','BB','W','L','SV','HLD','HP','SO','ER'].forEach(k=>t[k]+=(st[k]||0));
   t.DEF+=(st.DEF||0);
+  t.VeloIP=(t.VeloIP||0)+(st.avgVelo||0)*(st.IP||0);
   t.IP=+(t.IP+st.IP).toFixed(1);
+  t.avgVelo=t.IP>0?+(t.VeloIP/t.IP).toFixed(1):0;
 }
 function statLine(st){
-  if(S.pos==='P'){ const role=roleN(S.role); const relief=(S.role==='CL'&&st.SV)?`｜${st.SV}救援`:(S.role==='MR'&&st.HLD)?`｜${st.HLD}中繼｜${reliefPoints(st)}後援點`:''; return `出賽 ${st.G}｜局數 ${fmtIP(st.IP)}｜${st.W}勝${st.L}敗${relief}｜三振 ${st.SO}｜保送 ${st.BB||0}｜ERA ${st.era.toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}`; }
+  if(S.pos==='P'){ const role=roleN(S.role); const relief=(S.role==='CL'&&st.SV)?`｜${st.SV}救援`:(S.role==='MR'&&st.HLD)?`｜${st.HLD}中繼｜${reliefPoints(st)}後援點`:''; return `出賽 ${st.G}｜局數 ${fmtIP(st.IP)}｜${st.W}勝${st.L}敗${relief}｜三振 ${st.SO}｜保送 ${st.BB||0}｜ERA ${st.era.toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}｜平均球速 ${veloText(st)}`; }
   const obpN=st.PA>0?(st.H+st.BB)/st.PA:0;
   const slgN=slgOf(st);
   const obp=st.PA>0?obpN.toFixed(3).replace(/^0/,''):'-';
@@ -1319,13 +1368,14 @@ function statLine(st){
 }
 function seasonTeamInfo(){
   const minor=['R','A1','A2','A3'].includes(S.lv);
-  return {name:minor?`${S.orgTeam}體系`:S.teamName(),level:LV[S.lv]?LV[S.lv].n:stageLabel(),minor};
+  const roster=npbRosterStatus(),status=S.org==='NPB'?`・${roster.label}`:'';
+  return {name:minor?`${S.orgTeam}體系`:S.teamName(),level:(LV[S.lv]?LV[S.lv].n:stageLabel())+status,minor};
 }
 function statDashboard(st){
   const box=(label,value,key)=>`<div class="stat-box${key?' key':''}"><span>${label}</span><b>${value}</b></div>`;
   if(S.pos==='P'){
     const roleLabel=S.role==='CL'?'救援':S.role==='MR'?'中繼':'K/9',roleValue=S.role==='CL'?(st.SV||0):S.role==='MR'?(st.HLD||0):(st.IP?((st.SO||0)/st.IP*9).toFixed(1):'0.0'),hp=S.role==='MR'?box('後援點',reliefPoints(st),true):'';
-    return box('出賽',st.G)+box('局數',fmtIP(st.IP))+box('勝敗',`${st.W}-${st.L}`)+box(roleLabel,roleValue,S.role!=='SP')+hp+box('三振',st.SO||0)+box('保送',st.BB||0)+box('ERA',(st.era||0).toFixed(2),true)+box('WHIP',(st.WHIP||0).toFixed(2),true);
+    return box('出賽',st.G)+box('局數',fmtIP(st.IP))+box('勝敗',`${st.W}-${st.L}`)+box(roleLabel,roleValue,S.role!=='SP')+hp+box('平均球速',veloText(st),true)+box('三振',st.SO||0)+box('保送',st.BB||0)+box('ERA',(st.era||0).toFixed(2),true)+box('WHIP',(st.WHIP||0).toFixed(2),true);
   }
   const obp=st.PA?(st.H+st.BB)/st.PA:0,slg=slgOf(st),ops=obp+slg,pct=v=>v?v.toFixed(3).replace(/^0/,''):'—';
   return box('出賽',st.G)+box('打席',st.PA)+box('打擊率',pct(st.avg),true)+box('OPS',pct(ops),true)+box('安打',st.H)+box('全壘打',st.HR,true)+box('打點',st.RBI)+box('盜壘',st.SB);
@@ -1335,7 +1385,7 @@ function seasonVerdict(st){
   if(S.pos==='P'){
     const era=st.era||9.99,role=S.role==='MR'?(st.HLD>=25?'牛棚核心':'中繼戰力'):S.role==='CL'?(st.SV>=30?'可靠終結者':'後援戰力'):(st.IP>=150?'輪值支柱':'先發輪值');
     const grade=era<=2.50?'壓制級球季':era<=3.50?'優質球季':era<=4.40?'穩定球季':'艱難球季';
-    return {title:`${role}・${grade}`,text:`出賽 ${st.G} 場、${fmtIP(st.IP)} 局，留下 ${st.W} 勝 ${st.L} 敗${S.role==='MR'?`、${st.HLD||0} 次中繼成功、${reliefPoints(st)} 個後援點`:S.role==='CL'?`、${st.SV||0} 次救援成功`:''}。三振 ${st.SO||0}、ERA ${era.toFixed(2)}、WHIP ${(st.WHIP||0).toFixed(2)}。`};
+    return {title:`${role}・${grade}`,text:`出賽 ${st.G} 場、${fmtIP(st.IP)} 局，留下 ${st.W} 勝 ${st.L} 敗${S.role==='MR'?`、${st.HLD||0} 次中繼成功、${reliefPoints(st)} 個後援點`:S.role==='CL'?`、${st.SV||0} 次救援成功`:''}。平均球速 ${veloText(st)}、三振 ${st.SO||0}、ERA ${era.toFixed(2)}、WHIP ${(st.WHIP||0).toFixed(2)}。`};
   }
   const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),grade=ops>=.900?'明星級球季':ops>=.800?'主力級球季':ops>=.700?'穩定球季':'低潮球季';
   return {title:grade,text:`出賽 ${st.G} 場、${st.PA} 打席，打擊率 ${st.avg.toFixed(3).replace(/^0/,'')}、OPS ${ops.toFixed(3).replace(/^0/,'')}，另有 ${st.HR} 支全壘打與 ${st.RBI} 分打點。`};
@@ -1374,6 +1424,10 @@ function postseasonPlayerLine(st,games){
   }else{
     p.G=Math.max(1,Math.round(st.G/(st.scheduled||1)*games));p.PA=Math.max(p.G,Math.round(st.PA/(st.scheduled||1)*games));p.BB=Math.round(p.PA*(st.PA?st.BB/st.PA:0)*(.8+R()*.4));p.AB=Math.max(1,p.PA-p.BB);
     p.H=clamp(Math.round(p.AB*(st.avg||0)*(.78+R()*.44)),0,p.AB);p.HR=clamp(Math.round(st.PA?st.HR/st.PA*p.PA*(.65+R()*.7):0),0,p.H);p.RBI=Math.max(0,Math.round(st.PA?st.RBI/st.PA*p.PA*(.7+R()*.6):0));p.SB=Math.max(0,Math.round(st.PA?st.SB/st.PA*p.PA*(.7+R()*.6):0));p.avg=p.H/p.AB;
+  }
+  if(S.traits.october){
+    if(S.pos==='P'){p.SO=Math.round(p.SO*1.04);p.H=Math.max(0,Math.round(p.H*.96));p.ER=Math.max(0,Math.round(p.ER*.96));p.era=p.IP?p.ER*9/p.IP:0;p.WHIP=p.IP?(p.H+p.BB)/p.IP:0;}
+    else{p.H=clamp(Math.round(p.H*1.04),0,p.AB);p.RBI=Math.round(p.RBI*1.04);p.avg=p.AB?p.H/p.AB:0;}
   }
   return p;
 }
@@ -1518,7 +1572,7 @@ function expenseRange(amount,org,spread){
   return `${fmtContractMoney(Math.round(n*(1-r)),org)}～${fmtContractMoney(Math.round(n*(1+r)),org)}`;
 }
 function financeIncident(done,profile){
-  const f=S.finance,complete=()=>{f.taxPrepared=false;f.insured=false;done();};
+  const f=S.finance,complete=()=>{f.taxPrepared=false;f.insured=false;financialTraitAudit();done();};
   if(!chance(48-(f.taxPrepared?5:0)-(f.insured?5:0))){complete();return;}
   const base=Math.max(20,profile.base),org=S.org,costText=w=>fmtContractMoney(w,org);
   const incidents=[
@@ -1534,13 +1588,57 @@ function financeIncident(done,profile){
     ['贊助商臨時改約','品牌要求增加拍攝日，否則將調降合作金額。','請經紀與法律團隊重新談判','接受追加拍攝換取收入','退出合作保住休息時間','工作量與報酬重新取得平衡','拍攝拖進訓練期，恢復受到影響','沒有額外收入，但完整保住休賽季'],
     ['親友借款請求','熟人希望你出資創業，承諾很快就能回本。','先做完整盡職調查','只投入能承受損失的小額','明確拒絕','計畫風險被攤開，關係仍能維持','專案失敗，金錢與關係一起受損','保住資產，但親友情緒低落'],
     ['休賽季旅行取消','天候或賽程異動讓已付款的機票與住宿無法使用。','改期並保留完整行程','申請退款與保險理賠','取消休假直接回訓練基地','行程重新排定，家人與休息都被照顧','退款條款不利，額外支付差額','省下後續開銷，但家庭關係下降']
-  ],e=pick(incidents),covered=(f.taxPrepared&&/稅務|經紀/.test(e[0]))||(f.insured&&/醫療|事故|住宅/.test(e[0])),budget=Math.round(base*(.45+R()*.75)*(covered?.68:1)),applyRelation=(delta)=>{if(/家人|教育|旅行/.test(e[0]))S.love.affection=(S.love.affection||0)+delta;else S.chemistry=clamp((S.chemistry||0)+delta,-5,5);};
+  ];
+  /* 國家、聯盟層級、家庭與資產會決定事件是否有資格出現，避免所有球員抽到同一套帳單。 */
+  const contextual=[
+    {orgs:['CPBL'],scale:.55,relation:'family',row:['颱風造成家中損害','豪雨與強風讓老家屋頂、窗戶和電器同時需要處理。','委託合格廠商完整修復','自己分批找工班議價','先做防水與緊急清理','修繕趕在下一波雨勢前完成','工期延誤，臨時住宿與追加工程一起增加','住家先恢復安全，但仍留下待修項目']},
+    {orgs:['CPBL'],scale:.42,relation:'none',row:['補充保費與扣繳差額','薪資、獎金和代言分屬不同扣繳來源，年末帳單比預期多。','交由會計師重算全年所得','逐筆核對扣繳憑單','先繳清無爭議部分','重複計入的收入成功排除','漏報資料讓補繳金額繼續增加','先把期限守住，之後再申請更正']},
+    {orgs:['CPBL'],scale:.70,relation:'family',row:['父母住家無障礙改造','家中長輩開始需要扶手、浴室止滑與更安全的生活動線。','一次完成整屋安全改造','申請補助並分期施工','只先處理浴室和樓梯','家中環境變得安全，照護壓力下降','補助資格與工期不如預期','最危險的區域先完成改善']},
+    {orgs:['CPBL'],scale:.38,relation:'fan',row:['地方代言臨時停拍','合作店家遇到營運問題，已預留的拍攝日和造型費無法退回。','讓經紀團隊重整合作案','改成球迷公益活動','直接取消並吸收損失','新合作保住收入和形象','替代企劃沒有成交，前置費用全數認列','支出結清，休息日也保留下來']},
+    {orgs:['NPB'],scale:.72,relation:'none',row:['住民稅隔年到期','日本住民稅依前一年所得計算，旅日第二年的帳單突然大幅增加。','聘請跨國稅務師安排預繳','向球團確認扣繳後自行申報','先保留現金按期繳納','預繳與扣繳被完整對上','錯估前一年所得，資金缺口擴大','準時繳清，但休賽季預算被壓縮']},
+    {orgs:['NPB'],scale:.58,relation:'none',row:['租屋更新料與禮金','日本租約到期，更新料、保證公司費用與新住處禮金同時出現。','請生活支援團隊重新找房','自己和房東談續約','搬進球團安排的短租','新租約與通勤路線一次穩定下來','低估初期費用，搬家成本超標','空間較小，但報到與訓練不受影響']},
+    {orgs:['NPB'],scale:.85,relation:'family',row:['地震後臨時安置','住處沒有重大結構損害，但檢查期間家人必須暫住外地。','安排完整檢查與家庭住宿','申請保險並尋找較便宜短租','先由家人返台等待','檢查和安置迅速完成，家人安心留下','理賠進度落後，住宿費不斷累積','立即降低風險，但家庭分隔時間拉長']},
+    {orgs:['NPB'],scale:.46,relation:'team',row:['翻譯與生活管理合約中斷','原本合作的翻譯臨時離職，球團只提供比賽日基本協助。','聘請熟悉棒球的私人翻譯','與隊友共用翻譯並加強日語','只使用球團基本支援','溝通重新穩定，戰術會議沒有漏接','共享時段衝突，重要安排仍然誤解','省下費用，但生活行政變得更耗神']},
+    {orgs:['NPB'],when:()=>S.love.st==='married'||(S.love.kids||0)>0,scale:.78,relation:'family',row:['家屬簽證與國際學校續約','伴侶簽證、孩子學費和新學年押金集中在同一個月到期。','委託專業團隊一次辦妥','比較學校並自行準備文件','讓家人暫時留在台灣','簽證與入學順利銜接，家庭生活穩定','文件補件拖延，學費與短租都追加','現金壓力下降，但兩地生活再次開始']},
+    {orgs:['MiLB'],scale:.82,relation:'none',row:['跨州出賽稅務申報','客場收入分散在多州，報稅資料出現十多個不同管轄區。','聘請熟悉運動員稅務的會計團隊','使用軟體自行拆分比賽日','先依最高估算預留稅款','各州收入與抵免被正確整理','漏掉一州申報，罰金和補件一起寄到','現金先留住，確定金額後再結清']},
+    {orgs:['MiLB'],levels:['MLB'],scale:1.05,relation:'family',row:['春訓第二住處','二月就得報到，但家人和主要住處仍在球季城市。','租下完整春訓住宅並安排家人同行','與隊友合租後自行通勤','只住球團附近短租套房','家庭與訓練都能照原計畫運作','合租變動與租車費讓預算失控','生活空間有限，但完整撐過春訓']},
+    {orgs:['MiLB'],levels:['R','A1','A2','A3'],scale:.48,relation:'team',row:['小聯盟臨時住宿缺口','升級通知只提前兩天，新城市的球員宿舍已經額滿。','由經紀人安排月租公寓','和剛認識的隊友合租','先住汽車旅館等待空房','新住處在首場比賽前確定','押金詐騙與臨時房價讓成本翻倍','每天通勤較遠，但沒有錯過報到']},
+    {orgs:['MiLB'],scale:.64,relation:'none',row:['工作簽證與移民律師費','續約、升級或交易後，簽證文件必須重新確認。','聘請職業運動移民律師','請球團法務協助並自行補件','延後私人行程守住工作許可','文件提前核准，報到時程不受影響','補件要求反覆，急件費用一路增加','工作許可保住，但私人安排全部取消']},
+    {orgs:['MiLB'],scale:.92,relation:'none',row:['醫療保險自付額','影像檢查與治療獲得理賠，但高額自付額仍須立即支付。','請球員工會與保險顧問審核','向醫院申請分期與費用複核','先支付最低必要治療','不合理費用被排除，療程也不中斷','申訴未通過，行政費與帳單一起增加','傷勢先處理，剩餘費用分期承擔']},
+    {orgs:['MiLB'],scale:.44,relation:'team',row:['客場小費與球員會費','整季 clubhouse dues、行李搬運與客場服務費累積成一筆不小支出。','由會計統整並一次結清','自己逐張核對後支付','只先處理球隊共同費用','帳務清楚，隊內人情也顧到了','漏掉幾筆共同支出，關係和滯納金都受影響','必要費用結清，額外服務全部取消']},
+    {orgs:['MiLB'],levels:['MLB'],scale:1.20,relation:'none',row:['經紀團隊更換與解約','舊經紀合約仍有尾款，新團隊又要求簽約與法律審查費。','由獨立律師完成交接','要求新團隊負擔部分成本','維持舊團隊到合約結束','權利、佣金與客戶資料乾淨移交','兩邊責任沒有切清，費用重複發生','避免立即解約，但市場操作暫時停滯']},
+    {when:()=>f.netWorth>=300,scale:.58,relation:'none',row:['帳戶遭到網路詐騙','冒名聯絡與偽造付款指示讓一筆資金被暫時轉出。','聘請資安與法律團隊追款','立刻凍結帳戶並自行蒐證','認列損失後全面換帳戶','大部分款項追回，付款流程也加上雙重驗證','黃金時間被錯過，追回比例很低','損失確定，但後續帳戶安全提升']},
+    {when:()=>f.netWorth>=1200,scale:.90,relation:'fan',row:['公益承諾需要兌現','你先前公開承諾依成績捐款，如今球季表現遠超原先預算。','完整履行並交由基金會執行','和公益單位調整為分年捐助','只完成最低承諾金額','承諾完整落地，球迷信任明顯提升','協議細節拖延，引發外界質疑','法律義務完成，但社群反應平淡']},
+    {when:()=>S.love.st==='married',scale:1.05,relation:'family',row:['婚禮與家庭儀式追加','親友人數、跨國交通或場地變動讓原本預算失準。','保留完整儀式並交給團隊處理','和伴侶一起縮小規模','登記後延後大型宴會','重要家人都被照顧，儀式順利完成','臨時加桌與交通讓帳單失控','當下壓力降低，但家人仍在等待安排']},
+    {when:()=>S.love.st==='married'&&(S.love.kids||0)>0,scale:.72,relation:'family',row:['孩子托育臨時中斷','球季移動期間原托育安排突然無法繼續。','聘請具證照的到府照護','和伴侶重新輪班並找短期托育','請家人暫時協助','照護穩定，家庭作息重新接上','臨時排班反覆變動，工作與費用一起增加','支出較少，但長輩負擔與家庭壓力上升']},
+    {scale:.62,relation:'family',row:['緊急返鄉奔喪','近親離世，必須在極短時間內安排跨城或跨國交通。','負擔家人交通並完整返鄉','請經紀協調賽程後精簡行程','只短暫出席必要儀式','你陪家人把重要的告別走完','臨時票價與改期讓支出一路增加','趕回球隊較快，但心裡仍留下遺憾']},
+    {when:()=>f.investmentYears>=1,scale:1.10,relation:'none',row:['投資標的要求追加資金','你持有的投資遇到資金缺口，管理方要求股東限期決定。','聘請顧問重做風險評估','只按原持股比例小額增資','拒絕增資並接受稀釋','問題資產被提早辨識，損失受到控制','資訊判讀錯誤，新增資金也被套住','不再投入現金，但原持股價值下降']},
+    {when:()=>f.homeOwned,scale:.74,relation:'none',row:['房屋保險續保調漲','所在地風險與重置成本上升，續保報價突然增加。','請保險顧問重新比較保障','提高自付額換取較低保費','只保留基本災害保障','保障缺口補齊，保費也回到合理範圍','低價方案藏著除外條款，重新投保更昂貴','年度成本下降，但小型損害必須自行承擔']},
+    {scale:.52,relation:'team',row:['私人訓練館突然歇業','已預付的休賽季場租和教練課程無法照原計畫執行。','由經紀團隊尋找替代場地','和隊友共同租用新的空間','改用球團設施完成訓練','替代方案無縫接軌，預付款也追回大半','新場地檔期衝突，退款進度又落後','額外支出最低，但可用時段較受限制']},
+    {scale:.68,relation:'none',row:['訂製球具供應商延遲','新球季專用手套、鞋款或護具卡在生產與運輸。','支付急件並準備完整備品','要求品牌提供替代品與補償','沿用上季裝備到貨為止','裝備趕上報到，規格也完全合身','急件仍然延誤，最後又臨時採購','沒有多花大錢，但舊裝備磨耗加快']}
+  ];
+  const hasFamily=S.love.st==='married'||(S.love.kids||0)>0;
+  const basePool=incidents.filter(row=>row[0]!=='家人教育與搬遷選擇'||hasFamily).map(row=>({row,scale:1,relation:null}));
+  const eligible=contextual.filter(x=>(!x.orgs||x.orgs.includes(org))&&(!x.levels||x.levels.includes(S.lv))&&(!x.when||x.when()));
+  const incident=pick(basePool.concat(eligible)),e=incident.row;
+  const covered=(f.taxPrepared&&/稅務|住民稅|扣繳|經紀|簽證/.test(e[0]))||(f.insured&&/醫療|事故|住宅|颱風|地震|房屋|托育/.test(e[0]));
+  const budget=Math.round(base*(.45+R()*.75)*(incident.scale||1)*(covered?.68:1)*(S.traits.moneywise ? .95 : 1));
+  const applyRelation=(delta)=>{
+    const relation=incident.relation||(/家人|教育|旅行|返鄉|婚禮|孩子|父母/.test(e[0])?'family':'team');
+    if(relation==='family')S.love.affection=(S.love.affection||0)+delta;
+    else if(relation==='fan'){const so=socialState();so.fanRep=clamp(so.fanRep+delta,-20,20);}
+    else if(relation==='team')S.chemistry=clamp((S.chemistry||0)+delta,-5,5);
+  };
   const finish=(tone,title,body)=>{card(tone,title,`${body}${covered?'<br><b class="up">先前購買的專業服務／保障已吸收部分費用。</b>':''}<div class="statline">本次實際支出 ${costText(S.lastExpense?S.lastExpense.cost:0)}｜年末淨資產 ${costText(f.netWorth)}</div>`);board(2);continueAction('看完突發財務結果，繼續 ▸',complete);};
   choose(`休賽季突發支出｜${e[0]}｜${e[1]}`,[
-    {t:e[2],main:true,s:`預估 ${expenseRange(budget*1.05,org)}｜成本較高，成功率最高`,f:()=>{const c=randomizedSpend(budget*1.05,'living',e[0]+'・專業處理');applyRelation(1);finish('good',e[5],`${e[5]}。${S.lastExpense.note}，支付 ${costText(c)}。`);}},
+    {t:e[2],main:true,s:`預估 ${expenseRange(budget*1.05,org)}｜成本較高，成功率最高`,f:()=>{const c=randomizedSpend(budget*1.05,'living',e[0]+'・專業處理');f.crisesResolved=(f.crisesResolved||0)+1;applyRelation(1);finish('good',e[5],`${e[5]}。${S.lastExpense.note}，支付 ${costText(c)}。`);}},
     {t:e[3],risk:true,probability:58,s:`預估 ${expenseRange(budget*.45,org)}｜成功可省錢；失敗可能支付約 ${expenseRange(budget*1.35,org)}`,f:()=>quickRoll({sides:100,title:e[0],probability:58}).then(r=>{const c=randomizedSpend(budget*(r.success ? .45 : 1.35),'living',e[0]+'・自行處理');applyRelation(r.success?0:-1);finish(r.success?'good':'bad',r.success?e[5]:e[6],`${r.success?e[5]:e[6]}。${S.lastExpense.note}，支付 ${costText(c)}。`);})},
     {t:e[4],warn:true,s:`預估 ${expenseRange(budget*.72,org)}｜直接承擔可控代價，不進行成敗判定`,f:()=>{const c=randomizedSpend(budget*.72,'family',e[0]+'・直接承擔');applyRelation(-1);finish('info',e[7],`${e[7]}。${S.lastExpense.note}，支付 ${costText(c)}。`);}}
   ]);
+}
+function markFinanceDiscipline(){S.finance.discipline=(S.finance.discipline||0)+1;}
+function financialTraitAudit(){
+  const f=S.finance;if((f.discipline||0)>=4&&f.netWorth>=0)unlockDynamicTrait('moneywise','你連續多年把稅務、保險與現金流當成職業生涯的一部分，而不是帳單來了才處理——<b class="hl">突發財務事件成本約降低 5%</b>。');
 }
 function livingCostProfile(pay){
   const org=S.org||'CPBL',lv=S.lv||'CPBL2',team=S.orgTeam||'',top=LV[lv]&&LV[lv].top;
@@ -1583,8 +1681,8 @@ function annualFinanceChoice(pay,done){
     {id:'luxury',t:'明星生活：名車、派對與高額消費',warn:true,s:`預估 ${rangeText(Math.max(base+familyBase,take*.42))}｜曝光與失控風險都很高`,f:()=>{
       const cost=randomizedSpend(Math.max(base+familyBase,take*.42),'luxury','明星消費',.28);animatedRoll({sides:100,title:'高消費生活後果',subtitle:'鏡頭可能帶來合作，也可能只留下帳單。',probability:38,modifiers:['高調曝光']}).then(r=>{
         if(r.success){const bonus=Math.round(cost*.30);bookIncome(bonus,'endorsement',S.org,S.orgTeam);finish('gold','話題短暫變現',`消費 ${costText(cost)} 後換來 ${costText(bonus)} 合作收入。`);}else{S.injNext+=4;finish('bad','帳單與疲勞',`消費 ${costText(cost)}，沒有換到合約，失衡作息還提高下季傷病風險。`);}});}}
-    ,{id:'taxpro',t:'聘請跨國稅務與合約會計師',s:`預估 ${rangeText(Math.max(base*.55,take*.07))}｜降低補稅與現金流失控風險`,f:()=>{const cost=randomizedSpend(Math.max(base*.55,take*.07),'living','稅務與合約會計');S.finance.taxPrepared=true;finish('good','帳務先整理乾淨',`實際支付 ${costText(cost)}，把薪資、獎金、代言與跨國扣繳整理成同一份年度報表。`);}},
-    {id:'insurance',t:'加保傷病、失能與家庭醫療保障',s:`預估 ${rangeText(Math.max(base*.65,take*.09))}｜下季傷病風險 −3%；重大支出波動降低`,f:()=>{const cost=randomizedSpend(Math.max(base*.65,take*.09),'living','球員保險');S.injNext-=3;S.finance.insured=true;finish('good','先替最壞情況留後路',`實際支付 ${costText(cost)} 完成球員與家庭保障；保險不會讓你不受傷，但能降低場外衝擊。`);}},
+    ,{id:'taxpro',t:'聘請跨國稅務與合約會計師',s:`預估 ${rangeText(Math.max(base*.55,take*.07))}｜降低補稅與現金流失控風險`,f:()=>{const cost=randomizedSpend(Math.max(base*.55,take*.07),'living','稅務與合約會計');S.finance.taxPrepared=true;markFinanceDiscipline();finish('good','帳務先整理乾淨',`實際支付 ${costText(cost)}，把薪資、獎金、代言與跨國扣繳整理成同一份年度報表。`);}},
+    {id:'insurance',t:'加保傷病、失能與家庭醫療保障',s:`預估 ${rangeText(Math.max(base*.65,take*.09))}｜下季傷病風險 −3%；重大支出波動降低`,f:()=>{const cost=randomizedSpend(Math.max(base*.65,take*.09),'living','球員保險');S.injNext-=3;S.finance.insured=true;markFinanceDiscipline();finish('good','先替最壞情況留後路',`實際支付 ${costText(cost)} 完成球員與家庭保障；保險不會讓你不受傷，但能降低場外衝擊。`);}},
     {id:'education',t:S.org==='NPB'?'進修日語、數據與媒體應對':'進修語言、數據與媒體應對',s:`預估 ${rangeText(Math.max(base*.5,take*.08))}｜團隊關係 +1；累積媒體事件履歷`,f:()=>{const cost=randomizedSpend(Math.max(base*.5,take*.08),'living','球員進修');S.chemistry=clamp((S.chemistry||0)+1,-5,5);eventProfile().mediaWins++;finish('good','把場外能力也當成專業',`實際支付 ${costText(cost)} 完成語言、訪談與數據閱讀課程。永久球場能力沒有直接增加。`);}},
     {id:'equipment',t:'更新個人數據設備與訓練器材',s:`預估 ${rangeText(Math.max(base*.7,take*.12))}｜下一季訓練骰 +1；傷病風險 +1%`,f:()=>{const cost=randomizedSpend(Math.max(base*.7,take*.12),'living','數據設備與器材');S.offseasonTrainingDice=clamp((S.offseasonTrainingDice||0)+1,0,2);S.injNext+=1;finish('good','設備只是工具',`實際支付 ${costText(cost)} 更新攝影、感測與訓練器材；成果仍要靠你下一季親自練出來。`);}},
     {id:'resttrip',t:S.love.st==='single'?'安排真正離開棒球的短期旅行':'和家人安排不碰棒球的休假',s:`預估 ${rangeText(Math.max(base*.75,take*.13))}｜家庭關係 +1、下季傷病風險 −3%；不增加訓練骰`,f:()=>{const cost=randomizedSpend(Math.max(base*.75,take*.13),'family','休賽季旅行');S.love.affection=(S.love.affection||0)+1;S.injNext-=3;finish('good','讓身體和腦袋一起休息',`實際支付 ${costText(cost)}；沒有能力加點，但恢復品質確實改善。`);}},
@@ -1596,7 +1694,7 @@ function annualFinanceChoice(pay,done){
     const cost=randomizedSpend(Math.max(base+familyBase,take*.14),'living','旅外生活支援');S.chemistry=clamp((S.chemistry||0)+1,-5,5);addSeasonState(1);finish('good','生活不再只靠硬撐',`實際支付 ${costText(cost)} 處理語言、租屋、交通與家人安置。`);}});
   for(let i=plans.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[plans[i],plans[j]]=[plans[j],plans[i]];}
   const stable={t:f.homeOwned?'維持自住宅與穩健現金流':'穩健生活，保留現金',main:true,s:`${profile.country}生活、家庭與移動預估 ${rangeText(base+familyBase)}｜低波動但仍非固定金額`,f:()=>{
-    const cost=randomizedSpend(base+familyBase,'living','穩健生活',.12);finish('info','年度財務報表',`${summary}<br>本年生活與家庭實際支出 ${costText(cost)}。`);}};
+    const cost=randomizedSpend(base+familyBase,'living','穩健生活',.12);markFinanceDiscipline();finish('info','年度財務報表',`${summary}<br>本年生活與家庭實際支出 ${costText(cost)}。`);}};
   choose(`休賽季財務規劃｜${summary}`,[stable,...plans.slice(0,5)]);
 }
 /* ================= UI 基礎 ================= */
@@ -1708,7 +1806,7 @@ function seasonSwing(){
   const rawLuckAdj=(luck-10.5)*0.52,luckAdj=Math.abs(rawLuckAdj)<.3?0:rawLuckAdj;
   const contextAdj=(S.seasonContext&&S.seasonContext.perf)||0;
   const momentum=S.seasonMomentum||0,chemistry=clamp(S.chemistry||0,-5,5)*.35;
-  const traits=(S.traits.ace ? .3 : 0)+(S.traits.steady ? .25 : 0)+(S.traits.leader ? .3 : 0)+(S.traits.mentor ? .15 : 0)-(S.traits.island ? .45 : 0)-(S.traits.booed ? .3 : 0);
+  const traits=(S.traits.ace ? .3 : 0)+(S.traits.steady ? .25 : 0)+(S.traits.leader ? .3 : 0)+(S.traits.mentor ? .15 : 0)+(S.traits.globetrotter ? .15 : 0)+(S.traits.familyanchor&&S.love.st==='married'&&(S.love.affection||0)>=4 ? .15 : 0)-(S.traits.island ? .45 : 0)-(S.traits.booed ? .3 : 0);
   return {luck,luckAdj,contextAdj,momentum,chemistry,traits,total:clamp(luckAdj+contextAdj+momentum+chemistry+traits,-8,8)};
 }
 function rollTone(r){
@@ -1753,7 +1851,7 @@ function renderRails(){
       if(S.traits.legend)labels.legend=(S.legendLeague||'')+'歷史級球星';
       const tags=Object.keys(labels).filter(k=>S.traits[k]).map(k=>traitTagHTML(k,labels[k]));$('rail-traits').innerHTML=tags.join('')||'<span class="tag">尚未形成特性</span>';
     }
-    if($('rail-trait-path')){const ep=eventProfile(),tp=traitProgress(),parts=[`事件 ${ep.wins}/${ep.total} 成功`];if(S.pos==='P')parts.push(`投手任務 ${ep.positionWins}/2`);else parts.push(`${POSN[S.pos]}事件 ${ep.positionWins}/2`);if(S.pos!=='P')parts.push(`守備好季 ${tp.defense||0}/2`);else parts.push(`王牌好季 ${tp.elite||0}/2`);$('rail-trait-path').textContent=parts.join('｜');}
+    if($('rail-trait-path')){const ep=eventProfile(),tp=traitProgress(),labels={...STATIC_TRAIT_LABELS,...DYNAMIC_TRAIT_LABELS},unlocked=Object.keys(labels).filter(k=>S.traits[k]).length,parts=[`特性 ${unlocked}/${Object.keys(labels).length}`,`事件 ${ep.wins}/${ep.total} 成功`];if(S.pos==='P')parts.push(`投手任務 ${ep.positionWins}/2`);else parts.push(`${POSN[S.pos]}事件 ${ep.positionWins}/2`);if(S.pos!=='P')parts.push(`守備好季 ${tp.defense||0}/2`);else parts.push(`王牌好季 ${tp.elite||0}/2`);$('rail-trait-path').textContent=parts.join('｜');}
   }
   const env=$('rail-environment');
   if(env&&S.seasonContext){let chips=S.seasonContext.items.map(x=>`<div class="env-chip"><i></i><div><b>${x.n}</b><small>${x.d}</small></div></div>`).join('');
@@ -1892,7 +1990,7 @@ function applySeasonAdjustments(st){
   return st;
 }
 function compactSeasonLine(st){
-  if(S.pos==='P'){const relief=S.role==='CL'?`｜SV ${st.SV||0}`:S.role==='MR'?`｜HLD ${st.HLD||0}｜HP ${reliefPoints(st)}`:'';return `${st.G} G｜${fmtIP(st.IP)} IP｜${st.W}-${st.L}${relief}｜${st.SO||0} K｜ERA ${(st.era||0).toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}`;}
+  if(S.pos==='P'){const relief=S.role==='CL'?`｜SV ${st.SV||0}`:S.role==='MR'?`｜HLD ${st.HLD||0}｜HP ${reliefPoints(st)}`:'';return `${st.G} G｜${fmtIP(st.IP)} IP｜${st.W}-${st.L}${relief}｜${st.SO||0} K｜ERA ${(st.era||0).toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}｜AVG FB ${veloText(st)}`;}
   const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),pct=v=>v?v.toFixed(3).replace(/^0/,''):'—';return `${st.G} G｜${st.PA} PA｜${st.H} H｜${st.HR} HR｜${st.RBI} RBI｜AVG ${pct(st.avg)}｜OPS ${pct(ops)}`;
 }
 function monthlySeasonSlices(finalStats,timeline,activeMonths){
@@ -1911,7 +2009,9 @@ function monthlySeasonSlices(finalStats,timeline,activeMonths){
     }else{
       ['H','HR','RBI','SB'].forEach(k=>p[k]=count(finalStats[k],positive,i));p.BB=count(finalStats.BB,positive,i);p.avg=p.AB>0?p.H/p.AB:0;
     }
-    if(i===activeMonths-1)p={...finalStats};out.push(p);
+    if(i===activeMonths-1)p={...finalStats};
+    if(S.pos==='P')p.monthVelo=+clamp((finalStats.avgVelo||0)+(timeline[i].pulse||0)*.22+N0(.16),70,105).toFixed(1);
+    out.push(p);
   }
   return out;
 }
@@ -1919,7 +2019,7 @@ function monthlyDeltaLine(current,previous){
   previous=previous||{G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0};
   if(S.pos==='P'){
     const ip=+(current.IP-previous.IP).toFixed(1),er=Math.max(0,(current.ER||0)-(previous.ER||0)),h=Math.max(0,(current.H||0)-(previous.H||0)),bb=Math.max(0,(current.BB||0)-(previous.BB||0)),era=ip>0?er*9/ip:0,whip=ip>0?(h+bb)/ip:0,rel=S.role==='MR'?`｜${Math.max(0,(current.HLD||0)-(previous.HLD||0))} HLD｜${Math.max(0,reliefPoints(current)-reliefPoints(previous))} HP`:S.role==='CL'?`｜${Math.max(0,(current.SV||0)-(previous.SV||0))} SV`:'';
-    return `${Math.max(0,current.G-previous.G)} G｜${fmtIP(ip)} IP｜${Math.max(0,(current.SO||0)-(previous.SO||0))} K${rel}｜ERA ${era.toFixed(2)}｜WHIP ${whip.toFixed(2)}`;
+    return `${Math.max(0,current.G-previous.G)} G｜${fmtIP(ip)} IP｜${Math.max(0,(current.SO||0)-(previous.SO||0))} K${rel}｜ERA ${era.toFixed(2)}｜WHIP ${whip.toFixed(2)}｜AVG FB ${current.monthVelo?current.monthVelo.toFixed(1)+' mph':'—'}`;
   }
   const pa=Math.max(0,current.PA-previous.PA),ab=Math.max(0,current.AB-previous.AB),h=Math.max(0,current.H-previous.H),avg=ab?h/ab:0;return `${Math.max(0,current.G-previous.G)} G｜${pa} PA｜${h} H｜${Math.max(0,current.HR-previous.HR)} HR｜${Math.max(0,current.RBI-previous.RBI)} RBI｜AVG ${ab?avg.toFixed(3).replace(/^0/,''):'—'}`;
 }
@@ -1951,7 +2051,7 @@ function runSeasonAnimation(done){
       $('sim-player-games').textContent=`${finalStats.G||0} 場`;
       $('sim-momentum').textContent=(S.seasonMomentum>0?'+':'')+S.seasonMomentum.toFixed(1);
       const injuryText=injured?`｜球隊賽程已完成；個人因傷只留下 ${finalStats.G||0} 場出賽，後續月份為傷停與復健。`:Math.abs(S.seasonMomentum)<.05?'｜氣勢互相抵銷。':`｜氣勢 ${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)} 已進入數據公式。`;
-      $('sim-impact').innerHTML=`${pro?'例行賽':amCfg.name}最終個人成績｜<b>${compactSeasonLine(finalStats)}</b>${injuryText}`;
+      $('sim-impact').innerHTML=`${pro?'例行賽':amCfg.name}最終個人成績｜<b>${compactSeasonLine(finalStats)}</b>${finalStats.outlierLabel?`｜<span class="tag">${finalStats.outlierLabel}</span>`:''}${injuryText}`;
       $('season-accept').style.display='block';$('season-accept').onclick=()=>{closeFx('season-overlay');done();};return;
     }
     const beat=timeline[idx],pulse=beat.pulse,inactive=!!beat.injured,games=Math.round(totalGames*(idx+1)/months.length),current=monthlyStats[idx],previous=idx?monthlyStats[idx-1]:null,seen=timeline.slice(0,Math.min(idx+1,activeMonths)),avg=seen.length?seen.reduce((n,x)=>n+x.pulse,0)/seen.length:0;
@@ -1992,7 +2092,7 @@ function board(phase){
   if(S.stage==='HS'){t=S.team;level='高'+['一','二','三'][S.stageYr-1];}
   else if(S.stage==='U'){t=S.team;level='大'+['一','二','三','四'][S.stageYr-1];}
   else if(S.stage==='AMA'){t=S.team;level='業餘成棒';}
-  else {t=S.orgTeam||S.teamName();level=`${LV[S.lv]?LV[S.lv].n:'職業'}${S.pos==='P'&&S.role?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}`;}
+  else {t=S.orgTeam||S.teamName();level=`${LV[S.lv]?LV[S.lv].n:'職業'}${S.pos==='P'&&S.role?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}${S.org==='NPB'?'・'+npbRosterStatus().label:''}`;}
   { const tc=(S.orgTeam&&TEAM_COLOR[S.orgTeam])||'var(--amber)';
     $('bd-team').style.setProperty('--team-color',tc);
     $('bd-team').innerHTML=`<span class="team-dot"></span><small>目前所屬球隊</small><b>${t||'尚未簽約'}</b><em>${level||stageLabel()}</em>`; }
@@ -2238,8 +2338,13 @@ function phasePreContinue(){
   if(S.stage==='U'&&S.stageYr>=2){
     const o=ovr();
     const opts=[
-      {t:'投入中華職棒選秀',s:`目前綜合 ${o}｜年齡加權：越年輕評價越高`,f:()=>runDraft(true,afterAsk)},
-      {t:'留在大學繼續磨練',main:true,f:afterAsk}
+      {t:'投入本年度中華職棒選秀',s:`目前綜合 ${o}｜只參加一次；落榜後不會在季末被重複送進選秀`,f:()=>{
+        S.draftDecision={year:S.year,status:'entered'};
+        runDraft(true,r=>{if(r==='fail')S.draftDecision={year:S.year,status:'undrafted'};afterAsk();});}},
+      {t:'本年度不投入選秀',main:true,s:'留在大學完成本季；系統會記住這個決定，不會在季末強制參選',f:()=>{
+        S.draftDecision={year:S.year,status:'declined'};
+        card('info','本年度不參加選秀',`你已正式決定不參加 ${S.year} 年中華職棒選秀，繼續代表 <b class="hl">${S.team}</b> 完成本季。季末不會再次替你報名。`);
+        afterAsk();}}
     ];
     /* 年齡懲罰：每長一歲，門檻微調，但簽約金大幅縮水 */
     const agePenalty = Math.max(0, S.age - 18);
@@ -2390,6 +2495,7 @@ function dynamicSocialTraitAudit(st){
   if(S.age>=27&&so.mentorActs>=3&&so.playerRep>=6)unlockDynamicTrait('mentor','年輕球員開始主動坐到你旁邊問問題——<b class="hl">隊友互動成功率與球季化學效應提高</b>。');
   if(so.fanRep>=7&&(ep.mediaWins+so.fanActs)>=3&&perf>=2)unlockDynamicTrait('fanhero','看台上的球衣背號越來越整齊。你的球季成績與一次次正確互動一起累積成信任——<b class="hl">明星票選、代言與下一張合約小幅提升</b>。');
   if(so.communityActs>=3&&so.fanRep>=6)unlockDynamicTrait('community','你持續把休息日交給社區與孩子，不是只在合約年出現——<b class="hl">球迷聲望更穩定，並增加公益代言</b>。');
+  if(S.love.st==='married'&&(S.love.affection||0)>=10&&(S.finance.family||0)>=120)unlockDynamicTrait('familyanchor','你不只在鏡頭前談家人，也長期投入時間與實際支出處理照護、教育和搬遷——<b class="hl">家庭關係良好時提供微幅球季穩定</b>；關係轉差時加成會暫停。');
   if((so.playerRep<=-6||so.ignoredPlayers>=3||ep.positionFails>=5)&&!S.traits.leader)unlockDynamicTrait('island','你把所有人隔絕在自己的準備流程之外，守位事件的失敗也不再有人願意補位——<b class="dn">球季化學效應下降、交易風險提高</b>。','bad');
   if(so.fanRep<=-6&&(S.lastD||0)<=-2)unlockDynamicTrait('booed','低潮加上一次次冷落，主場廣播念到你的名字時已先響起噓聲——<b class="dn">球季壓力、明星票選與合約市場受到影響</b>。','bad');
   if(S.traits.island&&so.playerRep>=1&&(S.chemistry||0)>=1)clearDynamicTrait('island','你重新加入團隊會議，也開始在失誤後第一個走向隊友。');
@@ -2405,13 +2511,32 @@ function seasonTraitAudit(bucket,st){
   const spark=S.pos!=='P'&&st.PA>=LV[S.lv].g*2.7&&obp>=.355&&(st.SB>=15||st.H>=Math.round(LV[S.lv].g*.95));
   const defense=S.pos!=='P'&&(st.DEF||0)>=8&&st.G>=LV[S.lv].g*.60;
   const steady=st.d>=2&&st.G>=Math.max(25,LV[S.lv].g*.45),cold=st.d<=-3;
+  const ipFloor=isSP()?Math.round(ipNeed*.64):30,k9=st.IP?st.SO/st.IP*9:0,bb9=st.IP?st.BB/st.IP*9:99;
+  const velocity=S.pos==='P'&&st.IP>=ipFloor&&(st.avgVelo||0)>=98&&k9>=9;
+  const command=S.pos==='P'&&st.IP>=ipFloor&&bb9<=2.2;
+  const workhorse=S.pos==='P'&&isSP()&&st.IP>=ipNeed;
+  const stopper=S.pos==='P'&&!isSP()&&st.G>=42&&st.era<=2.75&&((st.HLD||0)+(st.SV||0))>=25;
+  const patience=S.pos!=='P'&&st.PA>=LV[S.lv].g*2.7&&st.BB/Math.max(1,st.PA)>=.10;
+  const speedNeed={CPBL:30,NPB:35,MLB:40}[bucket]||35,speed=S.pos!=='P'&&st.PA>=LV[S.lv].g*2.5&&st.SB>=speedNeed;
+  const ps=S.currentStandings&&S.currentStandings.postseasonStat;
+  const postseason=!!ps&&(S.pos==='P'?(ps.IP>=5&&(ps.era||99)<=2.75):(ps.PA>=10&&(((ps.H+ps.BB)/Math.max(1,ps.PA))+slgOf(ps))>=.850));
   [['elite',elite],['power',power],['spark',spark],['defense',defense]].forEach(([k,ok])=>{tp[k]=ok?(tp[k]||0)+1:0;tp[k+'Cold']=ok?0:(tp[k+'Cold']||0)+1;});
   tp.steady=steady?(tp.steady||0)+1:0;tp.cold=cold?(tp.cold||0)+1:0;
+  [['velocity',velocity],['command',command],['workhorse',workhorse],['stopper',stopper],['patience',patience],['speed',speed]].forEach(([k,ok])=>tp[k]=ok?(tp[k]||0)+1:0);
+  if(postseason)tp.postseason=(tp.postseason||0)+1;
   if(tp.elite>=2&&eventProfile().positionWins>=2)unlockDynamicTrait('ace','連續兩季同時扛住頂級局數與壓制力，且多次正確處理臨時登板與投捕任務，球隊開始把系列賽第一戰交給你——<b class="hl">球季表現修正、三振與合約評價提升</b>。');
   if(tp.power>=2)unlockDynamicTrait('slugger',`連續兩季跨過 ${hrNeed} 轟級門檻，投手不再願意把球丟進你的熱區——<b class="hl">全壘打產量、票房與合約評價提升</b>。`);
   if(tp.spark>=2)unlockDynamicTrait('sparkplug','連續兩季大量上壘並製造壘間壓力——<b class="hl">保送與盜壘產量提升，也更容易成為球迷焦點</b>。');
   if(tp.defense>=2&&eventProfile().positionWins>=2)unlockDynamicTrait('defchief','兩季守備數據與守位專屬事件都證明你能替投手群多拿出局數——<b class="hl">守備貢獻與隊友聲望提升</b>。');
   if(tp.steady>=3)unlockDynamicTrait('steady','連續三季沒有大起大落，教練知道每天把名字寫進先發名單會得到什麼——<b class="hl">球季波動獲得穩定加成</b>。');
+  if(tp.velocity>=2)unlockDynamicTrait('fireball','連續兩季平均球速站上 98.0 mph，三振率也證明這不是雷達槍灌水——<b class="hl">平均球速與三振小幅提升</b>，但高速投球的手臂負荷不會消失。');
+  if(tp.command>=3)unlockDynamicTrait('command','連續三季把 BB/9 壓在 2.2 以下，打者只能靠揮棒上壘——<b class="hl">保送小幅下降，WHIP 依真實結果重算</b>。');
+  if(tp.workhorse>=3)unlockDynamicTrait('workhorse','連續三年越過聯盟吃局數門檻，靠的是完整準備而不是無限體力——<b class="hl">基礎傷病風險 −2%</b>，仍可能遭遇意外大傷。');
+  if(tp.stopper>=2)unlockDynamicTrait('stopper','連續兩季在最擁擠的壘包與最短的準備時間中守住牛棚——<b class="hl">後援 ERA 與中繼／救援產量小幅改善</b>。');
+  if(tp.patience>=3)unlockDynamicTrait('patient','連續三季超過一成打席選到保送，你開始迫使投手把球送進自己的區域——<b class="hl">保送與上壘機會小幅提升</b>。');
+  if(tp.speed>=2)unlockDynamicTrait('basethief',`連續兩季至少 ${speedNeed} 次盜壘，投手一壘有人時已經無法專心看暗號——<b class="hl">盜壘產量小幅提升</b>。`);
+  if(tp.postseason>=2)unlockDynamicTrait('october','兩次在真實季後賽出賽中頂住短期賽壓力——<b class="hl">往後季後賽個人成績獲得小幅加成</b>，例行賽不因此變簡單。');
+  {const countries=['CPBL','NPB','MLB'].filter(k=>S.stats[k]&&S.stats[k].yr>0).length;if(countries>=2&&(S.chemistry||0)>=0)unlockDynamicTrait('globetrotter','你已在兩個國家的頂級聯盟留下正式球季，也學會在語言、移動與更衣室規則之間切換——<b class="hl">跨國適應帶來微幅球季穩定加成</b>。');}
   if(S.traits.ace&&tp.eliteCold>=2)clearDynamicTrait('ace','連續兩季的負荷與壓制力已不再符合王牌標準。');
   if(S.traits.slugger&&tp.powerCold>=2)clearDynamicTrait('slugger','連續兩季長打產量滑落，對手不再為你的力量改變佈陣。');
   if(S.traits.sparkplug&&tp.sparkCold>=2)clearDynamicTrait('sparkplug','上壘與跑壘威脅連續兩季下降，球風已經改變。');
@@ -2878,10 +3003,10 @@ function proSeason(){
       `<span class="tag">${S.teamName()}</span><div class="statline">${statLine(p2)}</div>`+
       `<span class="tag">合計</span><div class="statline">${statLine(st)}</div>`);
   }
-  else {const ti=seasonTeamInfo();card('','球季數據',`<div class="season-team-head"><b>${ti.name}</b><span>${ti.level}${S.pos==='P'?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}</span></div><div class="stat-dashboard">${statDashboard(st)}</div>`);}
+  else {const ti=seasonTeamInfo();card(st.outlierKind==='hot'?'gold':st.outlierKind==='cold'?'bad':'','球季數據',`<div class="season-team-head"><b>${ti.name}</b><span>${ti.level}${S.pos==='P'?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}</span></div>${st.outlierLabel?`<span class="tag">${st.outlierLabel}</span>`:''}<div class="stat-dashboard">${statDashboard(st)}</div>`);}
   { const sw=seasonSwing(),luckText=S.seasonLuck===20?'生涯年':S.seasonLuck>=16?'火燙':S.seasonLuck>=7?'正常':S.seasonLuck>=2?'低潮':'崩盤';
     card(sw.total>=2?'good':sw.total<=-2?'bad':'info','球季變數拆解',
-      `<span class="tag">${st.usageRole}</span><span class="tag">健康 ${st.availability}%</span><span class="tag">出賽 ${st.G}/${st.scheduled}</span><span class="tag">狀態 ${S.seasonLuck}/20・${luckText}</span><div class="statline">本季綜合修正 <b class="${sw.total>=0?'up':'dn'}">${sw.total>=0?'+':''}${sw.total.toFixed(1)}</b>｜狀態 ${sw.luckAdj>=0?'+':''}${sw.luckAdj.toFixed(1)}｜氣勢 ${Math.abs(sw.momentum)<.05?'無加成':(sw.momentum>0?'+':'')+sw.momentum.toFixed(1)}｜環境 ${sw.contextAdj>=0?'+':''}${sw.contextAdj.toFixed(1)}｜隊友 ${sw.chemistry>=0?'+':''}${sw.chemistry.toFixed(1)}｜特性 ${sw.traits>=0?'+':''}${sw.traits.toFixed(1)}</div>`); }
+      `<span class="tag">${st.usageRole}</span><span class="tag">健康 ${st.availability}%</span><span class="tag">出賽 ${st.G}/${st.scheduled}</span><span class="tag">狀態 ${S.seasonLuck}/20・${luckText}</span>${st.outlierLabel?`<span class="tag">厚尾波動：${st.outlierLabel}</span>`:''}<div class="statline">本季綜合修正 <b class="${sw.total>=0?'up':'dn'}">${sw.total>=0?'+':''}${sw.total.toFixed(1)}</b>｜狀態 ${sw.luckAdj>=0?'+':''}${sw.luckAdj.toFixed(1)}｜氣勢 ${Math.abs(sw.momentum)<.05?'無加成':(sw.momentum>0?'+':'')+sw.momentum.toFixed(1)}｜環境 ${sw.contextAdj>=0?'+':''}${sw.contextAdj.toFixed(1)}｜隊友 ${sw.chemistry>=0?'+':''}${sw.chemistry.toFixed(1)}｜特性 ${sw.traits>=0?'+':''}${sw.traits.toFixed(1)}</div>`); }
   const isInj = S.seasonFactor <= 0.45; /* 判斷是否為大傷報廢年 */
   S.log.push({y:S.year,age:S.age,tm:S.tradeFrom?`${S.tradeFrom}→${S.teamName()}`:S.teamName(),p:S.dpos||'',line:S.seasonFactor===0?'傷缺全季':statLine(st), inj: isInj, st: st});
   S.tradeFrom=null;
@@ -3090,10 +3215,16 @@ function faServiceRequirement(org,overseas){
   if(org==='NPB')return overseas?9:(college?7:8);
   return 6;
 }
+/* 台灣球員旅日前 8 個一軍登錄球季占用洋將名額；取得國內 FA 年資後視同本土球員。 */
+function npbRosterStatus(){
+  if(!S||S.org!=='NPB')return {foreign:false,years:0,need:8,label:''};
+  const years=(S.service&&S.service.NPB)||0,need=8,foreign=years<need;
+  return {foreign,years,need,label:foreign?`洋將名額 ${years}/${need}`:'視同本土球員'};
+}
 function faRuleSummary(org){
   const req=faServiceRequirement(org,false),svc=(S.service&&S.service[org])||S.svc||0;
   if(org==='CPBL')return `中職 ${req} 個一軍球季取得資格；行使後可與其他中職球團談約`;
-  if(org==='NPB')return `日職國內 FA ${req} 季、海外 FA 9 季；目前 ${svc} 季`;
+  if(org==='NPB'){const rs=npbRosterStatus();return `日職國內 FA ${req} 季、海外 FA 9 季；目前 ${svc} 季｜${rs.label}`;}
   return `大聯盟 6 年服務時間取得自由球員資格；目前 ${svc} 年`;
 }
 /* ---------- 升降級與去向 ---------- */
@@ -3116,6 +3247,7 @@ function movement(){
     S.service=S.service||{CPBL:0,NPB:0,MiLB:0};S.svcOrg=S.org;
     S.service[S.org]=(S.service[S.org]||0)+1;S.svc=S.service[S.org];
     if(S.svc>=faServiceRequirement(S.org,false))S.faElig=true;
+    if(S.org==='NPB'&&S.service.NPB>=8&&!S.npbLocalNotified){S.npbLocalNotified=true;card('gold','日職登錄身分改變','一軍登錄年資達到 8 季。從下一次名單競爭開始，你不再占用洋將名額，正式以 <b class="hl">視同本土球員</b> 身分接受球團評估。');board(1);}
   }
   /* 神主牌:同隊連續年數(轉隊會歸零,見 doTrade/signTo) */
   if(S.stage==='PRO'&&LV[S.lv].top){ S.teamYears=(S.teamYears||0)+1;
@@ -3137,22 +3269,27 @@ function movement(){
   let goodReal=false;
   { const st=S.lastSt;
     if(st&&S.seasonFactor>=0.5){
+      const foreign=S.lv==='NPB1'&&npbRosterStatus().foreign;
       if(S.pos==='P'){
         const era=st.IP>0?st.ER*9/st.IP:99, whip=st.IP>0?(st.H+st.BB)/st.IP:99;
         /* 出賽規模門檻:先發 80 局、後援 30 局,達不到代表可能有傷/撐不起位置→不保護 */
         const ipOK = isSP()? st.IP>=80 : st.IP>=30;
         /* 投手:規模達標 且 (ERA/WHIP 一線 或 救援/中繼產能) */
-        if(ipOK && (era<=4.20||whip<=1.35||(st.SV||0)>=15||(st.HLD||0)>=15))goodReal=true;
+        if(ipOK && (foreign?(era<=3.55||whip<=1.25||(st.SV||0)>=22||(st.HLD||0)>=22):(era<=4.20||whip<=1.35||(st.SV||0)>=15||(st.HLD||0)>=15)))goodReal=true;
       }else{
         const obp=st.PA>0?(st.H+st.BB)/st.PA:0, slg=slgOf(st), ops=obp+slg;
         /* 出賽規模門檻:250 打席,達不到代表可能有傷/撐不起主力→不保護 */
         const paOK = st.PA>=250;
         /* 野手:規模達標 且 (OPS 主力水準 或 雙位數轟/盜/打點達標) */
-        if(paOK && (ops>=0.720||st.HR>=12||st.SB>=15||st.RBI>=(LV[S.lv].g>=150?70:55)))goodReal=true;
+        if(paOK && (foreign?(ops>=.790||st.HR>=20||st.SB>=25||st.RBI>=70):(ops>=0.720||st.HR>=12||st.SB>=15||st.RBI>=(LV[S.lv].g>=150?70:55))))goodReal=true;
       }
     }
   }
   if(wonAward||goodReal){ /* 拿獎 或 帳面成績達標 → 球團不會處理掉 */ }
+  else if(S.lv==='NPB1'&&npbRosterStatus().foreign&&(perf===null||perf<1)&&chance(62)){
+    card('bad','洋將名額競爭',`你仍占用日職洋將名額（${npbRosterStatus().years}/${npbRosterStatus().need} 季）。球團要求洋將立即貢獻，本季實績未達續留一軍標準。`);
+    handleDemotion(o,path,idx);return;
+  }
   else if(o<minReq){
     if(perf!==null&&perf>=0){ /* 帳面成績夠好,球團續留觀察 */
       card('info','球團評估',`體能檢測數字亮紅燈，但你用<b class="hl">實際成績</b>說話——本季表現達聯盟水準，球團決定續留一線觀察。`);
@@ -3164,7 +3301,8 @@ function movement(){
   /* 升級還要競爭有限名額：能力與實績都會提高機會，但達到門檻不等於自動升級。 */
   if(idx<path.length-1){ const nx=path[idx+1];
     const margin=ratingGap(o,LV[nx].min),perfNow=S.lastD||0,topPenalty=LV[nx].top?8:0;
-    const rosterP=clamp(Math.round(42+margin*8+perfNow*4-topPenalty),12,88);
+    const foreignSlotPenalty=S.org==='NPB'&&npbRosterStatus().foreign?12:0;
+    const rosterP=clamp(Math.round(42+margin*8+perfNow*4-topPenalty-foreignSlotPenalty),8,88);
     if(o>=LV[nx].min&&chance(rosterP)){
       let to=nx;
       if(idx<path.length-2){ const nx2=path[idx+2];
@@ -3172,7 +3310,7 @@ function movement(){
       S.lv=to; card('good','升級通知',`表現獲得肯定，${to!==nx?'<b class="hl">連跳兩級</b>':'晉升'} <b class="hl">${LV[to].n}</b>！`); board(2);
       if(S.traits.yips){ removeTrait('yips','失憶症'); card('good','走出陰影','重回上一層舞台，你終於找回了節奏——<b class="hl">失憶症痊癒</b>。'); }
     }else if(o>=LV[nx].min){
-      card('info','名單競爭','能力已摸到下一層級，但本季實績與有限名額仍不足。球團決定讓你留在原層級繼續證明。');
+      card('info','名單競爭',`能力已摸到下一層級，但本季實績與有限名額仍不足。${foreignSlotPenalty?'你目前仍占用洋將名額，升上一軍需要擠掉另一名外籍球員。':''}球團決定讓你留在原層級繼續證明。`);
     }
   }
   if(!S.ct)S.ct={yrs:2,mult:1,annual:Math.round(salaryFor(S.lv,S.lastD||0)*dpMult()),guaranteed:LV[S.lv].top?1:.65};
@@ -3190,6 +3328,9 @@ function movement(){
   if(S.ct.yrs<=0){
     if(LV[S.lv].top){
       if(S.faElig){ faFlow(o); return; }
+      if(S.org==='NPB'&&npbRosterStatus().foreign&&(S.lastD||0)<1&&chance(48)){
+        card('bad','洋將合約未獲保留','合約到期後，球團把有限的洋將名額留給其他即戰力。你成為自由契約球員，可以尋找日職其他球團、返台或轉往其他聯盟。');outOfOrg(o);return;
+      }
       /* 尚未取得 FA：球團保有續約權，續短約。 */
       S.ct={yrs:ri(1,2),mult:1,annual:Math.round(salaryFor(S.lv,S.lastD||0)*dpMult()),guaranteed:1,extOffered:false};
       const req=faServiceRequirement(S.org,false);card('info','球團續約',`你尚未取得自由球員資格（服務 ${S.svc}/${req} 季），球團行使續約權——續 <b class="hl">${S.ct.yrs} 年</b>，固定年薪 <b class="hl">${fmtContractMoney(S.ct.annual,S.org)}</b>。`); board(1);
@@ -3544,7 +3685,7 @@ function runDraft(fromSchool,cb){
   draftBroadcast(rd).then(result=>{
     if(!result){
       card('bad','選秀落榜',`十輪六十個順位全部唱名完畢，始終沒有你的名字。（綜合 ${o}｜年齡加權後評價 ${score}）`);
-      if(fromSchool){card('info','','回到校隊，明年再來。');cb();}else cb('fail');return;
+      if(fromSchool){card('info','','回到校隊，明年再來。本年度不會重複參選。');cb('fail');}else cb('fail');return;
     }
     const bonus=[0,1000,600,350,350,150,150,150,50,50,50][rd]||50;
     const lv=(rd===1&&o>=r99(50))?'CPBL1':'CPBL2',team=result.team;
@@ -3577,11 +3718,22 @@ function pathChoiceHS(){
 }
 function pathChoiceU4(){
   const o=ovr();
-  const opts=[{t:'投入中華職棒選秀',main:true,s:'綜合 '+o+'｜大學畢業年齡加權下降',f:()=>runDraft(false,r=>{
-    if(r==='fail')choose('落榜之後',[
-      {t:'加入業餘成棒隊',f:()=>{S.stage='AMA';S.team=pick(['台電','合庫','安永鮮物']);advance();}},
-      {t:'高掛球鞋',warn:true,f:()=>endGame('大學畢業選秀落榜，決定告別球場。')}]);
-    else advance(); })}];
+  const decision=S.draftDecision&&S.draftDecision.year===S.year?S.draftDecision.status:null;
+  const amateurTeams=['台電','合庫','安永鮮物','綺麗珊瑚'];
+  const joinAmateur=()=>{S.stage='AMA';S.team=pick(amateurTeams);card('info','畢業後加入業餘成棒',`你沒有被送進另一場選秀，而是直接加入 <b class="hl">${S.team}</b>，保留工作、訓練與未來再次參選的選擇。`);advance();};
+  const opts=[];
+  /* 大四季初已做過決定時，畢業後絕不偷偷重跑同一屆選秀。 */
+  if(!decision)opts.push({t:'投入中華職棒選秀',main:true,s:'綜合 '+o+'｜這是本年度唯一一次選秀',f:()=>{
+    S.draftDecision={year:S.year,status:'entered'};
+    runDraft(false,r=>{
+      if(r==='fail'){S.draftDecision={year:S.year,status:'undrafted'};choose('落榜之後',[
+        {t:'加入業餘成棒隊',main:true,f:joinAmateur},
+        {t:'高掛球鞋',warn:true,f:()=>endGame('大學畢業選秀落榜，決定告別球場。')}]);}
+      else advance();
+    });
+  }});
+  opts.push({t:decision==='undrafted'?'本屆已落榜，轉往業餘成棒':'不參加選秀，加入業餘成棒隊',main:decision==='declined'||decision==='undrafted',s:decision==='declined'?'延續季初決定｜不會開啟選秀會':'保留比賽機會，未來仍可自行決定是否再次參選',f:joinAmateur});
+  opts.push({t:'離開競技棒球',warn:true,s:'不參加選秀，直接結束球員生涯',f:()=>endGame('大學畢業後決定不投入選秀，告別競技棒球。')});
 
   /* 大四畢業 (約22歲)，套用最大年齡懲罰 (Senior Sign) */
   const agePenalty = Math.max(0, S.age - 18);
@@ -3688,8 +3840,8 @@ function statTable(bucket){
   if(S.pos==='P'){
     const era=st.IP>0?(st.ER*9/st.IP).toFixed(2):'-';
     const whip=st.IP>0?((st.H+st.BB)/st.IP).toFixed(2):'-';
-    rows=`<tr><th>Yrs</th><th>G</th><th>IP</th><th>W</th><th>L</th><th>SV</th><th>HLD/HP</th><th>SO</th><th>BB</th><th>ERA</th><th>WHIP</th></tr>
-    <tr><td>${st.yr}</td><td>${st.G}</td><td>${fmtIP(st.IP)}</td><td>${st.W}</td><td>${st.L}</td><td>${st.SV||0}</td><td>${st.HLD||0}/${st.HP||0}</td><td>${st.SO}</td><td>${st.BB||0}</td><td>${era}</td><td>${whip}</td></tr>`;
+    rows=`<tr><th>Yrs</th><th>G</th><th>IP</th><th>W</th><th>L</th><th>SV</th><th>HLD/HP</th><th>SO</th><th>BB</th><th>ERA</th><th>WHIP</th><th>AVG FB</th></tr>
+    <tr><td>${st.yr}</td><td>${st.G}</td><td>${fmtIP(st.IP)}</td><td>${st.W}</td><td>${st.L}</td><td>${st.SV||0}</td><td>${st.HLD||0}/${st.HP||0}</td><td>${st.SO}</td><td>${st.BB||0}</td><td>${era}</td><td>${whip}</td><td>${veloText(st)}</td></tr>`;
   }else{
     const obpN = st.PA>0 ? (st.H+st.BB)/st.PA : 0;
     const slgN = slgOf(st);
@@ -3827,7 +3979,7 @@ function endGame(reason){
     if(proLogs.length > 0){
       const isP = S.pos === 'P';
       const head = isP
-        ? `<tr><th>年</th><th>齡</th><th style="text-align:left">球隊</th><th>G</th><th>IP</th><th>W</th><th>L</th><th>SV</th><th>HLD/HP</th><th>SO</th><th>BB</th><th>ERA</th><th>WHIP</th></tr>`
+        ? `<tr><th>年</th><th>齡</th><th style="text-align:left">球隊</th><th>G</th><th>IP</th><th>W</th><th>L</th><th>SV</th><th>HLD/HP</th><th>SO</th><th>BB</th><th>ERA</th><th>WHIP</th><th>AVG FB</th></tr>`
         : `<tr><th>年</th><th>齡</th><th style="text-align:left">球隊</th><th>G</th><th>PA</th><th>AVG</th><th>OBP</th><th>SLG</th><th>OPS</th><th>H</th><th>HR</th><th>RBI</th><th>SB</th><th>DEF</th></tr>`;
       const rows = proLogs.map(r => {
         const cS = r.inj ? 'color:var(--bad);font-weight:700;' : '';
@@ -3835,7 +3987,7 @@ function endGame(reason){
         if(isP){
           const era = s.IP>0 ? (s.ER*9/s.IP).toFixed(2) : '-';
           const whip = s.IP>0 ? ((s.H+s.BB)/s.IP).toFixed(2) : '-';
-          return `<tr style="${cS}"><td>${r.y}</td><td>${r.age}</td><td style="text-align:left;white-space:nowrap">${r.tm}</td><td>${s.G}</td><td>${fmtIP(s.IP)}</td><td>${s.W}</td><td>${s.L}</td><td>${s.SV||0}</td><td>${s.HLD||0}/${s.HP||0}</td><td>${s.SO}</td><td>${s.BB||0}</td><td>${era}</td><td>${whip}</td></tr>`;
+          return `<tr style="${cS}"><td>${r.y}</td><td>${r.age}</td><td style="text-align:left;white-space:nowrap">${r.tm}</td><td>${s.G}</td><td>${fmtIP(s.IP)}</td><td>${s.W}</td><td>${s.L}</td><td>${s.SV||0}</td><td>${s.HLD||0}/${s.HP||0}</td><td>${s.SO}</td><td>${s.BB||0}</td><td>${era}</td><td>${whip}</td><td>${veloText(s)}</td></tr>`;
         } else {
           const obpN = s.PA>0 ? (s.H+s.BB)/s.PA : 0;
           const slgN = slgOf(s);
@@ -3876,7 +4028,7 @@ function endGame(reason){
   card(S.honors.length?'gold':'','獎項與大賽成績', honorsHTML);
   /* 特質與薪資 */
   const tr=[];
-  const TN={genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',onetool:'只會這個',rubber:'橡膠手臂',goldcloth:'黃金聖衣',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',legend:(S.legendLeague||'')+'歷史級球星',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',...DYNAMIC_TRAIT_LABELS};
+  const TN={genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',combo:'無巧不工',onetool:'只會這個',rubber:'橡膠手臂',goldcloth:'黃金聖衣',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',legend:(S.legendLeague||'')+'歷史級球星',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',...DYNAMIC_TRAIT_LABELS};
   const posT={pos:['legend','goldcloth','mrteam','confidante','genius','late','disc','academy','intlace','franchise','clutch','phoenix','rubber','onetool','smallschool','grinder','ace','slugger','sparkplug','defchief','steady','fanhero','community','leader','mentor'],neg:['glass','scum','yips','distract','cancer','ambience','thief','island','booed']};
   const tagStyle=k=>{
     if(k==='legend')return 'background:#3a2c05;border-color:#ffc95c;color:#ffe08a'; /* 歷史級:金 */
@@ -3956,7 +4108,7 @@ function shareImage(evals,out){
   const isP=S.pos==='P';
   const tiers=evals.map(t=>t.replace(/<[^>]+>/g,''));
   /* 特性(保留 + 刪除線標記) */
-  const TN2={legend:(S.legendLeague||'')+'歷史級球星',goldcloth:'黃金聖衣',genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',onetool:'只會這個',rubber:'橡膠手臂',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',...DYNAMIC_TRAIT_LABELS};
+  const TN2={legend:(S.legendLeague||'')+'歷史級球星',goldcloth:'黃金聖衣',genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',combo:'無巧不工',onetool:'只會這個',rubber:'橡膠手臂',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',...DYNAMIC_TRAIT_LABELS};
   const negK=['glass','scum','yips','distract','cancer','ambience','thief','island','booed'];
   const keepTr=Object.keys(TN2).filter(k=>S.traits[k]).map(k=>({label:TN2[k],key:k,neg:negK.includes(k)}));
   const remTr=(S.removed||[]).map(l=>({label:l,key:'',neg:false,rem:true}));
@@ -4110,14 +4262,14 @@ function shareImage(evals,out){
 
   // 生涯數據表
   hr(); sectionTitle('生涯累積數據');
-  const cols=isP?[['League',90],['Yrs',36],['G',48],['IP',54],['W',36],['L',36],['SV',48],['HLD/HP',58],['SO',52],['BB',48],['ERA',52],['WHIP',54]]
+  const cols=isP?[['League',90],['Yrs',36],['G',48],['IP',54],['W',36],['L',36],['SV',48],['HLD/HP',58],['SO',52],['BB',48],['ERA',52],['WHIP',54],['AVG FB',76]]
                 :[['League',80],['Yrs',34],['G',40],['PA',46],['AVG',48],['OBP',48],['SLG',48],['OPS',48],['H',44],['HR',38],['RBI',44],['SB',40],['DEF',40]];
   function row(cells,head){ let x=PAD; c.font=(head?'bold ':'')+'13px monospace'; c.fillStyle=head?'#8fae9c':'#e8efe9';
     cells.forEach(function(cell,i){ c.fillText(String(cell),x,y); x+=cols[i][1]; }); y+=head?24:26; }
   row(cols.map(cc=>cc[0]),true);
   leagues.forEach(function(b){ const st=S.stats[b];
     if(isP){ const era=st.IP>0?(st.ER*9/st.IP).toFixed(2):'-'; const whip=st.IP>0?((st.H+st.BB)/st.IP).toFixed(2):'-';
-      row([LG_N[b],st.yr,st.G,fmtIP(st.IP),st.W,st.L,st.SV||0,`${st.HLD||0}/${st.HP||0}`,st.SO,st.BB||0,era,whip]); }
+      row([LG_N[b],st.yr,st.G,fmtIP(st.IP),st.W,st.L,st.SV||0,`${st.HLD||0}/${st.HP||0}`,st.SO,st.BB||0,era,whip,veloText(st)]); }
     else{
       const obpN = st.PA>0 ? (st.H+st.BB)/st.PA : 0;
       const slgN = slgOf(st);
@@ -4177,7 +4329,7 @@ function shareImage(evals,out){
   if(proLogs.length > 0){
     hr(); sectionTitle('生涯年表（職業成績）');
     const hc = isP
-      ? [['年',46],['齡',36],['球隊',124],['G',45],['IP',55],['W',36],['L',36],['SV',42],['HLD/HP',54],['SO',46],['BB',46],['ERA',52],['WHIP',54]]
+      ? [['年',46],['齡',36],['球隊',124],['G',45],['IP',55],['W',36],['L',36],['SV',42],['HLD/HP',54],['SO',46],['BB',46],['ERA',52],['WHIP',54],['AVG FB',76]]
       : [['年',46],['齡',34],['球隊',120],['G',36],['PA',42],['AVG',46],['OBP',46],['SLG',46],['OPS',46],['H',40],['HR',36],['RBI',40],['SB',36],['DEF',40]];
     let x=PAD; c.font='bold 12px monospace'; c.fillStyle='#8fae9c';
     hc.forEach(function(h){ c.fillText(h[0],x,y); x+=h[1]; }); y+=20;
@@ -4189,7 +4341,7 @@ function shareImage(evals,out){
       if(isP){
         const era = s.IP>0 ? (s.ER*9/s.IP).toFixed(2) : '-';
         const whip = s.IP>0 ? ((s.H+s.BB)/s.IP).toFixed(2) : '-';
-        cells=[String(r.y), String(r.age), tmS, String(s.G), fmtIP(s.IP), String(s.W), String(s.L), String(s.SV||0), `${s.HLD||0}/${s.HP||0}`, String(s.SO), String(s.BB||0), era, whip];
+        cells=[String(r.y), String(r.age), tmS, String(s.G), fmtIP(s.IP), String(s.W), String(s.L), String(s.SV||0), `${s.HLD||0}/${s.HP||0}`, String(s.SO), String(s.BB||0), era, whip, veloText(s)];
       } else {
         const obpN = s.PA>0 ? (s.H+s.BB)/s.PA : 0;
         const slgN = slgOf(s);
