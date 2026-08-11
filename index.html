@@ -184,7 +184,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 .event-name{font-size:21px;font-weight:900;line-height:1.2;margin-top:5px;position:relative;z-index:1}.event-summary{font-size:11px;color:var(--dim);margin-top:5px;position:relative;z-index:1}.event-impact{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;position:relative;z-index:1}.event-impact span{font:700 9px var(--mono);padding:3px 7px;border-radius:99px;background:#06120d;border:1px solid #294a39}
 .case-source{display:inline-flex;margin-top:7px;color:#8bd8ff;font:700 9px var(--mono);letter-spacing:.06em;text-decoration:none;border-bottom:1px dotted #68b7e888}.case-source:hover{color:#fff}
 .btn.event-choice{display:grid;grid-template-columns:38px minmax(0,1fr) 86px;gap:10px;align-items:center;text-align:left}.event-choice .event-icon{font-size:24px;text-align:center}.event-choice .event-copy{min-width:0}.event-choice .event-copy b{display:block;font-size:14px}.event-choice .event-copy small{margin:1px 0 5px}.event-choice .chance-track{height:5px;border-radius:99px;background:#07120e;overflow:hidden}.event-choice .chance-track i{display:block;height:100%;background:linear-gradient(90deg,var(--clay),var(--amber),var(--good))}.event-choice .chance-num{font:900 15px/1.25 var(--mono);color:var(--amber);text-align:right;word-break:keep-all}.event-choice .chance-num small{font:500 8px var(--mono);letter-spacing:.06em;color:var(--dim)}
-.event-outcome{font-size:16px;font-weight:800;margin:4px 0 8px}.tourney-list{display:grid;gap:8px;margin-top:9px}.tourney-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid #294d3b;border-radius:10px;background:#081912;animation:tourneyReveal .38s both}.tourney-row:nth-child(2){animation-delay:.12s}.tourney-row:nth-child(3){animation-delay:.24s}.tourney-row b{color:var(--amber)}.tourney-row em{font:700 11px var(--mono);font-style:normal;color:var(--good)}
+.event-outcome{font-size:16px;font-weight:800;margin:4px 0 8px}.tourney-list{display:grid;gap:8px;margin-top:9px}.tourney-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid #294d3b;border-radius:10px;background:#081912;animation:tourneyReveal .38s both;font-size:15px}.tourney-row:nth-child(2){animation-delay:.12s}.tourney-row:nth-child(3){animation-delay:.24s}.tourney-row b{color:var(--amber)}.tourney-row em{font:700 13px var(--mono);font-style:normal;color:var(--good)}.tourney-context{margin-top:9px;padding:8px 10px;border-left:3px solid var(--good);background:#071710;color:#b9cbc0;font-size:13px}.tourney-context b{color:var(--good)}
 .season-agenda{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;padding-top:10px;border-top:1px solid #294b39}.season-agenda span{padding:5px 9px;border-radius:99px;background:#081912;border:1px solid #355c49;color:#c7d6cd;font-size:11px}.season-agenda b{color:var(--amber)}
 @keyframes tourneyReveal{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
 .season-team-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.season-team-head b{font-size:17px}.season-team-head span{font-size:11px;color:var(--amber);border:1px solid #4c725e;border-radius:99px;padding:3px 9px;background:#081912;white-space:nowrap}.stat-dashboard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.stat-box{min-width:0;background:#081912;border:1px solid #294a39;border-radius:10px;padding:9px 8px}.stat-box span{display:block;color:var(--dim);font-size:9px;letter-spacing:.08em;white-space:nowrap}.stat-box b{display:block;font:800 17px var(--mono);color:var(--chalk);margin-top:2px;overflow:hidden;text-overflow:ellipsis}.stat-box.key{border-color:#5c7a55;background:linear-gradient(145deg,#153021,#081912)}.stat-box.key b{color:var(--amber);font-size:20px}.stat-secondary{margin-top:8px;color:#b7c9be;font-size:12px;line-height:1.8}
@@ -310,6 +310,63 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
   .standings-grid{grid-template-columns:1fr}.standings-table td:nth-child(2){max-width:155px}
   .draft-clock{grid-template-columns:1fr;padding:16px}.draft-pick-no{display:grid;grid-template-columns:1fr 1fr;align-items:center}.draft-pick-no b{font-size:34px;margin:3px}.draft-announcement h3{font-size:23px}.draft-ticker{padding:0 14px}.draft-row{grid-template-columns:62px 1fr 90px}.draft-row em{display:none}.draft-controls{padding:12px 14px 16px}
 }
+
+/* ---------- v2.3.3 可讀性與決策彈窗 ---------- */
+body{font-size:16px}
+#bd-team small{font-size:11px;color:#a9bdb1}#bd-team em{font-size:12px}#bd-team b{font-size:18px}
+.bd-cell span{font-size:11px;color:#9db0a4}.lamp{font-size:11px;color:#9db0a4}
+.broadcast-head span{font-size:12px}.broadcast-head b{font-size:14px}
+.card h4{font-size:15px}.card p{font-size:15px}.statline{font-size:14px}
+.rail-label{font-size:12px;color:#a9bdb1}.scout-type span{font-size:13px}.scout-ovr small{font-size:10px}
+.ability-row{grid-template-columns:70px minmax(34px,1fr) 48px;font-size:14px}.ability-row b{font-size:16px}.ability-row b small{font-size:10px;color:#a0b3a7}
+.mini-metric span{font-size:11px;color:#a9bdb1}.mini-metric b{font-size:16px}#rail-contract{font-size:13px!important}
+.rep-row{grid-template-columns:70px minmax(32px,1fr) 62px;gap:5px;font-size:12px;color:#a9bdb1}.rep-row b{font-size:13px}.team-relation-row b{font-size:11px;color:var(--amber)}
+.trait-cloud .tag{font-size:11px;padding:4px 7px}.trait-tip::after{font-size:13px;width:260px}.ability-note{font-size:12px;color:#b7c8be}
+.env-chip b{font-size:14px}.env-chip small{font-size:12px;line-height:1.5}.roll-hero .kind{font-size:12px}.roll-history div{font-size:12px}
+.machine-kicker{font-size:12px}.machine-sub{font-size:14px}.roll-formula{font-size:12px}.roll-result small{font-size:13px}
+.season-score span{font-size:11px}.season-impact{font-size:14px}.month-row span{font-size:12px}.month-row p{font-size:13px}.month-row b{font-size:13px}
+.summary-awards strong,.summary-awards span{font-size:13px}.summary-verdict p{font-size:14px}.summary-verdict small{font-size:12px}
+.standings-head b{font-size:15px}.standings-head span{font-size:12px}.standings-group h5{font-size:12px}.standings-table{font-size:12px}.standings-table th{font-size:11px}.standings-foot{font-size:11px}
+.honor-group h5{font-size:13px}.honor-group p{font-size:13px}.honor-group em{font-size:12px}.draft-note{font-size:13px}
+.mode-panel .mode-title{font-size:12px}.mode-help{font-size:13px}
+
+#decision-backdrop{position:fixed;inset:0;z-index:89;background:#020906b8;backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .18s ease}
+#decision-backdrop.open{opacity:1;pointer-events:auto}
+#career-main.decision-open{grid-template-rows:46px minmax(0,1fr) 0}
+#act.decision-modal{position:fixed;left:50%;top:50%;z-index:90;width:min(760px,calc(100vw - 36px));height:auto;max-height:calc(100dvh - 36px);margin:0;padding:20px;transform:translate(-50%,-50%);display:grid!important;grid-template-columns:1fr;gap:10px;overflow-x:hidden;overflow-y:auto;border:2px solid #4e7c64;background:linear-gradient(155deg,#143426,#081812 72%);box-shadow:0 32px 90px #000e}
+#act.decision-modal.event-actions{width:min(920px,calc(100vw - 36px));grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#act.decision-modal>.title{grid-column:1/-1;margin:0 0 2px}
+#act.decision-modal>.title{font-size:16px;line-height:1.55;color:#d5e1d9}
+.decision-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:3px 1px 12px;border-bottom:1px solid #365b48}
+.decision-heading span{font:800 12px var(--mono);letter-spacing:.16em;color:var(--amber)}.decision-heading b{font-size:20px}
+#act.decision-modal>.btn{height:auto;min-height:78px;margin:0;padding:15px 16px;border-width:1px;background:#102b20}
+#act.decision-modal>.btn:hover,#act.decision-modal>.btn:focus-visible{border-color:var(--amber);background:#183b2c;outline:2px solid #ffc85755;outline-offset:1px}
+#act.decision-modal>.btn.main{background:#204b35;border-color:#6ba07d}#act.decision-modal>.btn.warn{background:#35231d;border-color:#a45f50}
+#act.decision-modal .choice-card{grid-template-columns:42px minmax(0,1fr) 24px;gap:13px}.choice-key{width:38px;height:38px;font-size:15px}.choice-content b{font-size:17px;line-height:1.4}.choice-content small{font-size:14px;line-height:1.55;color:#c0d0c7}.choice-arrow{font-size:27px}
+#act.decision-modal.event-actions>.btn{min-height:112px;align-content:center}
+.btn.event-choice{grid-template-columns:44px minmax(0,1fr) 112px;gap:13px}.event-key{width:40px;height:40px;display:grid;place-items:center;border:1px solid #648c75;background:#071710;color:var(--amber);font:900 16px var(--mono)}
+.event-choice .event-copy b{display:block;font-size:17px;line-height:1.4}.event-choice .event-copy small{display:block;margin-top:5px;color:#c0d0c7;font-size:14px;line-height:1.5}
+.event-choice .chance-num{padding:8px 9px;border-left:3px solid var(--amber);background:#091a13;color:#ffe2a1;font:900 14px/1.3 var(--sans);text-align:left}.event-choice .chance-num small{display:block;margin-top:4px;color:#a9bdb1;font:600 11px/1.35 var(--sans);letter-spacing:0}.event-choice .chance-num.direct{border-left-color:#72c69a;color:#a9e4c2}
+.event-stage{padding:16px 17px;margin:0;border-width:2px;background:linear-gradient(135deg,color-mix(in srgb,var(--event-color) 15%,#0a1c15),#081711)}
+.event-stage::after{display:none}.event-kind,.event-count{font-size:12px}.event-name{font-size:25px;margin-top:7px}.event-summary{font-size:14px;line-height:1.55;color:#c2d1c8}.event-impact{gap:7px;margin-top:12px}.event-impact span{font:700 12px var(--sans);padding:5px 8px;border-color:#456b58;background:#071710}.case-source{font-size:12px}
+.team-relation-status{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;margin-top:12px;padding:9px 11px;border-left:4px solid var(--event-color);background:#071710}.team-relation-status span{font-size:13px;color:#b9cbc0}.team-relation-status b{font:900 20px var(--mono);color:var(--amber)}.team-relation-status em{min-width:76px;font-style:normal;font-size:13px;font-weight:800;color:var(--chalk)}.team-relation-status.good b,.team-relation-status.good em{color:var(--good)}.team-relation-status.bad b,.team-relation-status.bad em{color:var(--bad)}
+.reality-grid{display:grid;gap:7px}.reality-row{display:grid;grid-template-columns:minmax(180px,.8fr) minmax(240px,1.2fr);gap:3px 14px;padding:10px 12px;border-left:3px solid #4d8065;background:#081912}.reality-row b{font-size:14px;color:var(--amber)}.reality-row p{font-size:13px;color:#d0dcd4}.reality-row small{grid-column:1/-1;font:600 12px/1.45 var(--mono);color:#8fb5a0}
+.summary-machine{width:min(980px,100%)}.standings-grid{grid-template-columns:repeat(auto-fit,minmax(245px,1fr))}.postseason-report{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px;padding-top:12px;border-top:2px solid #365b48}.postseason-head,.post-player{grid-column:1/-1}.postseason-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:2px}.postseason-head>b{font-size:15px;color:var(--amber)}.postseason-head>span{max-width:72%;font-size:12px;line-height:1.45;color:#a9bdb1;text-align:right}.series-row{display:grid;grid-template-columns:minmax(100px,.85fr) minmax(0,1.3fr);gap:8px;padding:9px 10px;border:1px solid #294a39;background:#0a1a13}.series-row>span{font-size:11px;color:#92aa9b}.series-row p{font:700 12px/1.45 var(--mono);text-align:right}.series-row .win{color:var(--good)}.series-row.you{border-left:4px solid var(--amber);background:#17271d}.series-row small{grid-column:1/-1;text-align:right;color:#b9a77b;font-size:10px}.post-player{padding:11px 12px;border:1px solid #5a7048;background:#152219}.post-player>b{display:block;font-size:14px;color:var(--amber)}.post-player p{margin-top:4px;font:700 13px/1.55 var(--mono);color:#e7efe9}.post-player small{font-size:11px;color:#9fb1a5}.post-player.missed{border-color:#3b4e42;background:#0a1711}
+.month-feed{max-height:430px}.month-row{grid-template-columns:62px minmax(0,1fr);padding:10px 12px;border-color:#345d48;background:#0d241a}.month-row>span{color:#ffd166}.month-row p{color:#c7d7ce}.month-row p>b{font-size:13px;color:#eef5f0}.month-row p>small{display:block;margin-top:5px;font:700 12px/1.4 var(--mono);color:#ffd166}.season-impact{line-height:1.5}.season-impact b{font-family:var(--mono)}
+.potential-breakthrough{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 12px;margin:10px 0;padding:10px 12px;border-left:4px solid var(--amber);background:#171f13}.potential-breakthrough b{font-size:13px;color:var(--amber)}.potential-breakthrough span{font-size:13px;color:#e5eee8}.potential-breakthrough small{grid-column:1/-1;font-size:11px;line-height:1.5;color:#a8baae}
+
+@media (max-width:760px){
+  #career-main.decision-open{grid-template-rows:42px minmax(0,1fr) 0}
+  #act.decision-modal,#act.decision-modal.event-actions{left:12px;right:auto;top:50%;width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);margin:0;padding:13px;transform:translateY(-50%);grid-template-columns:minmax(0,1fr);gap:9px}
+  #act.decision-modal.event-actions>.btn{min-height:96px}
+  .btn.event-choice{min-width:0;grid-template-columns:38px minmax(0,1fr) minmax(84px,94px);gap:9px}.event-key{width:34px;height:36px;font-size:14px}.event-copy,.event-stage,.event-top{min-width:0}
+  .event-choice .event-copy b{font-size:16px}.event-choice .event-copy small{font-size:13px}.event-choice .chance-num{font-size:13px;padding:7px}.event-choice .chance-num small{font-size:10px}
+  .event-stage{padding:13px}.event-name{font-size:21px}.event-summary{font-size:13px}.event-kind,.event-count{font-size:11px}.event-impact span{font-size:11px}
+  .team-relation-status{grid-template-columns:1fr auto}.team-relation-status em{grid-column:1/-1}.choice-content b{font-size:16px}.choice-content small{font-size:13px}
+  .ability-list{grid-template-columns:1fr}.rail-label{font-size:13px}.ability-row{font-size:15px}.env-chip b{font-size:15px}.env-chip small{font-size:13px}
+  .reality-row{grid-template-columns:1fr;gap:4px}.reality-row small{grid-column:auto}.postseason-report{grid-template-columns:1fr}.postseason-head,.post-player{grid-column:auto}.postseason-head{display:block}.postseason-head>span{display:block;max-width:none;margin-top:5px;text-align:left}.series-row{grid-template-columns:1fr}.series-row p,.series-row small{text-align:left}.month-row{grid-template-columns:52px minmax(0,1fr)}.month-row p>small{font-size:11px}
+  .potential-breakthrough{grid-template-columns:1fr}.potential-breakthrough small{grid-column:auto}
+}
 /* 直角視覺系統：面板、卡片、按鈕、標籤、進度條與彈窗一律不使用圓角。 */
 html *{border-radius:0!important}
 .lamp i,#bd-team .team-dot,.scout-ovr,.env-chip i,.standings-table .mark,.stitch{border-radius:50%!important}
@@ -380,6 +437,7 @@ html *{border-radius:0!important}
       <div class="rail-label">聲望與特性</div>
       <div class="rep-row"><span>球迷聲望</span><span class="track"><i id="rail-fan-bar" style="width:50%"></i></span><b id="rail-fan-rep">0</b></div>
       <div class="rep-row"><span>球員聲望</span><span class="track"><i id="rail-player-bar" style="width:50%"></i></span><b id="rail-player-rep">0</b></div>
+      <div class="rep-row team-relation-row"><span>團隊關係</span><span class="track"><i id="rail-team-bar" style="width:50%"></i></span><b id="rail-team-rel">0 平穩</b></div>
       <div id="rail-traits" class="trait-cloud"><span class="tag">尚未形成特性</span></div>
     </section>
     <section class="rail-card">
@@ -414,6 +472,8 @@ html *{border-radius:0!important}
     </section>
   </aside>
 </div>
+
+<div id="decision-backdrop" aria-hidden="true"></div>
 
 <div id="roll-overlay" aria-hidden="true">
   <div class="fx-backdrop"></div>
@@ -638,7 +698,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v2.3.2';
+const APP_VER='v2.3.3';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -658,6 +718,20 @@ const MLB_DIVISIONS={
   '國聯中區':['芝加哥小熊','辛辛那提紅人','密爾瓦基釀酒人','匹茲堡海盜','聖路易紅雀'],
   '國聯西區':['亞利桑那響尾蛇','科羅拉多洛磯','洛杉磯道奇','聖地牙哥教士','舊金山巨人']};
 const MLB_TEAMS=Object.values(MLB_DIVISIONS).flat();
+/* 主場因子：MLB 使用 Baseball Savant 2023–2025 三年滾動資料；2025 啟用新主場的運動家、光芒採 2025 單年資料。
+   NPB／CPBL 依官方球場尺寸、屋頂與所在地氣候做保守的遊戲化估計。數值 100 代表聯盟平均；
+   模擬只套用約半季主場賽事，因此不會把完整球場差距灌進整季。 */
+const TEAM_PARK_PROFILES={
+  '巴爾的摩金鶯':['金鶯公園',100,103,106],'波士頓紅襪':['芬威球場',110,107,89],'紐約洋基':['洋基體育場',100,94,119],'坦帕灣光芒':['喬治・史坦布瑞納球場',104,104,112],'多倫多藍鳥':['羅傑斯中心',100,99,104],
+  '芝加哥白襪':['Rate Field',98,98,96],'克里夫蘭守護者':['進步球場',94,97,85],'底特律老虎':['聯信球場',102,100,99],'堪薩斯市皇家':['考夫曼體育場',102,104,85],'明尼蘇達雙城':['標靶球場',106,102,102],
+  '運動家':['薩特健康球場',117,107,112],'休士頓太空人':['Daikin Park',100,100,105],'洛杉磯天使':['天使球場',102,98,113],'西雅圖水手':['T-Mobile Park',83,89,93],'德州遊騎兵':['全球人壽球場',94,97,104],
+  '亞特蘭大勇士':['Truist Park',102,102,105],'邁阿密馬林魚':['loanDepot park',102,103,90],'紐約大都會':['花旗球場',96,94,104],'費城費城人':['市民銀行球場',102,101,115],'華盛頓國民':['國民球場',102,104,94],
+  '芝加哥小熊':['瑞格利球場',94,96,99],'辛辛那提紅人':['大美國球場',106,100,123],'密爾瓦基釀酒人':['美國家庭球場',94,94,106],'匹茲堡海盜':['PNC Park',98,101,76],'聖路易紅雀':['布許體育場',100,103,87],
+  '亞利桑那響尾蛇':['大通體育場',106,105,88],'科羅拉多洛磯':['庫爾斯球場',125,117,105],'洛杉磯道奇':['道奇體育場',102,97,127],'聖地牙哥教士':['沛可球場',94,96,102],'舊金山巨人':['甲骨文球場',94,101,81],
+  '東京大人':['東京巨蛋',104,101,111],'阪神猛虎':['阪神甲子園球場',92,98,82],'橫濱海星':['橫濱球場',106,102,113],'廣島紅鯉':['MAZDA Zoom-Zoom 球場',99,101,97],'神宮飛燕':['明治神宮球場',108,103,116],'名古屋神龍':['Vantelin Dome',96,98,91],
+  '福岡猛禽':['MIZUHO PayPay Dome',101,100,104],'北海道培根':['ES CON FIELD HOKKAIDO',108,105,110],'千葉海潮':['ZOZO Marine Stadium',94,98,88],'仙台金翼':['樂天 Mobile Park 宮城',99,101,96],'大阪蠻牛':['京瓷巨蛋大阪',96,98,93],'埼玉雄獅':['Belluna Dome',103,102,105],
+  '台中猛瑪':['臺中洲際棒球場',102,102,101],'府城雄獅':['臺南亞太國際棒球訓練中心',98,99,96],'桃園金剛':['樂天桃園棒球場',105,103,108],'新北騎士':['新莊棒球場',101,101,103],'台北恐龍':['臺北大巨蛋',94,97,89],'高雄神鵰':['澄清湖棒球場',96,99,91]
+};
 const MLB_TEAM_META={
   '巴爾的摩金鶯':['美聯東區',1.00,.058],'波士頓紅襪':['美聯東區',1.18,.090],'紐約洋基':['美聯東區',1.30,.109],'坦帕灣光芒':['美聯東區',.88,0],'多倫多藍鳥':['美聯東區',1.12,.105],
   '芝加哥白襪':['美聯中區',1.02,.065],'克里夫蘭守護者':['美聯中區',.96,.040],'底特律老虎':['美聯中區',.98,.043],'堪薩斯市皇家':['美聯中區',.90,.048],'明尼蘇達雙城':['美聯中區',1.00,.079],
@@ -812,13 +886,13 @@ function newState(name,pos,role){
       ace:false,slugger:false,sparkplug:false,defchief:false,steady:false,fanhero:false,community:false,leader:false,mentor:false,island:false,booed:false},
     removed:[], /* 被覆蓋/解除的特性,結算畫刪除線 */
     cntSave:0,cntSaveWin:0,cntSnack:0,cntBoldWin:0,cntBoldFail:0,samePick:0,samePickKey:null,teamYears:0,
-    six:0,bigInj:0,ironStreak:0,npbYears:0,
+    six:0,bigInj:0,ironStreak:0,npbYears:0,hsCupBonus:0,hsTrainingDiceMod:0,hsScout:0,hsPlan:null,hsCupHistory:[],
     injNext:0,tmpInj:0,rehab:0,salary:0,pool:0,seasonFactor:1,
     stats:{CPBL:null,NPB:null,MLB:null,MINOR:null},honors:[],awardWatch:[],intlCount:0,intlLock:null,intlStat:{G:0,PA:0,AB:0,H:0,HR:0,RBI:0,IP:0,SO:0,ER:0,W:0,SV:0},intlBest:null,dpos:null,dposYears:{},roleYears:{},tradeRefuse:0,champThisTeam:false,svc:0,service:{CPBL:0,NPB:0,MiLB:0},proEntry:null,svcOrg:null,faElig:false,tradeHeat:0,complainCount:0,demotionRefused:false,tj:0,tjCount:0,effort:'普通',tjSuccess:0,love:{st:'single',partner:null,partnerJob:null,affection:0,kids:0,caught:0,affairs:0,exes:[],dyrs:0,datedTimes:0},traits2:{},log:[],ct:null,done:false,
     rngMode:RNG_MODE,rolls:[],lastRoll:null,seasonContext:null,seasonLuck:10,seasonMomentum:0,teammate:null,chemistry:0,aging:{checks:0,declines:0,totalLoss:0,last:null},
     social:{fanRep:0,playerRep:0,fanActs:0,playerActs:0,communityActs:0,mentorActs:0,ignoredFans:0,ignoredPlayers:0,viral:0},
-    traitProgress:{elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0},standingsHistory:[],currentStandings:null,
-    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,netWorth:0,ledger:[]}};
+    traitProgress:{elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0},potentialBreakthrough:{streaks:{},successes:{},history:[]},standingsHistory:[],currentStandings:null,
+    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,netWorth:0,ledger:[],homeOwned:false,homeEquity:0,investmentYears:0},offseasonTrainingDice:0};
 }
 function blankStat(){return {yr:0,G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,IP:0,SO:0,ER:0,AS:0,DEF:0};}
 function bucketOf(lv){ const l=lv&&LV[lv]; return l&&l.top?l.top:'MINOR'; } /* 業餘引退時 lv 為空,歸類 MINOR */
@@ -1028,7 +1102,7 @@ function injuryProb(){ /* 只計需要缺席比賽的傷勢；一般痠痛不另
 /* ================= 數據模擬 ================= */
 function simSeason(lv){
   if(S.pos==='P'&&!S.role)S.role=pitcherRole();
-  const L=LV[lv], par=L.par, a=S.ab, f=S.seasonFactor;
+  const L=LV[lv], par=L.par, a=S.ab, scheduleF=(S.seasonContext&&S.seasonContext.scheduleF)||1,f=clamp(S.seasonFactor*scheduleF,0,1);
   const swing=seasonSwing();
   const st={G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,IP:0,SO:0,ER:0,avg:0,era:0,d:0,luck:swing.luck,swing:+swing.total.toFixed(1),scheduled:L.g,availability:Math.round(f*100),usageRole:'未定'};
   if(f<=0) return st;
@@ -1119,6 +1193,20 @@ function simSeason(lv){
     st.RBI=Math.round(st.HR*2.1+(st.H-st.HR)*0.30);
     st.DEF=defRuns(lv);
   }
+  /* 主場只占約半季：把公開球場指數折半套進整季，並直接改變 H／HR／ERA／WHIP。 */
+  const park=S.seasonContext&&S.seasonContext.park;
+  if(park&&f>0){
+    if(S.pos==='P'){
+      st.H=Math.max(0,Math.round(st.H*park.hitF));
+      st.era=clamp(st.era*park.runF,1.30,9.90);st.ER=Math.round(st.era*st.IP/9);
+      st.WHIP=st.IP>0?+((st.H+st.BB)/st.IP).toFixed(2):0;
+    }else{
+      const oldH=st.H,oldHR=st.HR;
+      st.H=clamp(Math.round(st.H*park.hitF),0,st.AB);st.HR=clamp(Math.round(st.HR*park.hrF),0,st.H);
+      st.RBI=Math.max(0,Math.round(st.RBI+(st.HR-oldHR)*2.1+(st.H-oldH-(st.HR-oldHR))*.30));
+      st.avg=st.AB?st.H/st.AB:0;
+    }
+  }
   /* 已形成的動態特性會反過來影響下一季數據，但幅度保持在可被運氣翻轉的範圍。 */
   if(S.pos==='P'&&S.traits.ace){st.era=clamp(st.era-.08,1.30,9.90);st.SO=Math.round(st.SO*1.02);st.ER=Math.round(st.era*st.IP/9);}
   if(S.pos!=='P'){
@@ -1198,6 +1286,28 @@ function weightedTeamPick(rows){
   const weights=rows.map(r=>Math.max(1,(r.pct-.38)*120+(r.team===S.orgTeam?Math.max(-4,(S.lastD||0)*.7)+(S.traits.clutch?4:0):0))),sum=weights.reduce((a,b)=>a+b,0);
   let roll=R()*sum;for(let i=0;i<rows.length;i++){roll-=weights[i];if(roll<=0)return rows[i];}return rows[rows.length-1];
 }
+function simulateSeries(label,a,b,bestOf,st,startA,startB){
+  const target=Math.floor(bestOf/2)+1;let aw=startA||0,bw=startB||0,games=0;
+  const playerEdge=team=>team===S.orgTeam?clamp((st.d||0)*.006*(st.availability||100)/100,-.08,.10)+(S.traits.clutch?.025:0):0;
+  const pA=clamp(.5+(a.pct-b.pct)*1.15+playerEdge(a.team)-playerEdge(b.team),.28,.72);
+  while(aw<target&&bw<target&&games<bestOf){if(R()<pA)aw++;else bw++;games++;}
+  const winner=aw>bw?a:b,loser=winner===a?b:a;
+  return {label,a:a.team,b:b.team,aWins:aw,bWins:bw,winner:winner.team,loser:loser.team,games,advantage:(startA||startB)?`${startA||0}–${startB||0} 起始優勢`:''};
+}
+function postseasonPlayerLine(st,games){
+  if(!games||!st||!st.G)return null;
+  const ratio=games/Math.max(1,st.scheduled||LV[S.lv].g),p=portionOf(st,ratio);
+  if(S.pos==='P'){
+    if(isSP()&&p.G<1)p.G=1;else if(!isSP())p.G=Math.max(1,Math.round(games*Math.min(.72,st.G/Math.max(1,st.scheduled))));
+    p.IP=+(Math.max(isSP()?4.2:.2,st.IP*Math.max(ratio,p.G/Math.max(1,st.G)))*(0.90+R()*.20)).toFixed(1);
+    p.SO=Math.round(st.IP?p.IP*st.SO/st.IP*(.88+R()*.24):0);p.BB=Math.round(st.IP?p.IP*st.BB/st.IP*(.85+R()*.3):0);p.H=Math.round(st.IP?p.IP*st.H/st.IP*(.86+R()*.28):0);
+    p.ER=Math.round(st.IP?p.IP*st.ER/st.IP*(.72+R()*.56):0);p.era=p.IP?p.ER*9/p.IP:0;p.WHIP=p.IP?(p.H+p.BB)/p.IP:0;
+  }else{
+    p.G=Math.max(1,Math.round(st.G/(st.scheduled||1)*games));p.PA=Math.max(p.G,Math.round(st.PA/(st.scheduled||1)*games));p.BB=Math.round(p.PA*(st.PA?st.BB/st.PA:0)*(.8+R()*.4));p.AB=Math.max(1,p.PA-p.BB);
+    p.H=clamp(Math.round(p.AB*(st.avg||0)*(.78+R()*.44)),0,p.AB);p.HR=clamp(Math.round(st.PA?st.HR/st.PA*p.PA*(.65+R()*.7):0),0,p.H);p.RBI=Math.max(0,Math.round(st.PA?st.RBI/st.PA*p.PA*(.7+R()*.6):0));p.SB=Math.max(0,Math.round(st.PA?st.SB/st.PA*p.PA*(.7+R()*.6):0));p.avg=p.H/p.AB;
+  }
+  return p;
+}
 function simulateLeagueStandings(st){
   const groups=standingsGroupsFor(S.lv),games=LV[S.lv]?LV[S.lv].g:120;
   S.teamStrengths=S.teamStrengths||{};
@@ -1215,20 +1325,36 @@ function simulateLeagueStandings(st){
     const leader=rows[0];rows.forEach((r,i)=>{r.rank=i+1;r.GB=i===0?0:+(((leader.W-r.W)+(r.L-leader.L))/2).toFixed(1);});
     return {name:group.name,rows};
   });
-  let playoff=[];
+  let playoff=[],series=[],format='';const all=reportGroups.flatMap(g=>g.rows),byTeam=t=>all.find(r=>r.team===t);
   if(S.lv==='MLB'){
-    reportGroups.forEach(g=>{g.rows[0].playoff=true;playoff.push(g.rows[0]);});
+    format='12 隊制｜外卡系列賽 3 戰 2 勝、分區系列賽 5 戰 3 勝、聯盟冠軍賽與世界大賽 7 戰 4 勝';
+    const leagueWinners=[];
     for(const league of ['美聯','國聯']){
-      const wild=reportGroups.filter(g=>g.name.startsWith(league)).flatMap(g=>g.rows.slice(1)).sort((a,b)=>b.W-a.W).slice(0,3);
-      wild.forEach(r=>{r.playoff=true;playoff.push(r);});
+      const gs=reportGroups.filter(g=>g.name.startsWith(league)),div=gs.map(g=>g.rows[0]).sort((a,b)=>b.W-a.W),wild=gs.flatMap(g=>g.rows.slice(1)).sort((a,b)=>b.W-a.W).slice(0,3),seed=[...div,...wild];
+      seed.forEach((r,i)=>{r.playoff=true;r.seed=i+1;playoff.push(r);});
+      const wc36=simulateSeries(`${league}外卡｜#3 vs #6`,seed[2],seed[5],3,st),wc45=simulateSeries(`${league}外卡｜#4 vs #5`,seed[3],seed[4],3,st);series.push(wc36,wc45);
+      const ds1=simulateSeries(`${league}分區系列賽｜#1`,seed[0],byTeam(wc45.winner),5,st),ds2=simulateSeries(`${league}分區系列賽｜#2`,seed[1],byTeam(wc36.winner),5,st);series.push(ds1,ds2);
+      const cs=simulateSeries(`${league}冠軍賽`,byTeam(ds1.winner),byTeam(ds2.winner),7,st);series.push(cs);leagueWinners.push(byTeam(cs.winner));
     }
-  }else if(S.lv==='NPB1')reportGroups.forEach(g=>g.rows.slice(0,3).forEach(r=>{r.playoff=true;playoff.push(r);}));
-  else if(S.lv==='CPBL1')reportGroups[0].rows.slice(0,4).forEach(r=>{r.playoff=true;playoff.push(r);});
-  else if(S.lv==='NPB2')reportGroups.forEach(g=>g.rows.slice(0,2).forEach(r=>{r.playoff=true;playoff.push(r);}));
-  else {reportGroups[0].rows.slice(0,2).forEach(r=>{r.playoff=true;playoff.push(r);});}
-  const champ=weightedTeamPick(playoff.length?playoff:reportGroups.flatMap(g=>g.rows));if(champ)champ.champion=true;
+    series.push(simulateSeries('世界大賽',leagueWinners[0],leagueWinners[1],7,st));
+  }else if(S.lv==='NPB1'){
+    format='兩聯盟各 3 隊｜高潮系列賽首輪 3 戰 2 勝；決勝輪聯盟第一先帶 1 勝、再搶 4 勝；日本大賽 7 戰 4 勝';const winners=[];
+    reportGroups.forEach(g=>{const q=g.rows.slice(0,3);q.forEach((r,i)=>{r.playoff=true;r.seed=i+1;playoff.push(r);});const first=simulateSeries(`${g.name}高潮系列賽・首輪`,q[1],q[2],3,st),final=simulateSeries(`${g.name}高潮系列賽・決勝輪`,q[0],byTeam(first.winner),7,st,1,0);series.push(first,final);winners.push(byTeam(final.winner));});
+    series.push(simulateSeries('日本大賽',winners[0],winners[1],7,st));
+  }else if(S.lv==='CPBL1'){
+    const q=reportGroups[0].rows.slice(0,3),sameHalf=chance(34);q.forEach((r,i)=>{r.playoff=true;r.seed=i+1;playoff.push(r);});
+    if(sameHalf){format='同隊包辦上下半季｜年度第 2 對第 3 打 5 戰 3 勝；年度第 1 在台灣大賽先帶 1 勝';const first=simulateSeries('季後挑戰賽｜年度 #2 vs #3',q[1],q[2],5,st),final=simulateSeries('台灣大賽',q[0],byTeam(first.winner),7,st,1,0);series.push(first,final);}
+    else{format='上下半季冠軍不同｜年度勝率較低的季冠軍在挑戰賽先帶 1 勝；台灣大賽 7 戰 4 勝';const first=simulateSeries('季後挑戰賽｜季冠軍 vs 外卡',q[1],q[2],5,st,1,0),final=simulateSeries('台灣大賽',q[0],byTeam(first.winner),7,st);series.push(first,final);}
+  }else if(S.lv==='NPB2'){
+    format='二軍東西聯盟優勝隊冠軍賽｜5 戰 3 勝';const q=reportGroups.map(g=>g.rows[0]);q.forEach(r=>{r.playoff=true;playoff.push(r);});series.push(simulateSeries('二軍總冠軍系列賽',q[0],q[1],5,st));
+  }else{
+    format=`${LV[S.lv]?LV[S.lv].n:'聯盟'}前兩名冠軍系列賽｜5 戰 3 勝`;const q=reportGroups[0].rows.slice(0,2);q.forEach(r=>{r.playoff=true;playoff.push(r);});series.push(simulateSeries('聯盟冠軍系列賽',q[0],q[1],5,st));
+  }
+  const champName=series.length?series[series.length-1].winner:null,champ=byTeam(champName);if(champ)champ.champion=true;
   const mine=reportGroups.flatMap(g=>g.rows.map(r=>({...r,group:g.name}))).find(r=>r.team===S.orgTeam)||null;
-  const report={year:S.year,org:S.org,lv:S.lv,games,groups:reportGroups,champion:champ&&champ.team,mine};
+  const mineSeries=series.filter(x=>x.a===S.orgTeam||x.b===S.orgTeam),postGames=mineSeries.reduce((n,x)=>n+x.games,0),postseasonStat=mine&&mine.playoff?postseasonPlayerLine(st,postGames):null;
+  const minePostseason=!mine||!mine.playoff?'未晉級季後賽':champName===S.orgTeam?'奪下總冠軍':mineSeries.length?`止步 ${mineSeries[mineSeries.length-1].label}`:'取得季後賽席位';
+  const report={year:S.year,org:S.org,lv:S.lv,games,groups:reportGroups,champion:champName,mine,postseason:series,postseasonFormat:format,minePostseason,postseasonStat,postGames};
   S.currentStandings=report;S.standingsHistory=S.standingsHistory||[];S.standingsHistory.push(report);S.standingsHistory=S.standingsHistory.slice(-18);
   return report;
 }
@@ -1240,7 +1366,9 @@ function latestTeamRecord(team,org){
 function standingsHTML(rep){
   if(!rep||!rep.groups)return '';
   const mine=rep.mine,sub=mine?`${S.orgTeam} ${mine.W} 勝 ${mine.L} 敗・${mine.group}第 ${mine.rank}`:'聯盟最終排名';
-  return `<section class="standings-report"><div class="standings-head"><b>年度會報｜聯盟戰績</b><span>${sub}</span></div><div class="standings-grid">${rep.groups.map(g=>`<div class="standings-group"><h5>${g.name}</h5><table class="standings-table"><thead><tr><th>#</th><th>球隊</th><th>勝</th><th>敗</th><th>勝率</th><th>勝差</th></tr></thead><tbody>${g.rows.map(r=>`<tr class="${r.team===S.orgTeam?'you ':''}${r.playoff?'playoff':''}"><td class="rank">${r.rank}</td><td><i class="mark"></i>${r.team}${r.champion?' ★':''}</td><td>${r.W}</td><td>${r.L}</td><td>${r.pct.toFixed(3).replace(/^0/,'')}</td><td>${r.GB===0?'—':r.GB}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div><div class="standings-foot">● 標記季後賽席位；★ 為本季總冠軍。球隊戰力會延續並在休賽季起伏，你的表現也會實際增減所屬球隊勝場。</div></section>`;
+  const post=(rep.postseason||[]).map(x=>`<div class="series-row ${(x.a===S.orgTeam||x.b===S.orgTeam)?'you':''}"><span>${x.label}</span><p><b class="${x.winner===x.a?'win':''}">${x.a}</b> ${x.aWins}–${x.bWins} <b class="${x.winner===x.b?'win':''}">${x.b}</b></p>${x.advantage?`<small>${x.advantage}</small>`:''}</div>`).join('');
+  const player=rep.postseasonStat?`<div class="post-player"><b>你的季後賽成績｜${rep.minePostseason}</b><p>${statLine(rep.postseasonStat)}</p><small>共參與 ${rep.postGames} 場球隊季後賽；短期賽另有獨立臨場波動。</small></div>`:`<div class="post-player missed"><b>你的季後賽｜${rep.minePostseason}</b><p>本季沒有個人季後賽出賽紀錄。</p></div>`;
+  return `<section class="standings-report"><div class="standings-head"><b>年度會報｜例行賽與季後賽</b><span>${sub}</span></div><div class="standings-grid">${rep.groups.map(g=>`<div class="standings-group"><h5>${g.name}</h5><table class="standings-table"><thead><tr><th>#</th><th>球隊</th><th>勝</th><th>敗</th><th>勝率</th><th>勝差</th></tr></thead><tbody>${g.rows.map(r=>`<tr class="${r.team===S.orgTeam?'you ':''}${r.playoff?'playoff':''}"><td class="rank">${r.rank}</td><td><i class="mark"></i>${r.team}${r.champion?' ★':''}</td><td>${r.W}</td><td>${r.L}</td><td>${r.pct.toFixed(3).replace(/^0/,'')}</td><td>${r.GB===0?'—':r.GB}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div><div class="postseason-report"><div class="postseason-head"><b>季後賽戰報</b><span>${rep.postseasonFormat||''}</span></div>${player}${post}</div><div class="standings-foot">● 標記季後賽席位；★ 為總冠軍。球隊戰力會延續並在休賽季起伏，你的例行賽表現會實際增減所屬球隊勝場。</div></section>`;
 }
 function showSeasonSummary(st,done){
   const info=seasonTeamInfo(),v=seasonVerdict(st);$('summary-title').textContent=`${S.year} 本季總結`;$('summary-sub').textContent=`${S.age} 歲・${st.usageRole||roleN(S.role)}`;
@@ -1310,25 +1438,37 @@ function spendMoney(amount,kind,label){
   const f=S.finance;amount=Math.max(0,Math.round(amount));f[kind]=(f[kind]||0)+amount;f.netWorth-=amount;f.ledger.push({year:S.year,type:kind,gross:0,tax:0,agent:0,net:-amount,label});return amount;
 }
 function annualFinanceChoice(pay,done){
-  const familyBase=(S.love.st==='married'?90:0)+(S.love.kids||0)*35;
-  const take=Math.max(40,pay.net),base=Math.max(45,Math.round(take*.10));
-  const summary=`稅前 ${fmtMoney(pay.gross)}｜估算稅負 ${fmtMoney(pay.tax)}｜經紀人 ${fmtMoney(pay.agent)}｜可支配 ${fmtMoney(pay.net)}`;
-  choose(`休賽季財務規劃｜${summary}`,[
-    {t:'穩健生活，保留現金',main:true,s:`生活與移動 ${fmtMoney(base+familyBase)}｜不額外冒險`,f:()=>{
-      const cost=spendMoney(base+familyBase,'living','穩健生活');card('info','年度財務報表',`${summary}<br>生活／家庭支出 ${fmtMoney(cost)}｜年末淨資產 <b class="hl">${fmtMoney(S.finance.netWorth)}</b>`);board(2);done();}},
-    {t:'投資訓練與恢復團隊',s:`約投入可支配所得 22%｜能力成長、傷病風險下降`,f:()=>{
-      const cost=spendMoney(Math.max(base+familyBase,take*.22),'living','私人訓練團隊'),k=pick(POS_AB[S.pos]),g=addAb(k,2);S.injNext-=3;
-      card('good','投資自己',`支付 ${fmtMoney(cost)} 聘請私人教練、物理治療師與營養師——<b class="up">${ABL[k]} +${g||1}</b>，下季準備更完整。淨資產 ${fmtMoney(S.finance.netWorth)}。`);board(2);done();}},
-    {t:'把時間與預算留給家庭',s:`約投入可支配所得 26%｜家庭關係提升`,f:()=>{
-      const cost=spendMoney(Math.max(base+familyBase,take*.26),'family','家庭與教育');S.love.affection=(S.love.affection||0)+2;S.injNext-=2;
-      card('good','家庭優先',`支付住房、旅行、長輩與孩子教育共 ${fmtMoney(cost)}。陪伴沒有寫進數據，卻讓你撐過最長的客場。淨資產 ${fmtMoney(S.finance.netWorth)}。`);board(2);done();}},
-    {t:'明星生活：豪宅、名車與派對',warn:true,s:`約花可支配所得 42%｜可能帶來人氣，也可能失控`,f:()=>{
-      const cost=spendMoney(Math.max(base+familyBase,take*.42),'luxury','明星消費');
-      animatedRoll({sides:100,title:'場外消費後果',subtitle:'曝光可能換來代言，也可能只剩帳單。',probability:45,modifiers:['豪華消費']}).then(r=>{
-        if(r.success){const bonus=Math.round(cost*.35);bookIncome(bonus,'endorsement',S.org,S.orgTeam);card('gold','話題變現',`高調生活帶來代言，回收 ${fmtMoney(bonus)}；但豪華消費 ${fmtMoney(cost)} 已經刷下去了。`);}
-        else{S.injNext+=4;card('bad','帳單與疲勞',`派對沒有變成代言，只留下 ${fmtMoney(cost)} 帳單與失衡作息。下季傷病風險上升。`);}board(2);done();
-      });}}
-  ]);
+  const f=S.finance,familyBase=(S.love.st==='married'?90:0)+(S.love.kids||0)*35;
+  const take=Math.max(40,pay.net),housingFactor=f.homeOwned?.78:1,base=Math.max(38,Math.round(take*.10*housingFactor));
+  const summary=`稅前 ${fmtMoney(pay.gross)}｜稅負 ${fmtMoney(pay.tax)}｜經紀人 ${fmtMoney(pay.agent)}｜可支配 ${fmtMoney(pay.net)}`;
+  const finish=(tone,title,body)=>{card(tone,title,`${body}<div class="statline">年末淨資產 <b class="hl">${fmtMoney(f.netWorth)}</b></div>`);board(2);done();};
+  const plans=[
+    {id:'training',t:'組建私人訓練與恢復團隊',s:`支出約 ${fmtMoney(Math.max(base+familyBase,take*.22))}｜下一季訓練骰 +1、傷病風險 −3%`,f:()=>{
+      const cost=spendMoney(Math.max(base+familyBase,take*.22),'living','私人訓練團隊');S.offseasonTrainingDice=clamp((S.offseasonTrainingDice||0)+1,0,2);S.injNext-=3;finish('good','把錢投資在訓練',`支付 ${fmtMoney(cost)} 聘請教練、防護員與營養師。永久能力仍要靠下一季訓練取得。`);}},
+    {id:'medical',t:'安排完整醫療檢查與恢復期',s:`支出約 ${fmtMoney(Math.max(base+familyBase,take*.18))}｜下季傷病風險 −7%`,f:()=>{
+      const cost=spendMoney(Math.max(base+familyBase,take*.18),'living','醫療與恢復');S.injNext-=7;finish('good','先處理身體',`支付 ${fmtMoney(cost)} 完成影像檢查、物理治療與睡眠調整。`);}},
+    {id:'family',t:S.love.st==='married'?'把時間與預算留給伴侶和孩子':'支援父母與家中生活',s:`支出約 ${fmtMoney(Math.max(base+familyBase,take*.26))}｜家庭關係提升、傷病風險 −2%`,f:()=>{
+      const cost=spendMoney(Math.max(base+familyBase,take*.26),'family','家庭與教育');S.love.affection=(S.love.affection||0)+2;S.injNext-=2;finish('good','家庭優先',`住房、旅行、長輩與教育支出合計 ${fmtMoney(cost)}。`);}},
+    {id:'portfolio',t:'建立分散投資組合',s:`投入資產配置約 ${fmtMoney(take*.25)}｜市場可能上漲，也可能虧損`,f:()=>{
+      const living=spendMoney(base+familyBase,'living','基本生活');animatedRoll({sides:20,title:'年度投資結果',subtitle:'資產價格不會因為球場成績而配合你。',resolve:v=>({success:null,label:v<=3?'市場重挫':v<=8?'帳面虧損':v<=15?'穩健成長':v<20?'強勁上漲':'意外大漲',tone:v<=8?'bad':'good'}),resultText:r=>r.label}).then(r=>{
+        const rate=r.value<=3?-.18:r.value<=8?-.07:r.value<=15?.06:r.value<20?.14:.28,delta=Math.round(take*.25*rate);f.netWorth+=delta;f.investmentYears=(f.investmentYears||0)+1;f.ledger.push({year:S.year,type:'investment',gross:0,tax:0,agent:0,net:delta,label:'投資組合損益'});finish(delta>=0?'good':'bad','年度投資結算',`基本生活支出 ${fmtMoney(living)}；投資組合本年 ${delta>=0?'增加':'減少'} <b class="${delta>=0?'up':'dn'}">${fmtMoney(Math.abs(delta))}</b>。`);});}},
+    {id:'community',t:'在家鄉舉辦基層棒球計畫',s:`支出約 ${fmtMoney(Math.max(base+familyBase,take*.16))}｜球迷聲望 +1、累積公益活動`,f:()=>{
+      const cost=spendMoney(Math.max(base+familyBase,take*.16),'family','家鄉棒球計畫'),so=socialState();so.fanRep=clamp(so.fanRep+1,-20,20);so.communityActs++;finish('good','把資源帶回家鄉',`支付 ${fmtMoney(cost)} 支持場地、裝備與基層教練。`);}},
+    {id:'media',t:'交給經紀團隊操作休賽季代言',s:`支出約 ${fmtMoney(Math.max(base+familyBase,take*.14))}｜可能增加合作收入，也可能白忙一場`,f:()=>{
+      const cost=spendMoney(Math.max(base+familyBase,take*.14),'living','代言與公關團隊');animatedRoll({sides:100,title:'休賽季商業合作',subtitle:'成績、形象與市場熱度一起接受品牌評估。',probability:clamp(48+(S.lastD||0)*3+socialState().fanRep,25,78),modifiers:['經紀團隊提案']}).then(r=>{
+        if(r.success){const bonus=Math.round(take*(r.critical==='success'?.32:.18));bookIncome(bonus,'endorsement',S.org,S.orgTeam);finish('gold','品牌簽下合作',`企劃支出 ${fmtMoney(cost)}，取得 ${fmtMoney(bonus)} 代言收入。`);}else{socialState().fanRep=clamp(socialState().fanRep-1,-20,20);finish('bad','提案沒有成交',`支付 ${fmtMoney(cost)} 後仍沒有品牌正式簽約，曝光還消耗了休息時間。`);}});}},
+    {id:'luxury',t:'明星生活：名車、派對與高額消費',warn:true,s:`支出約 ${fmtMoney(Math.max(base+familyBase,take*.42))}｜曝光與失控風險都很高`,f:()=>{
+      const cost=spendMoney(Math.max(base+familyBase,take*.42),'luxury','明星消費');animatedRoll({sides:100,title:'高消費生活後果',subtitle:'鏡頭可能帶來合作，也可能只留下帳單。',probability:38,modifiers:['高調曝光']}).then(r=>{
+        if(r.success){const bonus=Math.round(cost*.30);bookIncome(bonus,'endorsement',S.org,S.orgTeam);finish('gold','話題短暫變現',`消費 ${fmtMoney(cost)} 後換來 ${fmtMoney(bonus)} 合作收入。`);}else{S.injNext+=4;finish('bad','帳單與疲勞',`消費 ${fmtMoney(cost)}，沒有換到合約，失衡作息還提高下季傷病風險。`);}});}}
+  ];
+  if(!f.homeOwned)plans.push({id:'home',t:'購置自用住宅',s:`配置約 ${fmtMoney(Math.max(base+familyBase,take*.34))}｜房屋權益計入資產、未來生活費下降`,f:()=>{
+    const purchase=Math.round(Math.max(base+familyBase,take*.34)),expense=spendMoney(Math.round(purchase*.12),'living','購屋交易與裝修成本');f.homeOwned=true;f.homeEquity=(f.homeEquity||0)+purchase-expense;finish('good','有了自己的家',`把 ${fmtMoney(purchase)} 從現金轉成住宅與裝修，其中 ${fmtMoney(expense)} 是交易、裝修及搬遷成本；其餘房屋權益仍計入淨資產。`);}});
+  if(S.org==='NPB'||S.org==='MiLB')plans.push({id:'culture',t:S.org==='NPB'?'聘請日語與生活支援團隊':'聘請英語與旅外生活支援團隊',s:`支出約 ${fmtMoney(Math.max(base+familyBase,take*.14))}｜團隊關係 +1、本季狀態 +1`,f:()=>{
+    const cost=spendMoney(Math.max(base+familyBase,take*.14),'living','旅外生活支援');S.chemistry=clamp((S.chemistry||0)+1,-5,5);addSeasonState(1);finish('good','生活不再只靠硬撐',`支付 ${fmtMoney(cost)} 處理語言、租屋、交通與家人安置。`);}});
+  for(let i=plans.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[plans[i],plans[j]]=[plans[j],plans[i]];}
+  const stable={t:f.homeOwned?'維持自住宅與穩健現金流':'穩健生活，保留現金',main:true,s:`生活、家庭與移動 ${fmtMoney(base+familyBase)}｜沒有額外風險`,f:()=>{
+    const cost=spendMoney(base+familyBase,'living','穩健生活');finish('info','年度財務報表',`${summary}<br>生活與家庭支出 ${fmtMoney(cost)}。`);}};
+  choose(`休賽季財務規劃｜${summary}`,[stable,...plans.slice(0,4)]);
 }
 /* ================= UI 基礎 ================= */
 const $=id=>document.getElementById(id);
@@ -1337,38 +1477,46 @@ function currentParkContext(){
   const minor=['R','A1','A2','A3'].includes(S.lv);
   if(minor){
     const pool=[
-      {n:'小聯盟投手型球場',d:'寬廣外野與較厚重空氣壓低長打',p:1,h:-.8,inj:0},
-      {n:'小聯盟中性球場',d:'場地尺寸與攻守條件接近該層級平均',p:0,h:0,inj:0},
-      {n:'小聯盟打者型球場',d:'較小腹地與乾燥空氣提高長打機會',p:-.8,h:1,inj:0}];
-    return pool[stableIndex(`${S.orgTeam}-${S.lv}`,pool.length)];
+      {n:'小聯盟投手型球場',d:'寬廣外野與較厚重空氣壓低長打',run:94,hit:97,hr:89},
+      {n:'小聯盟中性球場',d:'場地尺寸與攻守條件接近該層級平均',run:100,hit:100,hr:100},
+      {n:'小聯盟打者型球場',d:'較小腹地與乾燥空氣提高長打機會',run:106,hit:103,hr:112}];
+    const raw=pool[stableIndex(`${S.orgTeam}-${S.lv}`,pool.length)],half=x=>1+(x/100-1)*.5;
+    return {...raw,kind:'park',p:0,h:0,inj:0,runF:half(raw.run),hitF:half(raw.hit),hrF:half(raw.hr),impact:`整季換算：得分環境 ${raw.run>100?'+':''}${raw.run-100}%、安打 ${raw.hit>100?'+':''}${raw.hit-100}%、全壘打 ${raw.hr>100?'+':''}${raw.hr-100}%（主場場次折半套用）`};
   }
-  if(S.lv==='MLB'&&S.orgTeam==='紐約洋基')return {n:'短右外野主場',d:'右外野距離較短，左打長打增加；投手失投代價更高',p:-1,h:1.2,inj:0};
-  if(S.lv==='MLB'&&S.orgTeam==='科羅拉多洛磯')return {n:'高海拔主場',d:'高海拔讓飛球延伸、變化球位移減少',p:-1.5,h:1.7,inj:1};
-  if(S.lv==='MLB'&&['舊金山巨人','聖地牙哥教士','西雅圖水手'].includes(S.orgTeam))return {n:'深遠外野主場',d:'寬廣外野與較不利飛球的環境幫助投手',p:1.1,h:-.9,inj:0};
-  const pool=SEASON_FACTORS.park;return pool[stableIndex(S.orgTeam||S.team,pool.length)];
+  const raw=TEAM_PARK_PROFILES[S.orgTeam];
+  if(raw){
+    const [venue,run,hit,hr]=raw,half=x=>1+(x/100-1)*.5;
+    const type=run>=107?'打者明顯有利':run>=103?'偏打者':run<=93?'投手明顯有利':run<=97?'偏投手':'接近中性',signed=x=>(x>0?'+':'')+x+'%';
+    return {kind:'park',n:`${venue}｜${type}`,d:`${S.lv==='MLB'?'Statcast 三年':'球場條件換算'}指數：得分 ${run}、安打 ${hit}、全壘打 ${hr}`,p:0,h:0,inj:0,runF:half(run),hitF:half(hit),hrF:half(hr),impact:`整季實際套用：得分 ${signed(Math.round((half(run)-1)*100))}、安打 ${signed(Math.round((half(hit)-1)*100))}、全壘打 ${signed(Math.round((half(hr)-1)*100))}`};
+  }
+  return {kind:'park',n:'中性主場',d:'目前沒有足夠球場資料，採聯盟平均環境',p:0,h:0,inj:0,runF:1,hitF:1,hrF:1,impact:'安打、全壘打與失分不做球場修正'};
 }
 function travelContext(){
-  if(S.stage!=='PRO')return pick([{n:'區域賽程',d:'移動距離有限，主要負荷來自密集盃賽',p:0,h:0,inj:0},{n:'雨後補賽',d:'延賽把幾週行程壓得更密集',p:-.4,h:-.4,inj:3}]);
-  if(['R','A1','A2','A3'].includes(S.lv))return pick([{n:'小聯盟巴士移動',d:'長途巴士與早晚場壓縮睡眠恢復',p:-.7,h:-.7,inj:4},{n:'同區連戰',d:'系列賽集中在同一區域，移動負荷正常',p:0,h:0,inj:0},{n:'密集客場週',d:'跨城連戰與臨時調度考驗恢復',p:-.5,h:-.5,inj:3}]);
-  if(S.org==='CPBL')return pick([{n:'島內標準賽程',d:'移動距離短，休息主要受晚場與補賽影響',p:.2,h:.2,inj:0},{n:'梅雨補賽期',d:'延賽集中補打，短期出賽變得密集',p:-.5,h:-.5,inj:3}]);
-  if(S.org==='NPB')return pick([{n:'標準聯盟賽程',d:'主客場與休息日按日職節奏分布',p:0,h:0,inj:0},{n:'交流戰移動',d:'跨聯盟與南北移動增加恢復難度',p:-.4,h:-.4,inj:2},{n:'連續主場週',d:'移動減少，睡眠與訓練較規律',p:.5,h:.5,inj:-2}]);
-  return pick([{n:'跨時區客場',d:'大聯盟長距離飛行與時差增加恢復負擔',p:-.6,h:-.6,inj:4},{n:'標準大聯盟賽程',d:'移動與休息日接近正常分布',p:0,h:0,inj:0},{n:'長段主場',d:'連續主場讓睡眠與訓練更穩定',p:.5,h:.5,inj:-2}]);
+  let x;
+  if(S.stage!=='PRO')x=pick([{n:'區域賽程',d:'移動距離有限，主要負荷來自密集盃賽',p:0,h:0,inj:0,schedule:1},{n:'雨後補賽',d:'延賽把幾週行程壓得更密集',p:-.4,h:-.4,inj:3,schedule:.98}]);
+  else if(['R','A1','A2','A3'].includes(S.lv))x=pick([{n:'小聯盟巴士移動',d:'長途巴士與早晚場壓縮睡眠恢復',p:-.7,h:-.7,inj:4,schedule:.96},{n:'同區連戰',d:'系列賽集中在同一區域，移動負荷正常',p:0,h:0,inj:0,schedule:1},{n:'密集客場週',d:'跨城連戰與臨時調度考驗恢復',p:-.5,h:-.5,inj:3,schedule:.98}]);
+  else if(S.org==='CPBL')x=pick([{n:'島內標準賽程',d:'移動距離短，休息主要受晚場與補賽影響',p:.2,h:.2,inj:0,schedule:1},{n:'梅雨補賽期',d:'延賽集中補打，短期出賽變得密集',p:-.5,h:-.5,inj:3,schedule:.97}]);
+  else if(S.org==='NPB')x=pick([{n:'標準聯盟賽程',d:'主客場與休息日按日職節奏分布',p:0,h:0,inj:0,schedule:1},{n:'交流戰移動',d:'跨聯盟與南北移動增加恢復難度',p:-.4,h:-.4,inj:2,schedule:.98},{n:'連續主場週',d:'移動減少，睡眠與訓練較規律',p:.5,h:.5,inj:-2,schedule:1}]);
+  else x=pick([{n:'跨時區客場',d:'大聯盟長距離飛行與時差增加恢復負擔',p:-.6,h:-.6,inj:4,schedule:.97},{n:'標準大聯盟賽程',d:'移動與休息日接近正常分布',p:0,h:0,inj:0,schedule:1},{n:'長段主場',d:'連續主場讓睡眠與訓練更穩定',p:.5,h:.5,inj:-2,schedule:1}]);
+  return {...x,kind:'schedule',impact:`可用出賽量 ×${(x.schedule||1).toFixed(2)}｜表現修正 ${(S.pos==='P'?x.p:x.h)>=0?'+':''}${S.pos==='P'?x.p:x.h}｜傷病風險 ${(x.inj||0)>=0?'+':''}${x.inj||0}%`};
 }
 function weatherContext(){
   const pool=S.org==='CPBL'?[SEASON_FACTORS.weather[0],SEASON_FACTORS.weather[2],SEASON_FACTORS.weather[1]]:
     S.org==='NPB'?[SEASON_FACTORS.weather[0],SEASON_FACTORS.weather[1],SEASON_FACTORS.weather[2],SEASON_FACTORS.weather[3]]:
     SEASON_FACTORS.weather;
-  return pick(pool);
+  const base=pick(pool),schedule=base.n==='多雨賽季'?.97:base.n==='炎熱潮濕'?.99:1;
+  return {...base,kind:'weather',schedule,impact:`可用出賽量 ×${schedule.toFixed(2)}｜表現修正 ${(S.pos==='P'?base.p:base.h)>=0?'+':''}${S.pos==='P'?base.p:base.h}｜傷病風險 ${(base.inj||0)>=0?'+':''}${base.inj||0}%`};
 }
 function staffContext(){
   const key=`${S.orgTeam||S.team}-${S.lv||S.stage}`;
   if(S.staffKey!==key||!S.staffProfile||chance(24)){S.staffKey=key;S.staffProfile=pick(SEASON_FACTORS.staff);}
-  return S.staffProfile;
+  const base=S.staffProfile,trainingDice=base.n==='高壓教練團'?1:0;
+  return {...base,kind:'staff',trainingDice,impact:`表現修正 ${(S.pos==='P'?base.p:base.h)>=0?'+':''}${S.pos==='P'?base.p:base.h}｜傷病風險 ${(base.inj||0)>=0?'+':''}${base.inj||0}%${trainingDice?'｜季初訓練骰 +1 顆':''}`};
 }
 function roomContext(){
   const prev=Number.isFinite(S.prevSeasonD)?S.prevSeasonD:0,chem=S.chemistry||0;
   const roomKey=S.stage==='PRO'?`${S.org}-${S.orgTeam}`:S.team;
-  if(S.traits.cancer||S.demotionRefused||S.complainCount>=2||(prev<=-4&&S.stage==='PRO'))return {n:'交易流言升溫',d:'低潮或場外摩擦讓球團開始詢價',p:-.8,h:-.8,inj:1};
+  if(S.traits.cancer||S.demotionRefused||S.complainCount>=2||(prev<=-4&&S.stage==='PRO'))return {n:'交易流言升溫',d:'低潮或場外摩擦讓球團開始詢價',p:-.8,h:-.8,inj:1,trade:20};
   if(chem>=3)return {n:'更衣室團結',d:'長期累積的默契讓連敗時仍有人互相補位',p:.7,h:.7,inj:-1};
   if(chem<=-2||S.traits.island)return {n:'更衣室關係緊繃',d:'溝通與角色分配失衡，場上合作受到影響',p:-.8,h:-.8,inj:1};
   if(S.stage==='PRO'&&S.roomTeamKey!==roomKey){S.roomTeamKey=roomKey;return {n:'新環境磨合',d:'剛加入球隊，暗號、隊友與教練要求都要重新適應',p:-.3,h:-.3,inj:0};}
@@ -1379,13 +1527,36 @@ function makeSeasonContext(){
   const items=[currentParkContext(),weatherContext(),travelContext(),staffContext(),roomContext()];
   const perf=items.reduce((n,x)=>n+(S.pos==='P'?x.p:x.h),0);
   const injury=clamp(items.reduce((n,x)=>n+x.inj,0),-5,10);
-  return {items,perf:+perf.toFixed(1),injury};
+  const scheduleF=clamp(items.reduce((n,x)=>n*(x.schedule||1),1),.88,1),trainingDice=items.reduce((n,x)=>n+(x.trainingDice||0),0),trade=items.reduce((n,x)=>n+(x.trade||0),0);
+  items.forEach(x=>{if(!x.impact)x.impact=`表現修正 ${(S.pos==='P'?x.p:x.h)>=0?'+':''}${S.pos==='P'?x.p:x.h}｜傷病風險 ${(x.inj||0)>=0?'+':''}${x.inj||0}%${x.trade?`｜交易機率 +${x.trade}%`:''}`;});
+  return {items,perf:+perf.toFixed(1),injury,scheduleF:+scheduleF.toFixed(3),trainingDice,trade,park:items.find(x=>x.kind==='park')};
 }
 function makeSeasonPlan(){
   const pro=S.stage==='PRO',quiet=chance(pro?18:24);
   if(quiet)return {events:0,team:false,family:false,fan:false,quiet:true};
   const r=R(),events=pro?(r<.25?0:r<.47?1:r<.69?2:r<.85?3:r<.95?4:5):(r<.30?0:r<.55?1:r<.78?2:r<.93?3:4);
   return {events,team:pro&&chance(44),family:pro&&S.age>=20&&chance(S.love&&S.love.st==='married'?46:26),fan:pro&&chance(38),quiet:false};
+}
+function highSchoolSeasonChoice(done){
+  const level=({1:'全國強權',2:'中堅校隊',3:'挑戰者'})[S.hsTier||2];
+  const plans=[
+    {id:'steady',t:'照教練課表穩定備戰',main:true,s:'大賽準備 +1｜沒有額外代價',summary:'按部就班完成整季訓練',fx:()=>{S.hsCupBonus+=1;}},
+    {id:'starter',t:S.pos==='P'?'爭取先發與關鍵局數':'爭取先發與中心棒次',warn:true,s:'大賽準備 +3｜傷病風險 +4%',summary:'用更高負荷換取大賽角色',fx:()=>{S.hsCupBonus+=3;S.tmpInj+=4;}},
+    {id:'team',t:'和隊友加練戰術配合',s:'大賽準備 +2｜團隊關係 +1｜訓練骰 −1 顆',summary:'把時間投資在團隊默契',fx:()=>{S.hsCupBonus+=2;S.chemistry=clamp((S.chemistry||0)+1,-5,5);S.hsTrainingDiceMod-=1;}},
+    {id:'individual',t:'把重心放在個人技術',s:'訓練骰 +1 顆｜大賽準備 −2｜團隊關係 −1',summary:'強化自己，但減少團隊演練',fx:()=>{S.hsTrainingDiceMod+=1;S.hsCupBonus-=2;S.chemistry=clamp((S.chemistry||0)-1,-5,5);}},
+    {id:'scout',t:'參加職棒球探測試會',s:'選秀評價累積 +2｜大賽準備 −1',summary:'提前讓球探建立追蹤資料',fx:()=>{S.hsScout=clamp((S.hsScout||0)+2,0,6);S.hsCupBonus-=1;}},
+    {id:'video',t:'負責研究大賽對手影片',s:'大賽準備 +2｜訓練骰 −1 顆',summary:'用情蒐彌補臨場差距',fx:()=>{S.hsCupBonus+=2;S.hsTrainingDiceMod-=1;}},
+    {id:'recovery',t:'保護身體並兼顧課業',s:'傷病風險 −6%｜訓練骰 −1 顆',summary:'犧牲部分訓練量換取健康',fx:()=>{S.tmpInj-=6;S.hsTrainingDiceMod-=1;}},
+    {id:'captain',t:'主動承擔隊長工作',s:'大賽準備 +2｜團隊關係 +1｜傷病風險 +2%',summary:'扛起溝通與場上責任',fx:()=>{S.hsCupBonus+=2;S.chemistry=clamp((S.chemistry||0)+1,-5,5);S.tmpInj+=2;}},
+    {id:'versatile',t:'接受多守位與替補調度',s:'大賽準備 +1｜選秀評價累積 +1｜傷病風險 +2%',summary:'用角色彈性爭取更多出賽',fx:()=>{S.hsCupBonus+=1;S.hsScout=clamp((S.hsScout||0)+1,0,6);S.tmpInj+=2;}},
+    {id:'extra',t:'每天加練到最後一班車',warn:true,s:'訓練骰 +1 顆｜大賽準備 +1｜傷病風險 +5%',summary:'高負荷追求個人與大賽成長',fx:()=>{S.hsTrainingDiceMod+=1;S.hsCupBonus+=1;S.tmpInj+=5;}}
+  ];
+  const steady=plans[0],pool=plans.slice(1).filter(x=>S.stageYr>=2||x.id!=='captain');
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  const shown=[steady,...pool.slice(0,4)];
+  choose(`高中球季計畫｜${S.team} · ${level} · 高${['一','二','三'][S.stageYr-1]}`,shown.map(p=>({t:p.t,s:p.s,main:p.main,warn:p.warn,f:()=>{
+    p.fx();S.hsPlan=p.t;card('info','本季高中計畫',`${p.summary}。<div class="statline">校隊定位：${level}｜大賽準備 ${S.hsCupBonus>=0?'+':''}${S.hsCupBonus}｜球探追蹤 ${S.hsScout||0}/6｜團隊關係 ${teamRelationView().value>=0?'+':''}${teamRelationView().value}</div>`);board(0);done();
+  }})));
 }
 function seasonPlanLabels(p){
   if(p.quiet)return ['平靜球季：沒有額外事件'];const out=[p.events?`${p.events} 段場內外事件`:'無事件卡'];if(p.team)out.push('隊內互動');if(p.family)out.push('家庭／關係');if(p.fan)out.push('球迷活動');return out;
@@ -1427,11 +1598,13 @@ function renderRails(){
   if($('rail-mode'))$('rail-mode').textContent=S.rngMode==='destiny'?'同種子':'完全隨機';
   const lk=S.seasonLuck||10,form=lk>=18?'生涯年':lk>=14?'火燙':lk>=8?'正常':lk>=4?'低潮':'崩盤',mom=S.seasonMomentum||0,stateAdj=(lk-10.5)*.52;
   if($('rail-form'))$('rail-form').textContent=`${form} ${stateAdj>=0?'+':''}${stateAdj.toFixed(1)}｜氣勢 ${Math.abs(mom)<.05?'無加成':(mom>0?'+':'')+mom.toFixed(1)}`;
-  { const so=socialState(),fan=clamp(so.fanRep||0,-20,20),player=clamp(so.playerRep||0,-20,20);
+  { const so=socialState(),fan=clamp(so.fanRep||0,-20,20),player=clamp(so.playerRep||0,-20,20),team=teamRelationView();
     if($('rail-fan-rep'))$('rail-fan-rep').textContent=(fan>=0?'+':'')+fan;
     if($('rail-player-rep'))$('rail-player-rep').textContent=(player>=0?'+':'')+player;
     if($('rail-fan-bar'))$('rail-fan-bar').style.width=((fan+20)/40*100)+'%';
     if($('rail-player-bar'))$('rail-player-bar').style.width=((player+20)/40*100)+'%';
+    if($('rail-team-bar'))$('rail-team-bar').style.width=((team.value+5)/10*100)+'%';
+    if($('rail-team-rel'))$('rail-team-rel').textContent=`${team.value>0?'+':''}${team.value} ${team.label}`;
     if($('rail-traits')){
       const labels={...STATIC_TRAIT_LABELS,...DYNAMIC_TRAIT_LABELS};
       if(S.traits.mrteam)labels.mrteam=(teamNick(S.mrTeamName||'')||'球隊')+'先生';
@@ -1528,7 +1701,7 @@ function animatedDicePool(n,min,title){
     $('roll-kicker').textContent='訓練拉霸';$('roll-title').textContent=title||'季初訓練';
     $('roll-sub').textContent='依序點亮起的骰子，或按下方按鈕，一顆一顆停下。';
     $('roll-slots').innerHTML=`<div class="pool-dice">${dice.map(()=>'<div class="pool-die spinning">?</div>').join('')}</div>`;
-    $('roll-formula').innerHTML=`<span><b>${n}</b> 顆訓練骰</span><span>每顆最低 <b>${min||1}</b> 點</span>`;
+    $('roll-formula').innerHTML=`<span><b>${n}</b> 顆獨立訓練骰</span><span>1～6 各 <b>1/6</b></span>${(min||1)>1?`<span>特性保底 <b>${min}</b> 點</span>`:''}`;
     $('roll-result').className='roll-result';$('roll-result').innerHTML='<small>點第一顆，或按「停下第 1 顆」開始</small>';$('roll-accept').style.display='none';
     openFx('roll-overlay');if(window.DiceFX)window.DiceFX.begin(Math.min(2,n));
     const els=Array.from(document.querySelectorAll('#roll-slots .pool-die'));
@@ -1542,10 +1715,23 @@ function animatedDicePool(n,min,title){
     });
   });
 }
-/* 每顆訓練骰獨立抽取：1/2/3/4/5/6 = 20/24/26/16/9/5%，天賦只抬高下限。 */
+/* 公平六面訓練骰：每顆獨立，1/2/3/4/5/6 各為 1/6；天賦只在擲出後抬高下限。 */
 function trainingRoll(min){
-  const r=R()*100;let v=r<20?1:r<44?2:r<70?3:r<86?4:r<95?5:6;
-  return Math.max(min||1,v);
+  return Math.max(min||1,ri(1,6));
+}
+function applySeasonAdjustments(st){
+  const pending=Number(S.pendStat)||0;
+  if(pending!==0&&S.seasonFactor>0){const p=clamp(pending,-4,4);
+    if(S.pos==='P'){st.SO=Math.max(0,st.SO+p*8);st.IP=+Math.max(0,st.IP+p*4).toFixed(1);if(isSP())st.W=Math.max(0,st.W+Math.round(p*.4));else st.SV=Math.max(0,st.SV+Math.round(p*.6));st.era=st.IP>0?clamp(st.era-p*.05,1.40,9.90):st.era;st.ER=Math.round(st.era*st.IP/9);st.WHIP=st.IP>0?+((st.H+st.BB)/st.IP).toFixed(2):0;}
+    else{const addH=p*6,addHR=Math.round(p*1.4);st.H=clamp(st.H+addH,0,st.AB);st.HR=clamp(st.HR+addHR,0,st.H);st.RBI=Math.max(0,st.RBI+Math.round(addHR*2.1+(addH-addHR)*.3));st.avg=st.AB?st.H/st.AB:0;}
+  }
+  if(S.pos==='P'&&S.seasonFactor>0){const em={'全力投':1,'普通投':0,'養生球':-1}[S.effort]||0;if(em!==0){st.d+=em;st.era=clamp(st.era-em*.25,1.40,9.90);st.ER=Math.round(st.era*st.IP/9);st.SO=Math.round(st.SO*(1+em*.06));st.WHIP=st.IP>0?+((st.H+st.BB)/st.IP).toFixed(2):0;}}
+  if(S.traits.onetool&&S.seasonFactor>0){const oldG=Math.max(1,st.G),maxG=Math.round(LV[S.lv].g*S.seasonFactor),newG=Math.min(maxG,Math.round(oldG*1.25)),boost=newG/oldG;st.G=newG;['PA','AB','H','HR','RBI','SB','BB'].forEach(k=>{if(typeof st[k]==='number')st[k]=Math.round(st[k]*boost);});st.avg=st.AB>0?st.H/st.AB:0;}
+  return st;
+}
+function compactSeasonLine(st){
+  if(S.pos==='P'){const relief=S.role==='CL'?`｜SV ${st.SV||0}`:S.role==='MR'?`｜HLD ${st.HLD||0}`:'';return `${st.G} G｜${fmtIP(st.IP)} IP｜${st.W}-${st.L}${relief}｜${st.SO||0} K｜ERA ${(st.era||0).toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}`;}
+  const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),pct=v=>v?v.toFixed(3).replace(/^0/,''):'—';return `${st.G} G｜${st.PA} PA｜${st.H} H｜${st.HR} HR｜${st.RBI} RBI｜AVG ${pct(st.avg)}｜OPS ${pct(ops)}`;
 }
 function runSeasonAnimation(done){
   const pro=S.stage==='PRO',months=pro?['開季','五月','六月','七月','八月','九月']:['春季','夏季','秋季'];
@@ -1554,26 +1740,29 @@ function runSeasonAnimation(done){
     {n:'連勝氣勢',d:'打線與投手群同時進入狀態',m:2},{n:'客場低潮',d:'長途移動讓反應慢了半拍',m:-2},{n:'關鍵系列賽',d:'面對排名競爭對手，壓力與機會同時升高',m:0},
     {n:'牛棚吃緊',d:'連續延長賽讓整隊負荷升高',m:-2},{n:'新秀竄起',d:'年輕隊友帶來競爭與新的活力',m:1},{n:'雨後補賽',d:'延賽把行程壓縮成密集連戰',m:-1},
     {n:'教練調整奏效',d:'影像會議後找到新的攻防策略',m:2},{n:'媒體熱潮',d:'連續好表現讓每次上場都成為焦點',m:1},{n:'安靜前進',d:'沒有大事件，靠日常維持表現',m:0},
-    {n:'角色遭到壓縮',d:'同位置競爭者搶走一部分重要局面',m:-1},{n:'隊友關鍵支援',d:'隊友在低潮時補上了最需要的一球',m:1}];
-  const available=beats.slice();
-  let idx=0,games=0,momentum=0;
+    {n:'角色遭到壓縮',d:'同位置競爭者搶走一部分重要局面',m:-1},{n:'隊友關鍵支援',d:'隊友在低潮時補上了最需要的一球',m:1},
+    {n:'守備救援',d:'隊友連續化解可能失分的強勁擊球',m:1},{n:'打線熄火',d:'得點圈長時間沒有支援，勝負壓力增加',m:-1},{n:'輪值穩定',d:'先發與牛棚分工清楚，整隊消耗受控',m:1},
+    {n:'跨區長征',d:'長途客場讓睡眠與恢復出現落差',m:-1},{n:'戰術重新分工',d:'教練依對戰資料調整角色與使用方式',m:0},{n:'主場長段賽程',d:'熟悉的作息讓日常準備更規律',m:1}];
+  const routine=[{n:'正常賽程',d:'沒有額外插曲，表現由能力、對手與日常狀態累積',m:0},{n:'例行調整',d:'訓練、休息與比賽照球隊計畫推進',m:0},{n:'小幅波動',d:'幾場好壞互相抵銷，整體沒有明顯轉折',m:0}];
+  const available=beats.slice(),timeline=months.map(()=>{if(chance(38))return {...pick(routine),pulse:ri(-1,1)};const bi=ri(0,available.length-1),b=available.splice(bi,1)[0];return {...b,pulse:clamp(b.m+ri(-1,1),-3,3)};});
+  const momentum=timeline.reduce((n,x)=>n+x.pulse,0);S.seasonMomentum=clamp(+(momentum/months.length).toFixed(1),-3,3);
+  const finalStats=applySeasonAdjustments(simSeason(S.lv));S._pendingSeasonStats=finalStats;
+  const weights=timeline.map(x=>Math.max(.55,1+x.pulse*.09)),weightTotal=weights.reduce((a,b)=>a+b,0);let idx=0,usedWeight=0;
   $('month-feed').innerHTML='';$('sim-progress').style.width='0%';$('sim-games').textContent='0 場';$('sim-momentum').textContent='0.0';$('sim-form').textContent='準備開季';$('sim-impact').innerHTML='每月狀態會取平均，套用到最後的球季數據。';
   $('season-sim-title').textContent=`${S.year} ${pro?'職業球季':'業餘賽季'}模擬中`;
   $('season-sim-sub').textContent=S.seasonContext?S.seasonContext.items.map(x=>x.n).join(' · '):'賽程與狀態正在交互作用';
   $('season-accept').style.display='none';openFx('season-overlay');
   const tick=()=>{
     if(idx>=months.length){
-      S.seasonMomentum=clamp(+(momentum/months.length).toFixed(1),-3,3);
       $('sim-form').textContent=S.seasonMomentum>=1.2?'火燙收官':S.seasonMomentum<=-1.2?'艱難收官':'穩定完賽';
       $('sim-momentum').textContent=(S.seasonMomentum>0?'+':'')+S.seasonMomentum.toFixed(1);
-      $('sim-impact').innerHTML=Math.abs(S.seasonMomentum)<.05?'球季氣勢 <b>0.0</b>，本季沒有額外加成或減成。':`球季氣勢 <b>${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)}</b> 已直接加入本季數據；${S.seasonMomentum>0?'提高':'壓低'}本季表現。`;
+      $('sim-impact').innerHTML=`例行賽最終數據｜<b>${compactSeasonLine(finalStats)}</b>${Math.abs(S.seasonMomentum)<.05?'｜氣勢互相抵銷，沒有額外修正。':`｜氣勢 ${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)} 已進入數據公式。`}`;
       $('season-accept').style.display='block';$('season-accept').onclick=()=>{closeFx('season-overlay');done();};return;
     }
-    const bi=ri(0,available.length-1),beat=available.splice(bi,1)[0],pulse=clamp(beat.m+ri(-1,1),-3,3);momentum+=pulse;games=Math.round(totalGames*(idx+1)/months.length);
-    const pulseText=pulse>0?`狀態 +${pulse}`:pulse<0?`狀態 ${pulse}`:'無變動',avg=momentum/(idx+1);
-    const row=document.createElement('div');row.className='month-row';row.innerHTML=`<span>${months[idx]}</span><p>${beat.n}｜${beat.d}</p><b style="color:${pulse>0?'var(--good)':pulse<0?'var(--bad)':'var(--dim)'}">${pulseText}</b>`;
-    $('month-feed').appendChild(row);$('sim-progress').style.width=((idx+1)/months.length*100)+'%';$('sim-games').textContent=games+' 場';
-    $('sim-momentum').textContent=(avg>0?'+':'')+avg.toFixed(1);$('sim-impact').textContent=`目前平均修正 ${(avg>=0?'+':'')+avg.toFixed(1)}；正數提升、負數壓低最後數據。`;$('sim-form').textContent=pulse>=2?'狀態火燙':pulse<=-2?'陷入低潮':'正常推進';idx++;
+    const beat=timeline[idx],pulse=beat.pulse;usedWeight+=weights[idx];const ratio=idx===months.length-1?1:usedWeight/weightTotal,games=Math.round(totalGames*(idx+1)/months.length),current=portionOf(finalStats,ratio),avg=timeline.slice(0,idx+1).reduce((n,x)=>n+x.pulse,0)/(idx+1);
+    const row=document.createElement('div');row.className='month-row';row.innerHTML=`<span>${months[idx]}</span><p><b>${beat.n}</b>｜${beat.d}<small>${compactSeasonLine(current)}</small></p>`;
+    $('month-feed').appendChild(row);$('sim-progress').style.width=((idx+1)/months.length*100)+'%';$('sim-games').textContent=`${games}/${totalGames}`;
+    $('sim-momentum').textContent=(avg>0?'+':'')+avg.toFixed(1);$('sim-impact').innerHTML=`截至 ${months[idx]} 個人成績｜<b>${compactSeasonLine(current)}</b>`;$('sim-form').textContent=pulse>=2?'狀態火燙':pulse<=-2?'陷入低潮':'正常推進';idx++;
     setTimeout(tick,window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?60:520);
   };
   setTimeout(tick,250);
@@ -1602,7 +1791,8 @@ function board(phase){
   renderRails();
 }
 function actClear(){ const a=$('act'); a.innerHTML=''; a.classList.remove('collapsed');
-  a.classList.remove('event-actions');
+  a.classList.remove('event-actions','decision-modal');a.removeAttribute('role');a.removeAttribute('aria-modal');a.removeAttribute('aria-label');
+  const career=$('career-main'),backdrop=$('decision-backdrop');if(career)career.classList.remove('decision-open');if(backdrop){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');}
   const t=$('act-toggle'); if(t)t.style.display='none'; }
 function actToggleSync(){
   const a=$('act'), t=$('act-toggle'); if(!t)return;
@@ -1613,13 +1803,50 @@ function actToggleSync(){
 function choose(title,opts){
   actClear(); const a=$('act');
   a.classList.remove('collapsed'); /* 新選項出現時自動展開 */
-  a.classList.toggle('event-actions',opts.some(o=>o.event));
+  const hasEvent=opts.some(o=>o.event);a.classList.toggle('event-actions',hasEvent);a.classList.add('decision-modal');
+  a.setAttribute('role','dialog');a.setAttribute('aria-modal','true');a.setAttribute('aria-label',hasEvent?'事件決策':'生涯選擇');
+  const career=$('career-main'),backdrop=$('decision-backdrop');if(career)career.classList.add('decision-open');if(backdrop){backdrop.classList.add('open');backdrop.setAttribute('aria-hidden','false');}
   if(title)a.innerHTML=`<div class="title">${title}</div>`;
+  else a.innerHTML='<div class="title decision-heading"><span>下一步</span><b>選擇你的行動</b></div>';
   opts.forEach((o,idx)=>{ const b=document.createElement('button');
     b.className='btn'+(o.main?' main':'')+(o.warn?' warn':'')+(o.event?' event-choice':' choice-card');
-    b.innerHTML=o.event?`<span class="event-icon">${o.icon||'⚾'}</span><span class="event-copy"><b>${o.t}</b>${o.s?`<small>${o.s}</small>`:''}<span class="chance-track"><i style="width:${o.probability||0}%"></i></span></span><span class="chance-num">${chanceBand(o.probability)}<small>局勢評估</small></span>`:`<span class="choice-key">${String.fromCharCode(65+idx)}</span><span class="choice-content"><b>${o.t}</b>${o.s?`<small>${o.s}</small>`:''}</span><span class="choice-arrow">›</span>`;
+    b.innerHTML=o.event?`<span class="event-key">${String.fromCharCode(65+idx)}</span><span class="event-copy"><b>${o.t}</b>${o.s?`<small>${o.s}</small>`:''}</span><span class="chance-num${o.direct?' direct':''}">${o.direct?'直接執行':chanceBand(o.probability)}<small>${o.direct?'不進行成敗判定':'結果之後揭曉'}</small></span>`:`<span class="choice-key">${String.fromCharCode(65+idx)}</span><span class="choice-content"><b>${o.t}</b>${o.s?`<small>${o.s}</small>`:''}</span><span class="choice-arrow">›</span>`;
     b.onclick=()=>{ actClear(); o.f(); }; a.appendChild(b); });
-  actToggleSync(); scrollBottom();
+  actToggleSync(); scrollBottom();requestAnimationFrame(()=>{const first=a.querySelector('button');if(first)first.focus({preventScroll:true});});
+}
+function potentialBreakthroughRules(){
+  if(S.pos==='P')return [
+    {id:'power_pitch',name:'聯盟宰制',match:/三振王/,need:3,targets:['vel','brk'],condition:'連續 3 年三振王'},
+    {id:'ace_pitch',name:'王牌進化',match:/防禦率王|賽揚獎|澤村賞/,need:3,targets:['ctl','brk'],condition:'連續 3 年防禦率王／最高投手獎'},
+    {id:'workhorse',name:'工作馬進化',match:/勝投王/,need:3,targets:['sta'],condition:'連續 3 年勝投王'},
+    {id:'relief_peak',name:'牛棚極限',match:/救援王|中繼王/,need:3,targets:['ctl','vel','sta'],condition:'連續 3 年救援王／中繼王'}];
+  return [
+    {id:'home_run',name:'長打極限',match:/全壘打王/,need:3,targets:['pow'],condition:'連續 3 年全壘打王'},
+    {id:'batting',name:'打擊極限',match:/打擊王|安打王/,need:3,targets:['con'],condition:'連續 3 年打擊王／安打王'},
+    {id:'discipline',name:'選球極限',match:/上壘王/,need:3,targets:['eye'],condition:'連續 3 年上壘王'},
+    {id:'speed',name:'速度極限',match:/盜壘王/,need:3,targets:['spd'],condition:'連續 3 年盜壘王'},
+    {id:'defense',name:'守備極限',match:/金手套/,need:4,targets:['rng','fld','arm'],condition:'連續 4 年金手套'}];
+}
+function potentialBreakthroughState(){return S.potentialBreakthrough||(S.potentialBreakthrough={streaks:{},successes:{},history:[]});}
+function potentialProgressHTML(){
+  const ps=potentialBreakthroughState(),rules=potentialBreakthroughRules(),active=rules.filter(r=>(ps.streaks[r.id]||0)>0).sort((a,b)=>(ps.streaks[b.id]||0)-(ps.streaks[a.id]||0)),r=active[0];
+  const text=r?`${r.name}｜連霸進度 ${Math.min(ps.streaks[r.id],r.need)}/${r.need}｜${r.condition}`:`尚無連霸進度｜例如${S.pos==='P'?'連續 3 年三振王或防禦率王':'連續 3 年全壘打王或打擊王'}`;
+  return `<div class="potential-breakthrough"><b>超稀有實績突破</b><span>${text}</span><small>達成連霸只取得挑戰資格；首次成功率 10%，失敗後連霸每多一年 +3%，成功只提高對應潛力上限 2 點，能力仍須靠訓練。</small></div>`;
+}
+function potentialBreakthroughAudit(awards){
+  const ps=potentialBreakthroughState(),rules=potentialBreakthroughRules();
+  rules.forEach(rule=>{
+    const won=awards.some(x=>rule.match.test(x));ps.streaks[rule.id]=won?(ps.streaks[rule.id]||0)+1:0;
+    const streak=ps.streaks[rule.id],eligible=rule.targets.filter(k=>k in S.ab&&Math.max(S.ab[k],S.pot[k]||0)<RATING_MAX);
+    if(!won||streak<rule.need||(ps.successes[rule.id]||0)>=2||!eligible.length)return;
+    const p=clamp(10+(streak-rule.need)*3,10,22);
+    if(chance(p)){
+      const k=pick(eligible),before=Math.max(S.ab[k],S.pot[k]||0),after=clamp(before+2,1,RATING_MAX);S.pot[k]=after;ps.successes[rule.id]=(ps.successes[rule.id]||0)+1;ps.streaks[rule.id]=0;ps.history.push({year:S.year,id:rule.id,key:k,before,after});
+      card('gold','實績突破｜個人上限鬆動',`${rule.condition}後，球探與教練重新評估了你的身體與技術天花板。<b class="hl">${ABL[k]} 潛力上限 ${before} → ${after}/99</b>。這不是免費能力，仍要在往後訓練中把它練出來。`);board(2);
+    }else{
+      card('info','極限仍未鬆動',`${rule.condition}讓你取得突破資格，但這次身體與技術沒有產生新的適應。<div class="statline">本次突破機會 ${p}%｜連霸維持 ${streak} 年；若明年再次奪冠，機會提高 3%。</div>`);
+    }
+  });
 }
 /* 加點介面：mode {dice:[..]} 或 {pool:n} */
 function allocUI(mode,label,done){
@@ -1630,8 +1857,8 @@ function allocUI(mode,label,done){
   const top=$('al-top'),rows=$('al-rows'),btm=$('al-btm');
   function remaining(){ return dice?dice.length-idx:pool; }
   function render(){
-    if(dice){ top.innerHTML='<div id="dice">'+dice.map((v,i)=>`<div class="die ${i<idx?'used':''} ${i===idx?'active':''} ${v===6?'six':''}">${v}</div>`).join('')+'</div>'; }
-    else top.innerHTML=`<div class="pool">剩餘可分配點數：${pool} 點（點一下能力 +1）</div>`;
+    if(dice){ top.innerHTML='<div id="dice">'+dice.map((v,i)=>`<div class="die ${i<idx?'used':''} ${i===idx?'active':''} ${v===6?'six':''}">${v}</div>`).join('')+'</div>'+potentialProgressHTML(); }
+    else top.innerHTML=`<div class="pool">剩餘可分配點數：${pool} 點（點一下能力 +1）</div>${potentialProgressHTML()}`;
     rows.innerHTML='';
     keys.forEach(k=>{ const v=S.ab[k],cap=v>=RATING_MAX;
       const r=document.createElement('div'); r.className='abrow'+(cap?' capped':'');
@@ -1708,10 +1935,10 @@ function agingCheck(done){
 }
 function phasePre(){
   S.prevSeasonD=Number.isFinite(S.lastD)?S.lastD:0;
-  S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.lastD=0;S.seasonLuck=10;S.seasonMomentum=0;S.drawnEvents=[];
+  S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.lastD=0;S.seasonLuck=10;S.seasonMomentum=0;S.drawnEvents=[];S.hsCupBonus=0;S.hsTrainingDiceMod=0;S.hsPlan=null;
   S.seasonPlan=makeSeasonPlan();S.seasonContext=makeSeasonContext();board(0);
-  card('info','本季現實環境',S.seasonContext.items.map(x=>`<span class="tag">${x.n}</span> ${x.d}`).join('<br>')+
-    `<div class="statline">環境表現修正 ${S.seasonContext.perf>=0?'+':''}${S.seasonContext.perf}｜傷病風險修正 ${S.seasonContext.injury>=0?'+':''}${S.seasonContext.injury}%</div><div class="season-agenda">${seasonPlanLabels(S.seasonPlan).map((x,i)=>`<span>${i===0?'<b>本季抽選</b> ':''}${x}</span>`).join('')}</div>`);
+  card('info','本季現實環境',`<div class="reality-grid">${S.seasonContext.items.map(x=>`<div class="reality-row"><b>${x.n}</b><p>${x.d}</p><small>${x.impact}</small></div>`).join('')}</div>`+
+    `<div class="statline">已套入模擬：表現 ${S.seasonContext.perf>=0?'+':''}${S.seasonContext.perf}｜可用出賽量 ×${S.seasonContext.scheduleF.toFixed(2)}｜傷病風險 ${S.seasonContext.injury>=0?'+':''}${S.seasonContext.injury}%${S.seasonContext.trade?`｜交易觸發率 +${S.seasonContext.trade}%`:''}</div><div class="season-agenda">${seasonPlanLabels(S.seasonPlan).map((x,i)=>`<span>${i===0?'<b>本季抽選</b> ':''}${x}</span>`).join('')}</div>`);
   if(S.age>=48){ endGame('身體已到極限，'+S.year+' 年春訓後宣布引退。'); return; }
   if(S.age-(S.traits.disc?2:0)>=30){agingCheck(phasePreContinue);return;}
   phasePreContinue();
@@ -1723,27 +1950,30 @@ function phasePreContinue(){
     S.log.push({y:S.year,age:S.age,tm:S.stage==='PRO'?S.teamName():(S.team||stageLabel()),line:'復健年・全年報銷', inj: true, st: S.stage==='PRO'?dummySt:null}); }
   let afterAsk=()=>{
     let n=S.skipMid?2:(()=>{const r=R();if(S.stage==='PRO')return r<.25?2:r<.72?3:r<.94?4:5;return r<.35?3:r<.78?4:r<.96?5:6;})();
+    if(S.stage==='HS'&&!S.skipMid)n=clamp(n+(S.hsTrainingDiceMod||0),2,6);
+    if(S.stage==='PRO'&&!S.skipMid&&S.offseasonTrainingDice){n=clamp(n+S.offseasonTrainingDice,2,6);S.offseasonTrainingDice=0;}
+    if(S.stage==='PRO'&&!S.skipMid&&S.seasonContext&&S.seasonContext.trainingDice)n=clamp(n+S.seasonContext.trainingDice,2,6);
     if(S.traits.distract&&!S.skipMid)n=Math.max(2,n-1); /* 外務纏身 */
     if(S.traits.academy&&!S.skipMid&&chance(35))n++; /* 學院派:期望值略升 */
     if(S.samePickBonus&&!S.skipMid&&chance(45))n++; /* 無巧不工:專精訓練不再年年保證加量 */
     const floor=S.traits.genius?3:S.traits.late?2:1;
-    choose('季初自主訓練',[{t:`🎰 開始 ${n} 顆訓練拉霸`,main:true,s:`99 制能力｜每顆獨立，最高 6 點僅約 5%｜逐顆點擊停下`,f:()=>{
+    choose('季初自主訓練',[{t:`🎰 開始 ${n} 顆訓練拉霸`,main:true,s:`99 制能力｜公平六面骰，每顆獨立、1～6 各 1/6｜逐顆點擊停下`,f:()=>{
       animatedDicePool(n,floor,`${S.year} 季初訓練骰`).then(dice=>{
         let newSix=0;
         dice.forEach(v=>{if(v===6&&S.age<22&&!S.traits.genius){S.six++;newSix++;}});
         let msg=`自主訓練擲出 <b class="hl">${dice.join('、')}</b>。`;
-        if(newSix&&!S.traits.genius)msg+=` 高標值「6」累計 <b class="hl">${S.six}/5</b> 次。`;
+        if(newSix&&!S.traits.genius)msg+=` 高標值「6」累計 <b class="hl">${S.six}/7</b> 次。`;
         card('','季初特訓',msg);
-        if(S.six>=5&&!S.traits.genius&&S.age<22){ S.traits.genius=true;
+        if(S.six>=7&&!S.traits.genius&&S.age<22){ S.traits.genius=true;
           const exDef=S.pos==='C'?['rng','fld','arm','cat']:[];
           const cands=POS_AB[S.pos].filter(k=>S.ab[k]<r99(70)&&!exDef.includes(k));
           for(let i=cands.length-1;i>0;i--){const j=Math.floor(R()*(i+1));const t=cands[i];cands[i]=cands[j];cands[j]=t;}
           const boost=cands.slice(0,2),bl=[];
           boost.forEach(k=>{S.pot[k]=Math.min(RATING_MAX,(S.pot[k]||r99(62))+10);S.ab[k]=clamp(S.ab[k]+5,1,RATING_MAX);bl.push(`${ABL[k]} <b class="up">+5</b>（潛力上限 +10 → ${S.pot[k]}/99）`);});
-          card('gold','隱藏素質解鎖：天才','22 歲前五度擲出高標值！從今以後，每一次訓練結果<b class="hl">至少 3 點</b>，事件處理也會得到小幅優勢。'+(bl.length?`天賦覺醒，潛能重新被評估：${bl.join('、')}。`:'')+'天賦能拉高上限，但不能保證一路順風。');
+          card('gold','隱藏素質解鎖：天才','22 歲前七度擲出高標值！從今以後，每一次訓練結果<b class="hl">至少 3 點</b>，事件處理也會得到小幅優勢。'+(bl.length?`天賦覺醒，潛能重新被評估：${bl.join('、')}。`:'')+'天賦能拉高上限，但不能保證一路順風。');
           board(1);
         }
-        choose('',[{t:`▸ 分配訓練成果（${dice.length} 顆骰）`,main:true,f:()=>dposReview(()=>allocUI({dice},'分配訓練成果｜99 制能力・黃線為個人潛力上限',()=>nextStep()))}]);
+        choose('',[{t:`▸ 分配訓練成果（${dice.length} 顆骰）`,main:true,f:()=>dposReview(()=>allocUI({dice},'分配訓練成果｜99 制能力・黃線為個人潛力上限・連霸可挑戰突破',()=>nextStep()))}]);
       });
     }}]);
   };
@@ -1785,6 +2015,7 @@ function phasePreContinue(){
       {t:'召開引退記者會',warn:true,s:'結束選手生涯',f:()=>{buyoutRemaining();daibaFarewell(()=>endGame('功成身退，於 '+S.year+' 年宣布引退。'));}}]);
     return;
   }
+  if(S.stage==='HS'&&!S.skipMid){highSchoolSeasonChoice(afterAsk);return;}
   if(S.stage==='PRO'&&!S.skipMid&&S.seasonPlan&&S.seasonPlan.team){teammateChoice(afterAsk);return;}
   afterAsk();
 }
@@ -1808,7 +2039,9 @@ function drawEvents(n,done,total){
     if(!pool.length){done();return;}const ev=pick(pool);drawn.push(ev.n);
     const meta=eventMeta(ev),imp=eventImpacts(ev);
     const after=()=>{ board(1); drawEvents(n-1,done,total); };
-    const title=`<div class="event-stage" style="--event-color:${meta.color}"><div class="event-top"><span class="event-kind">${meta.icon} ${meta.kind}</span><span class="event-count">本季事件 ${total-n+1}/${total}</span></div><div class="event-name">${ev.n}</div><div class="event-summary">${meta.scene}</div>${meta.source?`<a class="case-source" href="${meta.url}" target="_blank" rel="noopener">真實職棒案例改編 · ${meta.source} ↗</a>`:''}<div class="event-impact">${imp.map(x=>`<span>${x}</span>`).join('')}</div></div>`;
+    const relation=meta.kind==='團隊關係'?teamRelationView():null;
+    const relationHTML=relation?`<div class="team-relation-status ${relation.tone}"><span>目前團隊關係</span><b>${relation.value>0?'+':''}${relation.value}</b><em>${relation.label}</em></div>`:'';
+    const title=`<div class="event-stage" style="--event-color:${meta.color}"><div class="event-top"><span class="event-kind">${meta.icon} ${meta.kind}</span><span class="event-count">本季事件 ${total-n+1}/${total}</span></div><div class="event-name">${ev.n}</div><div class="event-summary">${meta.scene}</div>${relationHTML}${meta.source?`<a class="case-source" href="${meta.url}" target="_blank" rel="noopener">真實職棒案例改編 · ${meta.source} ↗</a>`:''}<div class="event-impact">${imp.map(x=>`<span>${x}</span>`).join('')}</div></div>`;
     choose(title,eventChoices(ev,meta,after));
   }}]);
 }
@@ -1818,7 +2051,7 @@ function eventMeta(ev){
   if(/媒體|社群|代言|工會/.test(n))return {kind:'場外焦點',icon:'📣',color:'#dd784f',scene:'鏡頭與輿論突然靠近，你得決定要投入多少心力。'};
   if(/睡眠|伙食|營養|防護|心理|宵夜|低潮/.test(n))return {kind:'身心狀態',icon:'🫀',color:'#76d49a',scene:'漫長球季正在消耗身體，這次處理方式會留下後續影響。'};
   if(/守備|跑壘|長傳|草皮|球具/.test(n))return {kind:'球場技術',icon:'🧤',color:'#68b7e8',scene:'比賽細節出現新的考驗，臨場選擇可能改變你的角色。'};
-  if(/教練|老將|更衣室|捕手|語言/.test(n))return {kind:'團隊關係',icon:'🤝',color:'#caa6ff',scene:'球隊裡的人正在觀察你的反應，結果不只影響一項能力。'};
+  if(/教練|老將|更衣室|捕手|語言/.test(n))return {kind:'團隊關係',icon:'◆',color:'#72c69a',scene:'球隊裡的人正在觀察你的反應，這次處理會直接改變團隊關係。'};
   if(ev.for==='P'||/投球|牛棚|球速|配球/.test(n))return {kind:'投球調整',icon:'⚾',color:'#ffc857',scene:'動作與負荷來到分岔點，選擇投入程度後再揭曉結果。'};
   return {kind:'訓練挑戰',icon:'📈',color:'#ffc857',scene:'新的訓練安排擺在眼前，你可以決定要冒多少風險。'};
 }
@@ -1849,7 +2082,7 @@ function eventChoices(ev,meta,after){
     {t:s.norm[0],icon:s.norm[1],event:true,main:true,probability:eventChance('norm'),s:s.norm[2],f:()=>resolveEvent(ev,'norm',after)},
     {t:s.bold[0],icon:s.bold[1],event:true,warn:true,probability:eventChance('bold'),s:s.bold[2],f:()=>resolveEvent(ev,'bold',after)},
     {t:s.safe[0],icon:s.safe[1],event:true,probability:eventChance('safe'),s:s.safe[2],f:()=>resolveEvent(ev,'safe',after)},
-    {t:s.alt[0],s:s.alt[1],f:()=>eventAlternative(meta,after)}
+    {t:s.alt[0],s:s.alt[1],event:true,direct:true,f:()=>eventAlternative(meta,after)}
   ];
 }
 function eventAlternative(meta,done){
@@ -2116,6 +2349,11 @@ function eventChance(mode){
   return clamp(mode==='safe'?base+15:mode==='bold'?base-boldPen:base,3,92);
 }
 function chanceBand(p){p=Number(p)||0;return p>=75?'把握很高':p>=60?'略有把握':p>=42?'勝負難料':p>=25?'風險偏高':'機會渺茫';}
+function teamRelationView(){
+  const value=clamp(Math.round((S&&S.chemistry)||0),-5,5);
+  const label=value>=4?'高度凝聚':value>=2?'互相信任':value>=0?'平穩':value>=-2?'有些疏離':'關係緊繃';
+  return {value,label,tone:value>=2?'good':value<0?'bad':'neutral'};
+}
 function resolveEvent(ev,mode,done){
   done=done||function(){};
   const p=eventChance(mode),tag=mode==='safe'?'降低風險':mode==='bold'?'全力挑戰':'照計畫執行';
@@ -2229,7 +2467,7 @@ function tradeCheck(cont){
   if(S.ct&&S.ct.option==='完整不可交易條款'){cont();return;}
   const star = ratingGap(ovr(),LV[S.lv].par)>=4; /* 明星：換算後高於聯盟平均 4 個舊球探級距。 */
   const rec=S.currentStandings&&S.currentStandings.mine;
-  let p=7+(S.tradeHeat||0); /* 交易不是每年固定橋段，先由球隊方向決定。 */
+  let p=7+(S.tradeHeat||0)+((S.seasonContext&&S.seasonContext.trade)||0); /* 交易不是每年固定橋段，先由球隊方向與現實環境決定。 */
   if(rec&&rec.pct<.47&&star&&S.age>=29)p+=14; /* 重建隊出售有價值老將 */
   else if(rec&&rec.pct>.55&&!star)p+=7;       /* 爭冠隊升級板凳／輪替 */
   else if(rec&&rec.pct>.55&&star)p-=4;
@@ -2267,9 +2505,9 @@ function doTradeExec(){
 }
 function portionOf(st,r){
   const p={...st};
-  ['G','PA','AB','H','HR','RBI','SB','BB','W','L','SV','SO','ER'].forEach(k=>p[k]=Math.round(st[k]*r));
+  ['G','PA','AB','H','HR','RBI','SB','BB','W','L','SV','HLD','SO','ER'].forEach(k=>p[k]=Math.round((st[k]||0)*r));
   p.IP=+(st.IP*r).toFixed(1);
-  p.avg=p.AB>0?p.H/p.AB:0; p.era=p.IP>0?p.ER*9/p.IP:0;
+  p.avg=p.AB>0?p.H/p.AB:0;p.era=p.IP>0?p.ER*9/p.IP:0;p.WHIP=p.IP>0?(p.H+p.BB)/p.IP:0;
   return p;
 }
 function injuryTraitAudit(){
@@ -2328,23 +2566,27 @@ function amateurSeason(){
   if(S.seasonFactor===0){ card('bad','','整季只能在場邊看著隊友比賽。');
     S.log.push({y:S.year,age:S.age,tm:S.team||stageLabel(),line:'傷缺全季', inj:true}); nextStep(); return; }
   const cups=S.stage==='HS'?HS_CUPS:S.stage==='U'?U_CUPS:['成棒甲組春季聯賽','成棒甲組秋季聯賽'];
-  const thr=S.stage==='HS'?[52,46,40,34,28]:[60,54,48,42,36];
+  const thr=S.stage==='HS'?[50,44,38,32,25]:[60,54,48,42,36];
   let gain=0,lines=[],plain=[];
-  const tB=S.stage==='HS'?({1:6,2:0,3:-6})[S.hsTier||2]:0; /* 高中隱藏強度分級 */
-  cups.forEach(c=>{ const pw=ovr()+Math.round(tB*79/60)+ri(-11,11),cut=thr.map(r99);
+  const tB=S.stage==='HS'?({1:5,2:1,3:-2})[S.hsTier||2]:0; /* 校隊底蘊會影響結果，但不再讓弱校長期鎖死於預賽。 */
+  const teamBase=Math.round(tB*79/60),yearBonus=S.stage==='HS'?(S.stageYr-1)*2:0,stateBonus=Math.round((S.pendStat||0)*1.2),contextBonus=Math.round(((S.seasonContext&&S.seasonContext.perf)||0)*.7);
+  const sharedForm=ri(-5,5),cupDifficulty={'木棒聯賽':0,'黑豹旗':-1,'玉山盃':-2};
+  cups.forEach(c=>{ const pw=ovr()+teamBase+yearBonus+(S.stage==='HS'?(S.hsCupBonus||0):0)+stateBonus+contextBonus+sharedForm+(cupDifficulty[c]||0)+ri(-6,6),cut=thr.map(r99);
     const i=pw>=cut[0]?0:pw>=cut[1]?1:pw>=cut[2]?2:pw>=cut[3]?3:pw>=cut[4]?4:5;
     const rk=['冠軍','亞軍','四強','八強','十六強','預賽出局'][i];
     /* 大賽獎勵看名次，不再因為能力高而額外送點，避免強者滾雪球。 */
     const pts=[5,4,3,2,1,0][i];
-    gain+=pts; lines.push({cup:c,rank:rk,pts,tier:i}); plain.push(`${c}${rk}`);
+    gain+=pts; lines.push({cup:c,rank:rk,pts,tier:i,power:pw}); plain.push(`${c}${rk}`);
     if(S.stage==='U'&&rk==='冠軍'&&!S.traits.academy){ S.traits.academy=true;
       card('gold','隱藏屬性解鎖：學院派','大學殿堂的科學化訓練與防護打下扎實基礎——<b class="hl">25 歲前受傷率 −5%、季初擲骰期望值提升</b>。'); }
     if(i===0)S.honors.push(`${S.year} ${c}冠軍`); });
   S.pool+=gain;
+  if(S.stage==='HS'){S.hsCupHistory=S.hsCupHistory||[];S.hsCupHistory.push({year:S.year,plan:S.hsPlan,tier:S.hsTier,results:lines.map(x=>({cup:x.cup,rank:x.rank,pts:x.pts}))});}
   S.log.push({y:S.year,age:S.age,tm:S.team||stageLabel(),line:plain.join('、'), inj:false});
   {const best=lines.slice().sort((a,b)=>a.tier-b.tier)[0],headline=best.tier===0?'冠軍球季':best.tier===1?'站上決賽舞台':best.tier<=3?'闖進全國後段賽程':'累積大賽經驗';
     card(best.tier<=1?'gold':best.tier<=3?'good':'info',`年度大賽｜${headline}`,
-      `<div class="tourney-list">${lines.map(x=>`<div class="tourney-row"><span>${x.cup}</span><b>${x.rank}</b><em>${x.pts?`+${x.pts} 點`:'無加點'}</em></div>`).join('')}</div><div class="statline">大賽成長完全依名次計算，本季共獲得 <b class="hl">${gain} 點</b>，季末一次分配。</div>`);}
+      `<div class="tourney-list">${lines.map(x=>`<div class="tourney-row"><span>${x.cup}</span><b>${x.rank}</b><em>${x.pts?`+${x.pts} 點`:'無加點'}</em></div>`).join('')}</div>${S.stage==='HS'?`<div class="tourney-context">校隊定位 <b>${({1:'全國強權',2:'中堅校隊',3:'挑戰者'})[S.hsTier||2]}</b>｜年級成熟度 +${yearBonus}｜本季計畫 ${S.hsPlan||'一般備戰'}</div>`:''}<div class="statline">能力、校隊強度與球季計畫共同影響晉級，臨場狀態仍可能爆冷或失常。本季依名次獲得 <b class="hl">${gain} 點</b>，季末一次分配。</div>`);}
+  S.pendStat=0;
   maybeIntl(()=>nextStep());
 }
 function proSeason(){
@@ -2357,27 +2599,8 @@ function proSeason(){
     return;
   }
   S._seasonPrepared=false;
-  const st=simSeason(S.lv); S.lastSt=st; S.lastD=st.d;
-  const pending=Number(S.pendStat)||0;
-  if(pending!==0&&S.seasonFactor>0){ const p=clamp(pending,-4,4);
-    if(S.pos==='P'){ st.SO=Math.max(0,st.SO+p*8);st.IP=+Math.max(0,st.IP+p*4).toFixed(1);
-      if(isSP())st.W=Math.max(0,st.W+Math.round(p*0.4));else st.SV=Math.max(0,st.SV+Math.round(p*0.6));
-      st.era=st.IP>0?clamp(st.era-p*0.05,1.40,9.90):st.era;st.ER=Math.round(st.era*st.IP/9); }
-    else { const addH=p*6,addHR=Math.round(p*1.4);
-      st.H=clamp(st.H+addH,0,st.AB);st.HR=clamp(st.HR+addHR,0,st.H);st.RBI=Math.max(0,st.RBI+Math.round(addHR*2.1+(addH-addHR)*0.3));
-      st.avg=st.AB?st.H/st.AB:0; }
-  }
+  const st=S._pendingSeasonStats||applySeasonAdjustments(simSeason(S.lv));S._pendingSeasonStats=null;S.lastSt=st;S.lastD=st.d;
   S.pendStat=0;
-  /* 投法對成績的加成/折損 */
-  if(S.pos==='P'&&S.seasonFactor>0){ const em={'全力投':1,'普通投':0,'養生球':-1}[S.effort]||0;
-    if(em!==0){ st.d+=em; st.era=clamp(st.era-em*0.25,1.40,9.90); st.ER=Math.round(st.era*st.IP/9);
-      st.SO=Math.round(st.SO*(1+em*0.06)); } }
-  if(S.traits.onetool&&S.seasonFactor>0){ /* 工具人:那項工具讓他「多爭取」到代打/代跑/代守上場(加成,非砍半) */
-    const oldG=Math.max(1,st.G),maxG=Math.round(LV[S.lv].g*S.seasonFactor),newG=Math.min(maxG,Math.round(oldG*1.25)),boost=newG/oldG; /* 絕不超過球隊實際賽程 */
-    st.G=newG;['PA','AB'].forEach(k=>{if(typeof st[k]==='number')st[k]=Math.round(st[k]*boost);});
-    /* 累積型數據隨打席等比微調 */
-    ['H','HR','RBI','SB','BB'].forEach(k=>{ if(typeof st[k]==='number')st[k]=Math.round(st[k]*boost); });
-    st.avg=st.AB>0?st.H/st.AB:0; }
   const bucket=bucketOf(S.lv); accStat(bucket,st);simulateLeagueStandings(st);
   if(S.seasonFactor===0){ card('bad','球季數據','（傷缺，本季無出賽紀錄）'); }
   else if(S.tradeFrom){ /* 季中轉隊:列出兩段+合計 */
@@ -2511,6 +2734,7 @@ function awards(bucket,st){
         S.pool+=8;
         card('gold','隱藏屬性解鎖：浴火重生','那些殺不死你的，真的讓你更強大了。撕裂的韌帶長成更堅韌的形狀——<b class="hl">玻璃人懲罰解除，受傷率恢復正常，並獲得一大筆能力點</b>。'); } }
   }
+  potentialBreakthroughAudit(added);
 }
 function maybeIntl(done){
   const wbc=(S.year-2026)%4===0; let p12=(S.year-2028)%4===0;
@@ -3044,7 +3268,7 @@ function draftBroadcast(targetRound){
   });
 }
 function runDraft(fromSchool,cb){
-  const entryStage=S.stage,o=ovr(); const score=o+Math.max(0,22-S.age)*3+ri(-5,5);
+  const entryStage=S.stage,o=ovr(); const score=o+Math.max(0,22-S.age)*3+(S.stage==='HS'?(S.hsScout||0):0)+ri(-5,5);
   const rd=score>=r99(56)?1:score>=r99(49)?2:score>=r99(43)?ri(3,4):score>=r99(37)?ri(5,7):score>=r99(30)?ri(8,10):0;
   draftBroadcast(rd).then(result=>{
     if(!result){
@@ -3777,7 +4001,7 @@ $('btn-start').onclick=()=>{
   };
   $('start').style.display='none';
   $('board').style.display=''; $('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';
-  card('info','球員誕生',`${S.year} 年春天，${POSN[S.pos]} <b class="hl">${S.name}</b> 加入 <b class="hl">${S.team}</b> 棒球隊。三年後的路，要自己選。<br><span style="color:var(--dim);font-size:12px">模式：${RNG_MODE==='destiny'?'同種子挑戰':'完全隨機'}｜22 歲前累積擲出 5 次「6」可覺醒隱藏素質。</span>`);
+  card('info','球員誕生',`${S.year} 年春天，${POSN[S.pos]} <b class="hl">${S.name}</b> 加入 <b class="hl">${S.team}</b> 棒球隊。三年後的路，要自己選。<br><span style="color:var(--dim);font-size:13px">模式：${RNG_MODE==='destiny'?'同種子挑戰':'完全隨機'}｜22 歲前累積擲出 7 次「6」可覺醒隱藏素質。</span>`);
   startYear();
 };
 (function(){ const vb=document.getElementById('ver-badge'); if(vb)vb.textContent=APP_VER; })();
