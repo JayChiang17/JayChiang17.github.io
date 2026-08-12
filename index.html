@@ -245,6 +245,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 .machine-title{font-size:22px;font-weight:900;margin-top:4px}.machine-sub{font-size:12px;color:var(--dim);margin-top:3px}
 #three-stage{height:185px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 55%,#31553c66,transparent 54%)}
 #three-stage canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+#roll-overlay.compact-roll .roll-machine{width:min(600px,100%)}#roll-overlay.compact-roll #three-stage{display:none}#roll-overlay.compact-roll .roll-slot-wrap{margin:18px auto 14px}#roll-overlay.compact-roll .machine-top{padding-bottom:2px}
 .roll-slot-wrap{position:relative;z-index:3;display:flex;justify-content:center;gap:10px;margin:-20px auto 14px;min-height:96px;align-items:center}
 .slot-digit,.pool-die{width:82px;height:94px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(#f7f0d9,#d9cdaa);color:#102017;
   font:900 52px/1 var(--mono);border:3px solid #fff5d6;box-shadow:inset 0 -8px 0 #796f5444,0 12px 24px #0009;position:relative;overflow:hidden}
@@ -416,6 +417,129 @@ body{font-size:16px}
 /* 直角視覺系統：面板、卡片、按鈕、標籤、進度條與彈窗一律不使用圓角。 */
 html *{border-radius:0!important}
 .lamp i,#bd-team .team-dot,.scout-ovr,.env-chip i,.standings-table .mark,.stitch{border-radius:50%!important}
+
+/* ---------- v3.0 BROADCAST FIRST ---------- */
+:root{
+  --surface-0:#050c09;--surface-1:#08140f;--surface-2:#0c1d16;--surface-3:#11271d;
+  --line-soft:#1d352a;--line:#315342;--text:#edf3ef;--muted:#9bb0a4;
+  --accent:#73c69a;--accent-deep:#23553b;--signal:#d7bd75;--live:#e16f63;--info:#78afd2;
+}
+body{background:#050c09;color:var(--text);font-size:16px;line-height:1.65;background-image:linear-gradient(90deg,#0d241a22 1px,transparent 1px),linear-gradient(#0d241a22 1px,transparent 1px);background-size:48px 48px}
+body::before{display:none}
+#app{--board-h:112px;--action-h:0px;width:100%;max-width:1680px;height:100dvh;padding:0 12px 12px;grid-template-columns:minmax(220px,250px) minmax(620px,1fr) minmax(220px,250px);grid-template-rows:var(--board-h) minmax(0,1fr);gap:12px;align-items:stretch}
+#board{height:var(--board-h);padding:10px 14px 9px;border:0;border-bottom:1px solid #385c49;background:#07140ff5;box-shadow:0 10px 28px #0009;backdrop-filter:blur(14px)}
+#bd-top{grid-template-columns:minmax(210px,1fr) minmax(340px,1.35fr) 40px;gap:12px;min-height:48px}#bd-tj{display:none!important}
+#bd-name{display:flex;align-items:center;gap:10px;min-width:0}
+#bd-name>b{font-size:23px;color:#f4f7f5}
+#bd-name small{color:#a8b9af;font-size:13px}
+#bd-name small i{border-left-color:var(--accent);background:#10231a;color:#bfe5cf}
+#bd-team{min-width:0;grid-template-columns:38px minmax(0,1fr) auto auto;grid-template-areas:'mark label level roster' 'mark name level roster';gap:0 10px;padding:5px 10px;border-color:#29483a;background:#091a13}
+.team-monogram{grid-area:mark;width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--team-color);background:color-mix(in srgb,var(--team-color) 16%,#07140f);color:#f1f6f3;font:900 11px var(--mono);letter-spacing:-.04em}
+#bd-team .team-dot{display:none}
+#bd-team small{font-size:10px;color:#8fa397}
+#bd-team b{font-size:18px;color:#f3f6f4}
+#bd-team em,.team-roster-chip{font-style:normal;white-space:nowrap;border-left:1px solid #385747;padding:4px 9px;color:#b7c8be;font:750 11px var(--sans)}
+.team-roster-chip{grid-area:roster;color:#a8d7bd}
+#bd-grid{width:min(610px,100%);grid-template-columns:repeat(4,minmax(100px,1fr));gap:1px;margin-top:6px;border:1px solid #213b2f;background:#213b2f}
+.bd-cell{min-height:34px;padding:4px 9px;background:#07140f;border:0;display:flex;align-items:center;justify-content:space-between;gap:7px;text-align:left}
+.bd-cell b{font-size:18px!important;line-height:1;color:#f0f4f1!important}.bd-cell span{font-size:9px;line-height:1.2;color:#83978c;letter-spacing:.06em}
+#lamps{position:absolute;right:15px;bottom:11px;margin:0;gap:18px}.lamp{font-size:10px}.lamp.on{color:#cbd8d0}.lamp.on i{background:var(--accent);border-color:var(--accent);box-shadow:none}
+#btn-restart{width:40px;height:40px;margin:0;padding:0;border-color:#385547;color:#a6b8ae;font-size:17px}
+
+#career-main{position:relative;grid-template-rows:64px minmax(0,1fr) 0;gap:8px;background:#06100c;border:1px solid #1e3b2e}
+.broadcast-head{height:64px;grid-template-columns:92px minmax(0,1fr) auto;gap:10px;padding:7px 10px;border:0;border-bottom:1px solid #3f6852;background:#0a1c15;box-shadow:none}
+.broadcast-head>span{font-size:11px;color:#f08a81;line-height:1.35;white-space:normal}.broadcast-head>span::before{width:6px;height:6px;background:var(--live);box-shadow:0 0 9px #e16f63}
+.broadcast-team{height:48px;grid-template-columns:38px minmax(0,1fr) auto auto;grid-template-areas:'mark label level roster' 'mark name level roster';gap:0 10px;padding:4px 9px;border-left:5px solid var(--team-color);background:#0d2118;box-shadow:none}
+.broadcast-team .team-monogram{width:36px;height:36px}.broadcast-team small{grid-area:label;font-size:9px}.broadcast-team strong{grid-area:name;font-size:19px}.broadcast-team em{grid-area:level;padding-left:9px;border-left:1px solid #365544;color:#bdcbc3;font:700 11px var(--sans)}.broadcast-team .team-roster-chip{grid-area:roster}
+.broadcast-tools{gap:8px}.broadcast-tools>b{font-size:12px;color:#a9bbb1}.career-report-btn{min-height:40px;padding:8px 12px;border-color:#52705f;background:#11271d;color:#cce6d7;font-size:12px}.career-report-btn:hover,.career-report-btn:focus-visible{border-color:var(--accent);background:#193728}
+
+#log{position:relative;width:100%;margin:0;padding:14px 18px 92px 58px;gap:0;background:linear-gradient(90deg,#0a1b14 0 42px,#06100c 42px);scrollbar-color:#294b3b transparent}
+.yr-block{position:relative;margin:0 0 16px}.yr-block::before{content:'';position:absolute;left:-27px;top:38px;bottom:-16px;width:1px;background:#2b4b3b}.yr-block:last-child::before{bottom:8px}
+.yr-head{position:sticky;top:0;z-index:4;margin:0 0 6px -42px;padding:7px 10px 7px 42px;text-align:left;background:#07140ff2;border-top:1px solid #294638;border-bottom:1px solid #294638;color:#aebfb5;font:800 12px var(--mono);letter-spacing:.08em;backdrop-filter:blur(8px)}
+.yr-head::before{content:'';position:absolute;left:10px;top:50%;width:11px;height:11px;transform:translateY(-50%);background:#0a1913;border:2px solid var(--accent)}
+.yr-body{display:grid;gap:2px}.yr-block.collapsed .yr-body{display:none}
+.card{--entry-color:#658775;position:relative;margin:0;padding:15px 17px 15px 20px;border:0;border-left:4px solid var(--entry-color);background:#0b1a14;box-shadow:none;animation:feedIn .2s ease}
+.card:nth-child(even){background:#0d1d16}.card:hover{border-color:var(--entry-color);background:#10241b}
+.card::before{content:'';position:absolute;left:-36px;top:22px;width:13px;height:13px;border:3px solid #06100c;background:var(--entry-color);box-shadow:0 0 0 1px #315543}
+.card.info{--entry-color:var(--info)}.card.good{--entry-color:var(--accent)}.card.bad{--entry-color:var(--live)}.card.gold{--entry-color:var(--signal)}
+.card h4{margin:0 0 6px;color:#eaf1ed;font-size:16px;letter-spacing:.02em}.card h4::before{display:none}.card p{font-size:15px;color:#c8d4cd}.card .statline{margin-top:9px;padding:9px 11px;border:1px solid #29483a;background:#07130f;color:#dce5e0;font-size:14px}
+.timeline-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:5px;color:#82968b;font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase}.timeline-meta b{color:var(--entry-color);font-size:10px}
+.choice-recap{margin:9px 0 0;padding:8px 10px;border-left:3px solid var(--info);background:#091711;color:#bdd0c5;font-size:13px}.choice-recap b{color:#e8f1ec}
+.choice-state-diff{border-left-color:var(--accent);background:#0a1b14}.choice-state-diff>b{color:#bfe6d0}.choice-state-diff span{color:#dce6e0}
+@keyframes feedIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+#act{height:0;min-height:0;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
+#career-main.decision-open{grid-template-rows:64px minmax(0,1fr) 0}
+#decision-backdrop{background:#020806cc;backdrop-filter:blur(7px);transition:opacity .15s ease}
+#act.decision-modal,#act.decision-modal.event-actions{position:fixed;left:50%;top:50%;bottom:auto;z-index:90;width:min(840px,calc(100vw - 40px));height:auto;max-height:calc(100dvh - 40px);margin:0;padding:18px;transform:translate(-50%,-50%);display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;overflow:auto;border:1px solid #5a806b;background:#07140f;box-shadow:0 32px 100px #000e}
+#act.decision-modal.event-actions{width:min(920px,calc(100vw - 40px))}
+#act.decision-modal.decision-major{width:min(1080px,calc(100vw - 32px));max-height:calc(100dvh - 32px);border-top:5px solid var(--signal)}
+#act.decision-modal.allocation-modal{width:min(820px,calc(100vw - 40px));grid-template-columns:1fr}#act.decision-modal.allocation-modal>*{grid-column:1/-1}#act.decision-modal.allocation-modal #al-rows{display:grid;grid-template-columns:1fr;gap:3px}
+#act.decision-modal>.title,#act.decision-modal>.decision-tools{grid-column:1/-1}
+#act.decision-modal>.title{margin:0;padding:12px 14px;border:1px solid #2a493a;border-left:5px solid var(--accent);background:#0d2118;color:#e5ede8;font-size:16px;line-height:1.55}
+#act.decision-modal>.btn,#act.decision-modal.event-actions>.btn{min-height:108px;height:auto;margin:0;padding:15px;border:1px solid #365b48;background:#0c2118;box-shadow:none}
+#act.decision-modal>.btn:hover,#act.decision-modal>.btn:focus-visible{border-color:var(--accent);background:#143426;outline:2px solid #73c69a55;outline-offset:1px}
+#act.decision-modal>.btn.main{background:#173c2b;border-color:#5b9272}.btn.main{background:#173c2b;border-color:#4f8266;color:#edf5f0}.btn.main:hover{background:#20503a}
+#act.decision-modal>.btn.risk{background:linear-gradient(90deg,#3b1f1b 0 7px,#12271d 7px);border-color:#8f574f}.btn.risk:hover{border-color:#df857b;background:linear-gradient(90deg,#62302a 0 7px,#173427 7px)}
+.choice-risk-badge{border-color:#9b665e;color:#eeb2aa;background:#281815}.choice-cost-badge{border-color:#6b746e;color:#cbd3ce;background:#191f1b}
+.decision-tools{order:-2;margin:0}.decision-dock{width:100%;min-height:44px;border:1px solid #466353;background:#0a1a13;color:#c3d0c9}.decision-dock:hover,.decision-dock:focus-visible{border-color:var(--accent);outline:2px solid #73c69a44}
+#act.result-continue{position:absolute;left:18px;right:18px;bottom:14px;z-index:20;width:auto;height:auto;display:block;padding:8px;border:1px solid #365b48;background:#07140fee;box-shadow:0 14px 36px #000b;backdrop-filter:blur(10px)}
+#act.result-continue .btn{min-height:54px;max-width:none;margin:0;text-align:center}
+#act.decision-docked,#act.decision-docked.event-actions{position:absolute;left:18px;right:18px;bottom:14px;z-index:20;width:auto;height:min(42%,360px);display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:9px;overflow:auto;border:1px solid #486a57;border-top:4px solid var(--accent);background:#07140ff5;box-shadow:0 20px 48px #000d;backdrop-filter:blur(10px)}#act.decision-docked>.title,#act.decision-docked>.decision-tools{grid-column:1/-1}#act.decision-docked>.btn{min-height:76px;margin:0}
+.btn{min-height:52px;border:1px solid #355443;background:#0d2219;color:#e7eee9;font-size:15px;transition:background .15s,border-color .15s,color .15s}.btn:hover{border-color:var(--accent);background:#143426;box-shadow:none}.btn:active{transform:translateY(1px)}
+.btn:focus-visible,.career-tab:focus-visible,.mobile-nav-btn:focus-visible,.season-control:focus-visible{outline:3px solid #73c69a99;outline-offset:2px}.btn:disabled,.btn[aria-busy="true"]{opacity:.42;filter:grayscale(.7);cursor:not-allowed;pointer-events:none}
+
+.side-rail{gap:8px;padding:0 0 12px;scrollbar-color:#223e31 transparent}.rail-card{padding:12px;background:#07140f;border:1px solid #1f392d;color:#afc0b6}.rail-card:hover{border-color:#315341;background:#091a13}.rail-label{margin-bottom:9px;color:#85998e;font-size:11px;letter-spacing:.12em}.mini-metric{padding:9px;background:#06110d;border-color:#1f392d}.mini-metric span{font-size:10px}.mini-metric b{color:#dde7e1;font-size:15px}.ability-row .track,.rep-row .track,.prob-track{background:#020906}.ability-row .track i{background:var(--accent)}.rep-row .track i{background:linear-gradient(90deg,#a6534c,#879a8f,var(--accent))}.trait-cloud .tag{border-color:#355545;background:#0a1a13;color:#c4d4cb}
+.scout-ovr{background:conic-gradient(var(--accent) var(--ovr-angle,35%),#172d23 0);box-shadow:0 0 24px #73c69a18}
+.rail-season-card{border-top:3px solid var(--accent)}.rail-season-team{display:grid;gap:2px;margin-bottom:10px}.rail-season-team strong{font-size:17px;color:#edf4f0}.rail-season-team span{color:#93a79b;font-size:12px}.rail-season-line{padding:9px 10px;border-left:3px solid var(--info);background:#091a13;color:#d3ded8;font:700 12px/1.65 var(--mono)}.rail-season-line.empty{color:#81958a;font-family:var(--sans);font-weight:500}.rail-season-record{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:#8fa397;font-size:11px}.rail-season-record b{color:#dce6e0}
+
+#season-overlay{padding:16px}.season-machine{width:min(1180px,100%);height:min(900px,calc(100dvh - 32px));max-height:none;display:flex;flex-direction:column;padding:0 0 16px;border:1px solid #52725f;background:#06100c;box-shadow:0 35px 100px #000e;overflow:hidden}.season-machine .machine-top{padding:15px 20px 10px;border-bottom:1px solid #2e4d3e;background:#0b1e16}.machine-kicker{color:#a9cdb9}.machine-title{font-size:24px}.machine-sub{color:#9eb0a6}
+.season-score{grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;padding:0 20px;margin:12px 0 0;background:#223d30}.season-score div{padding:9px 11px;border:0;background:#08140f;text-align:left}.season-score span{font-size:10px}.season-score b{color:#edf3ef!important;font-size:19px}
+.season-cumulative{margin:10px 20px 0;padding:10px 12px;border:1px solid #345845;border-left:5px solid var(--accent);background:#0d2118}.season-cumulative span{display:block;color:#86a092;font:800 10px var(--mono);letter-spacing:.12em}.season-cumulative b{display:block;margin-top:3px;color:#f0f5f2;font:800 14px/1.55 var(--mono)}
+.season-impact{margin:7px 20px 0;padding:7px 10px;border:0;border-left:3px solid #52705f;background:#081610;color:#9fb2a7;font-size:12px}.season-impact .season-club{margin:0;color:#dae5df;font-size:13px}.season-impact .season-club small{color:#8fa397}
+.season-controls{display:flex;align-items:center;justify-content:flex-end;gap:1px;margin:8px 20px 0;border:1px solid #2b493a;background:#2b493a}.season-control{min-height:38px;padding:7px 12px;border:0;background:#0a1a13;color:#b7c7be;font:750 12px var(--sans);cursor:pointer}.season-control:hover{background:#153326;color:#eaf1ed}.season-control:disabled{opacity:.45;cursor:not-allowed}.season-control.danger{color:#e1a29b}
+.month-track{height:3px;margin:8px 20px 0;background:#14261d}.month-track i{background:var(--accent)}
+.month-feed{flex:1;min-height:220px;max-height:none;margin:8px 20px 0;border-color:#2f5140;background:#050d0a}.month-table-head,.month-row{grid-template-columns:72px minmax(210px,.75fr) minmax(360px,1.55fr)}.month-table-head{background:#10251b}.month-table-head span{font-size:11px}.month-row:nth-child(odd){background:#081610}.month-row:nth-child(even){background:#0a1913}.month-row .month-label{color:#9bc7ad}.month-row code{background:#07120e;color:#e0e9e3!important;font-size:12px}
+#season-accept{width:calc(100% - 40px);max-width:none;min-height:50px;margin:10px 20px 0;text-align:center}
+
+.summary-machine{width:min(1120px,calc(100vw - 32px));max-height:calc(100dvh - 32px);background:#07140f}.summary-body{padding:16px 20px 20px}.summary-body>.stat-dashboard{gap:1px;background:#29473a}.stat-box{padding:10px;background:#081610;border:0}.stat-box span{font-size:10px;color:#8ea196}.stat-box b{font-size:19px;color:#edf3ef}.summary-awards{background:#1b190e;border-color:#665b36}.summary-verdict{border-left-color:var(--accent)}
+
+.career-machine{width:min(1240px,calc(100vw - 32px));height:min(900px,calc(100dvh - 32px));background:#06100c}.career-report-head{padding:16px 20px 13px;background:#0b1e16}.career-report-head small{color:#84b69a}.career-report-head h2{font-size:26px}.career-tabs{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;background:#07140f}.career-tab{min-height:52px;color:#9aaca2;font-size:13px}.career-tab.on{color:#d8eee1;background:#10281d;box-shadow:inset 0 -3px 0 var(--accent)}.career-report-body{padding:18px 20px 30px}.career-report-body .report-section>h3{color:#cde2d6;border-bottom-color:#3d6450}.career-report-body .fin-wrap{position:relative;overflow:auto;max-height:520px}.career-report-body .fin-wrap table{border-collapse:separate;border-spacing:0}.career-report-body .fin-wrap th{position:sticky;top:0;z-index:2;background:#10251b}.career-report-body .fin-wrap th:first-child,.career-report-body .fin-wrap td:first-child{position:sticky;left:0;z-index:1;background:#0b1d16;box-shadow:1px 0 #345442}.career-report-body .fin-wrap th:first-child{z-index:3;background:#13291f}.career-overview{gap:1px;background:#29483a}.career-league-block{border-left-color:#527764}.career-team-timeline{display:grid;gap:1px;border:1px solid #2e4f3e;background:#2e4f3e}.career-team-stop{display:grid;grid-template-columns:90px minmax(190px,1fr) minmax(160px,.7fr) auto;gap:10px;align-items:center;padding:11px 13px;background:#081610}.career-team-stop.current{border-left:5px solid var(--accent);background:#10251b}.career-team-stop span{color:#8ea297;font:700 11px var(--mono)}.career-team-stop b{font-size:15px}.career-team-stop small{color:#9db0a5}.career-team-stop em{font-style:normal;color:#c4d4cb;font:700 11px var(--mono)}
+.finance-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#29483a}.finance-overview .stat-box{background:#081610}.finance-ledger-type{display:inline-block;padding:2px 6px;border-left:3px solid var(--info);background:#10231a;color:#bcd5c7;font-size:10px}.finance-ledger-type.income{border-left-color:var(--accent)}.finance-ledger-type.expense{border-left-color:var(--live)}
+
+#mobile-nav{display:none}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+@media (min-width:761px) and (max-width:1180px){
+  #app{grid-template-columns:230px minmax(0,1fr);grid-template-areas:'board board' 'left main';padding-left:10px;padding-right:10px}.broadcast-team em{display:block}.broadcast-team .team-roster-chip{display:none}
+  #bd-top{grid-template-columns:minmax(200px,1fr) minmax(330px,1.2fr) 40px}#lamps{display:none}
+}
+
+@media (max-width:760px){
+  body{overflow:hidden;background:#050c09}
+  #app{--board-h:126px;--mobile-nav-h:64px;width:100%;max-width:none;height:calc(100dvh - var(--mobile-nav-h));min-height:0;padding:0;display:block;overflow:hidden}
+  #board{position:relative;top:auto;width:100%;height:var(--board-h);padding:7px 10px;border-bottom-color:#365746}
+  #bd-top{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:6px;min-height:74px}#bd-name{display:block;min-width:0}#bd-name>b{display:block;font-size:20px}#bd-name small{margin-top:2px;font-size:11px;gap:5px}#bd-name small i{font-size:10px}
+  #bd-team{grid-column:1/-1;grid-row:2;min-width:0;grid-template-columns:32px minmax(0,1fr) auto;grid-template-areas:'mark label level' 'mark name roster';padding:4px 7px}.team-monogram{width:31px;height:31px;font-size:9px}#bd-team b{font-size:15px}#bd-team small{font-size:8px}#bd-team em{max-width:145px;padding-left:6px;overflow:hidden;text-overflow:ellipsis;font-size:9px}#bd-team .team-roster-chip{display:block;max-width:150px;padding:2px 0 2px 7px;overflow:hidden;text-overflow:ellipsis;font-size:8px}
+  #btn-restart{grid-column:2;grid-row:1;width:44px;height:44px}#bd-tj,#lamps{display:none}
+  #bd-grid{width:100%;height:30px;margin-top:4px;grid-template-columns:repeat(4,minmax(0,1fr))}.bd-cell{min-width:0;padding:3px 6px;display:flex;align-items:center;gap:5px}.bd-cell b{font-size:14px!important}.bd-cell span{font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #career-main,#player-rail,#roll-rail{display:none!important;position:relative;width:100%;height:calc(100dvh - var(--board-h) - var(--mobile-nav-h));margin:0;overflow:hidden}
+  #app[data-mobile-view="broadcast"] #career-main{display:grid!important;grid-template-rows:58px minmax(0,1fr) 0}
+  #app[data-mobile-view="player"] #player-rail,#app[data-mobile-view="finance"] #player-rail,#app[data-mobile-view="season"] #roll-rail{display:block!important;padding:10px 10px 24px;overflow-y:auto;background:#050d0a}
+  #app[data-mobile-view="player"] #player-rail .rail-finance{display:none}
+  #app[data-mobile-view="finance"] #player-rail .rail-card:not(.rail-finance){display:none}
+  .broadcast-head{height:58px;margin:0;grid-template-columns:63px minmax(0,1fr) auto;padding:5px 7px}.broadcast-head>span{max-width:none;font-size:9px}.broadcast-team{height:46px;grid-template-columns:30px minmax(0,1fr);grid-template-areas:'mark label' 'mark name';padding:3px 6px;border-left-width:4px}.broadcast-team .team-monogram{width:28px;height:32px}.broadcast-team strong{font-size:15px}.broadcast-team em,.broadcast-team .team-roster-chip{display:none}.broadcast-tools>b{display:none}.career-report-btn{min-height:44px;padding:6px 8px;font-size:10px}
+  #log{width:100%;margin:0;padding:10px 9px 84px 42px;background:linear-gradient(90deg,#0a1b14 0 31px,#06100c 31px)}.yr-block::before{left:-19px}.yr-head{margin-left:-33px;padding-left:32px}.yr-head::before{left:7px}.card{padding:13px 12px 13px 14px}.card::before{left:-28px;width:11px;height:11px}.card h4{font-size:15px}.card p{font-size:14px}.card .statline{font-size:13px}.timeline-meta{font-size:9px}
+  #mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:80;height:64px;padding-bottom:env(safe-area-inset-bottom);display:none;grid-template-columns:repeat(4,1fr);border-top:1px solid #3e614f;background:#07140ff5;backdrop-filter:blur(12px)}body.game-started #mobile-nav{display:grid}.mobile-nav-btn{min-width:0;border:0;border-right:1px solid #1e392d;background:transparent;color:#82968b;font:750 11px var(--sans);cursor:pointer}.mobile-nav-btn:last-child{border-right:0}.mobile-nav-btn span{display:block;margin-bottom:1px;color:#a5b7ad;font:800 15px var(--mono)}.mobile-nav-btn.on{background:#11291e;color:#e6f0ea;box-shadow:inset 0 3px 0 var(--accent)}.mobile-nav-btn.on span{color:var(--accent)}
+  #act.result-continue{position:fixed;left:8px;right:8px;bottom:72px;padding:7px}#act.result-continue .btn{min-height:52px}
+  #act.decision-docked,#act.decision-docked.event-actions{position:fixed;left:8px;right:8px;bottom:72px;width:auto;height:min(42dvh,340px);grid-template-columns:1fr;padding:8px}#act.decision-docked>.btn{min-height:72px}
+  #act.decision-modal,#act.decision-modal.event-actions,#act.decision-modal.decision-major{left:8px;right:8px;top:auto;bottom:8px;width:auto!important;max-width:none;height:auto;max-height:calc(100dvh - 24px);padding:10px;transform:none;grid-template-columns:1fr;gap:7px;border-top:4px solid var(--accent)}#act.decision-modal.decision-major{top:8px;border-top-color:var(--signal)}#act.decision-modal>.btn,#act.decision-modal.event-actions>.btn{min-height:82px;padding:12px}.btn.event-choice{grid-template-columns:38px minmax(0,1fr) minmax(82px,96px)}.event-choice .event-copy b{font-size:15px}.event-choice .event-copy small{font-size:12px}.event-choice .chance-num{font-size:12px}.decision-tools{position:sticky;top:-10px;z-index:3;background:#07140f;padding:4px 0}.decision-dock{min-height:48px}
+  .rail-card{margin:0 0 8px;padding:13px}.rail-label{font-size:12px}.ability-row{font-size:14px}.mini-metric span{font-size:11px}.mini-metric b{font-size:16px}
+  #season-overlay{padding:0}.season-machine{width:100%;height:100dvh;max-height:none;padding:0 10px max(8px,env(safe-area-inset-bottom));border:0;overflow:hidden}.season-machine .machine-top{padding:10px 0 8px}.machine-title{font-size:20px}.machine-sub{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.season-score{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:7px;padding:0;gap:1px}.season-score div{padding:6px 8px}.season-score b{font-size:16px}.season-cumulative{margin:7px 0 0;padding:7px 9px}.season-cumulative b{font-size:11px}.season-impact{margin:5px 0 0;padding:5px 8px;font-size:11px}.season-impact .season-club{font-size:12px}.season-controls{margin:6px 0 0}.season-control{flex:1;min-height:44px;padding:6px 4px;font-size:11px}.month-track{margin:6px 0 0}.month-feed{margin:6px 0 0;min-height:0;max-width:none;max-height:none}.month-table-head{display:none}.month-row{grid-template-columns:50px minmax(0,1fr)}.month-row>*{padding:7px 8px}.month-row code{display:block;grid-column:1/-1;padding:7px 8px;border-top:1px solid #29483a;font-size:10.5px}.month-row code::before{display:none}#season-accept{width:100%;max-width:none;margin:7px 0 0;min-height:48px}
+  #career-overlay{padding:0}.career-machine{width:100%;height:100dvh;max-width:none;max-height:none;border:0}.career-report-head{padding:11px 12px 9px}.career-report-head h2{font-size:20px}.career-report-head p{font-size:10px}.career-close{width:48px;height:48px}.career-tabs{grid-template-columns:repeat(5,minmax(94px,1fr));overflow-x:auto}.career-tab{min-height:48px;font-size:11px}.career-report-body{padding:12px 9px 24px}.career-overview,.finance-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.career-team-stop{grid-template-columns:70px minmax(0,1fr)}.career-team-stop small,.career-team-stop em{grid-column:2}.career-report-body .fin-wrap{max-height:none}
+  .summary-machine{width:100%;height:100dvh;max-height:none;border:0}.summary-body{padding:12px}.summary-body>.stat-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media (prefers-reduced-motion:reduce){.card{animation:none}.mobile-nav-btn,.season-control{transition:none}}
 </style>
 </head>
 <body>
@@ -423,7 +547,7 @@ html *{border-radius:0!important}
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">棒球人生<br><em>CAREER SIM</em></h1>
-    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v2.9.0</div>
+    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.0</div>
     <p class="sub">做出選擇，再親手停下拉霸。從高中、選秀、旅外、傷病到引退，每次人生都不一樣。</p>
     <div class="start-grid">
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
@@ -454,8 +578,8 @@ html *{border-radius:0!important}
     <div id="bd-grid">
       <div class="bd-cell"><b id="bd-age">16</b><span>年齡</span></div>
       <div class="bd-cell"><b id="bd-year">2026</b><span>年份</span></div>
-      <div class="bd-cell"><b id="bd-ovr">30</b><span>綜合能力 / 99</span></div>
-      <div class="bd-cell"><b id="bd-sal">0</b><span>可用現金(萬)</span></div>
+      <div class="bd-cell"><b id="bd-ovr">30</b><span>能力 / 99</span></div>
+      <div class="bd-cell"><b id="bd-sal">0</b><span>現金（萬）</span></div>
     </div>
     <div id="lamps">
       <span class="lamp" id="lp0"><i></i>季初</span>
@@ -464,13 +588,13 @@ html *{border-radius:0!important}
     </div>
   </header>
   <aside id="player-rail" class="side-rail" style="display:none">
-    <section class="rail-card">
+    <section class="rail-card rail-player">
       <div class="rail-label">球員能力</div>
       <div class="scout-head"><div class="scout-ovr" id="scout-ring"><b id="rail-ovr">—</b><small>/ 99</small></div><div class="scout-type"><b id="rail-type">等待開季</b><span id="rail-role">球探報告尚未建立</span></div></div>
       <div id="rail-abilities" class="ability-list"></div>
       <div class="ability-note"><b>永久成長靠季初訓練</b>｜事件主要改變短期狀態、關係與風險；黃線是球探預估潛力。</div>
     </section>
-    <section class="rail-card">
+    <section class="rail-card rail-health">
       <div class="rail-label">健康與負荷</div>
       <div class="health-grid">
         <div class="mini-metric"><span>傷病風險</span><b id="rail-injury">—</b></div>
@@ -479,7 +603,7 @@ html *{border-radius:0!important}
         <div class="mini-metric"><span>目前模式</span><b id="rail-mode">RANDOM</b></div>
       </div>
     </section>
-    <section class="rail-card">
+    <section class="rail-card rail-social">
       <div class="rail-label">聲望與特性</div>
       <div class="rep-row"><span>球迷聲望</span><span class="track"><i id="rail-fan-bar" style="width:50%"></i></span><b id="rail-fan-rep">0</b></div>
       <div class="rep-row"><span>球員聲望</span><span class="track"><i id="rail-player-bar" style="width:50%"></i></span><b id="rail-player-rep">0</b></div>
@@ -487,7 +611,7 @@ html *{border-radius:0!important}
       <div id="rail-traits" class="trait-cloud"><span class="tag">尚未形成特性</span></div>
       <div id="rail-trait-path" class="trait-path">事件與正式成績會共同形成特性</div>
     </section>
-    <section class="rail-card">
+    <section class="rail-card rail-finance">
       <div class="rail-label">生涯財務・新台幣</div>
       <div class="health-grid">
         <div class="mini-metric"><span>可動用現金</span><b id="rail-cash">0萬</b></div>
@@ -503,12 +627,18 @@ html *{border-radius:0!important}
     </section>
   </aside>
   <section id="career-main">
-    <div class="broadcast-head"><span>LIVE · 生涯播報</span><div id="broadcast-team" class="broadcast-team"><small>目前所屬</small><strong>尚未加入球隊</strong><em>等待開球</em></div><div class="broadcast-tools"><b id="broadcast-now">人生尚未開球</b><button id="btn-career-report" class="career-report-btn" type="button">生涯資料</button></div></div>
+    <div class="broadcast-head"><span>LIVE · 生涯播報</span><div id="broadcast-team" class="broadcast-team"><span class="team-monogram" aria-hidden="true">—</span><small>目前所屬</small><strong>尚未加入球隊</strong><em>等待開球</em></div><div class="broadcast-tools"><b id="broadcast-now">人生尚未開球</b><button id="btn-career-report" class="career-report-btn" type="button">生涯資料</button></div></div>
     <main id="log"></main>
     <button id="act-toggle" style="display:none">⌄ 收合選項</button>
     <footer id="act" style="display:none"></footer>
   </section>
   <aside id="roll-rail" class="side-rail" style="display:none">
+    <section class="rail-card rail-season-card">
+      <div class="rail-label">本季摘要</div>
+      <div id="rail-season-team" class="rail-season-team"><strong>等待開季</strong><span>球隊與競賽層級</span></div>
+      <div id="rail-season-stats" class="rail-season-line empty">完成第一個球季後，這裡會固定顯示最近正式成績。</div>
+      <div id="rail-season-record" class="rail-season-record"><span>球隊戰績</span><b>尚未產生</b></div>
+    </section>
     <section class="rail-card">
       <div class="rail-label">最近一次</div>
       <div class="roll-hero"><div class="num" id="rail-roll-num">—</div><div class="kind" id="rail-roll-kind">等待第一次擲骰</div><div class="outcome" id="rail-roll-outcome">選擇改變機率，骰子決定結果</div></div>
@@ -523,6 +653,14 @@ html *{border-radius:0!important}
     </section>
   </aside>
 </div>
+
+<nav id="mobile-nav" aria-label="主要功能">
+  <button class="mobile-nav-btn on" type="button" data-mobile-view="broadcast"><span>LIVE</span>播報</button>
+  <button class="mobile-nav-btn" type="button" data-mobile-view="player"><span>99</span>球員</button>
+  <button class="mobile-nav-btn" type="button" data-mobile-view="season"><span>STAT</span>本季</button>
+  <button class="mobile-nav-btn" type="button" data-mobile-view="finance"><span>$</span>財務</button>
+</nav>
+<div id="ui-live" class="sr-only" aria-live="polite"></div>
 
 <div id="decision-backdrop" aria-hidden="true"></div>
 
@@ -546,7 +684,9 @@ html *{border-radius:0!important}
   <section class="season-machine" role="dialog" aria-modal="true" aria-labelledby="season-sim-title">
     <div class="machine-top"><div class="machine-kicker">球季進行中</div><div class="machine-title" id="season-sim-title">球季模擬中</div><div class="machine-sub" id="season-sim-sub">賽程、狀態與環境正在交互作用</div></div>
     <div class="season-score"><div><span id="sim-schedule-label">球隊賽程</span><b id="sim-games">0 場</b></div><div><span>個人出賽</span><b id="sim-player-games">0 場</b></div><div><span>事件氣勢</span><b id="sim-momentum">0.0</b></div><div><span>健康／角色</span><b id="sim-form">—</b></div></div>
+    <div class="season-cumulative"><span>累積個人成績</span><b id="sim-cumulative">等待開季</b></div>
     <div class="season-impact" id="sim-impact">手感、事件氣勢、球場環境與團隊關係會共同套入正式成績。</div>
+    <div class="season-controls" aria-label="球季播放控制"><button class="season-control" id="season-pause" type="button">暫停</button><button class="season-control" id="season-speed" type="button">速度 1×</button><button class="season-control danger" id="season-skip" type="button">直接完成</button></div>
     <div class="month-track"><i id="sim-progress"></i></div>
     <div class="month-feed" id="month-feed"></div>
     <button class="btn main" id="season-accept">查看完整球季數據 ▸</button>
@@ -565,7 +705,7 @@ html *{border-radius:0!important}
   <div class="fx-backdrop"></div>
   <section class="career-machine" role="dialog" aria-modal="true" aria-labelledby="career-report-title">
     <header class="career-report-head"><div><small>PLAYER ARCHIVE</small><h2 id="career-report-title">生涯資料</h2><p id="career-report-sub">累積數據、逐年成績與正式獎項</p></div><button id="career-report-close" class="career-close" type="button" aria-label="關閉生涯資料">×</button></header>
-    <nav class="career-tabs" aria-label="生涯資料分類"><button class="career-tab on" data-tab="totals" type="button">生涯累積</button><button class="career-tab" data-tab="years" type="button">逐年成績</button><button class="career-tab" data-tab="honors" type="button">獎項榮譽</button></nav>
+    <nav class="career-tabs" aria-label="生涯資料分類"><button class="career-tab on" data-tab="totals" type="button">生涯累積</button><button class="career-tab" data-tab="years" type="button">逐年成績</button><button class="career-tab" data-tab="honors" type="button">獎項榮譽</button><button class="career-tab" data-tab="teams" type="button">球隊軌跡</button><button class="career-tab" data-tab="finance" type="button">合約財務</button></nav>
     <div id="career-report-body" class="career-report-body"></div>
   </section>
 </div>
@@ -764,7 +904,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v2.9.0';
+const APP_VER='v3.0.0';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -1894,6 +2034,9 @@ function annualFinanceChoice(pay,done,reason){
 const $=id=>document.getElementById(id);
 function randomSubset(items,n){const a=items.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a.slice(0,Math.min(n||4,a.length));}
 function stableIndex(text,n){let h=0;for(const ch of String(text||''))h=(h*31+ch.charCodeAt(0))>>>0;return h%n;}
+function teamMonogram(name){const clean=String(name||'—').replace(/[\s・|｜]/g,'');if(!clean)return '—';const latin=clean.match(/[A-Za-z0-9]+/g);return latin?latin.map(x=>x[0]).join('').slice(0,3).toUpperCase():clean.slice(0,2);}
+function phaseName(){const now=$('broadcast-now')&&$('broadcast-now').textContent||'';return /季初/.test(now)?'季初':/賽季中/.test(now)?'賽季中':/季末/.test(now)?'季末':'生涯';}
+function latestSeasonEntry(){return (S&&S.log||[]).filter(x=>x&&x.st).slice(-1)[0]||null;}
 function currentParkContext(){
   const minor=['R','A1','A2','A3'].includes(S.lv);
   if(minor){
@@ -2053,6 +2196,11 @@ function renderRails(){
   if($('rail-ovr'))$('rail-ovr').textContent=overall;
   if($('rail-type'))$('rail-type').textContent=playerType();
   if($('rail-role'))$('rail-role').textContent=`${S.dpos?DPN[S.dpos]:POSN[S.pos]}${S.role?' · '+roleN(S.role):''}｜${S.age} 歲`;
+  { const latest=latestSeasonEntry(),team=S.stage==='PRO'?(S.orgTeam||S.teamName()):(S.team||stageLabel()),level=S.stage==='PRO'&&S.lv&&LV[S.lv]?LV[S.lv].n:stageLabel(),mine=S.currentStandings&&S.currentStandings.mine;
+    if($('rail-season-team'))$('rail-season-team').innerHTML=`<strong>${team||'尚未加入球隊'}</strong><span>${level}${S.role?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}｜${S.year} 年</span>`;
+    if($('rail-season-stats')){const el=$('rail-season-stats');el.textContent=latest?`${latest.y}｜${latest.line}`:'完成第一個球季後，這裡會固定顯示最近正式成績。';el.classList.toggle('empty',!latest);}
+    if($('rail-season-record'))$('rail-season-record').innerHTML=`<span>球隊戰績</span><b>${mine?`${mine.W}-${mine.L}｜${mine.pct.toFixed(3).replace(/^0/,'')}`:'尚未產生'}</b>`;
+  }
   if($('rail-abilities'))$('rail-abilities').innerHTML=POS_AB[S.pos].map(k=>{
     const v=S.ab[k],rawPot=(S.pot&&S.pot[k])||r99(62),pot=Math.max(v,rawPot);
     return `<div class="ability-row" title="目前 ${v}／球探預估上限 ${pot}／滿分 99"><span>${ABL[k]}</span><span class="track"><i style="width:${v/RATING_MAX*100}%"></i><em style="left:${pot/RATING_MAX*100}%"></em></span><b>${v}<small>/${pot}</small></b></div>`;
@@ -2103,8 +2251,9 @@ function renderRails(){
     if($('rail-roster')&&S.org==='MiLB'){const rs=mlbRosterStatus(),mr=mlbRosterState();$('rail-roster').textContent=`${rs.label}｜本季 option ${rs.assignments}/5 次${mr.outrightCount?`｜生涯 outright ${mr.outrightCount} 次`:''}`;}
   }
 }
-function openFx(id){ const el=$(id); el.classList.remove('finalizing','reveal-good','reveal-bad');el.classList.add('open');el.setAttribute('aria-hidden','false');const machine=el.querySelector('.roll-machine,.season-machine,.summary-machine,.career-machine');if(machine)machine.scrollTop=0;document.body.style.overflow='hidden'; }
-function closeFx(id){ const el=$(id); el.classList.remove('open','finalizing','reveal-good','reveal-bad');el.setAttribute('aria-hidden','true');if(id==='roll-overlay'&&$('roll-stop'))$('roll-stop').style.display='none';document.body.style.overflow=''; }
+let modalReturnFocus=null;
+function openFx(id){ const el=$(id);modalReturnFocus=document.activeElement;el.classList.remove('finalizing','reveal-good','reveal-bad');el.classList.add('open');el.setAttribute('aria-hidden','false');const machine=el.querySelector('.roll-machine,.season-machine,.summary-machine,.career-machine');if(machine)machine.scrollTop=0;document.body.style.overflow='hidden';requestAnimationFrame(()=>{const focus=el.querySelector('button:not([disabled]),[tabindex="0"]');if(focus)focus.focus({preventScroll:true});}); }
+function closeFx(id){ const el=$(id);el.classList.remove('open','finalizing','reveal-good','reveal-bad');el.setAttribute('aria-hidden','true');if(id==='roll-overlay'&&$('roll-stop'))$('roll-stop').style.display='none';document.body.style.overflow='';if(modalReturnFocus&&document.contains(modalReturnFocus))requestAnimationFrame(()=>modalReturnFocus.focus({preventScroll:true}));modalReturnFocus=null; }
 let rollAudio=null;
 function playRollSound(kind){
   try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;rollAudio=rollAudio||new AC();const o=rollAudio.createOscillator(),g=rollAudio.createGain(),now=rollAudio.currentTime;o.connect(g);g.connect(rollAudio.destination);o.type=kind==='bad'?'sawtooth':'sine';o.frequency.setValueAtTime(kind==='stop'?180:kind==='good'?520:120,now);if(kind==='good')o.frequency.exponentialRampToValueAtTime(780,now+.16);if(kind==='bad')o.frequency.exponentialRampToValueAtTime(70,now+.2);g.gain.setValueAtTime(.045,now);g.gain.exponentialRampToValueAtTime(.001,now+(kind==='stop'?.08:.22));o.start(now);o.stop(now+(kind==='stop'?.09:.23));}catch(_){ }
@@ -2137,8 +2286,9 @@ function rollResult(cfg){
 }
 function quickRoll(cfg){return Promise.resolve(rollResult(cfg));}
 function animatedRoll(cfg){
-  const result=rollResult(cfg),{sides,value,probability}=result;
+  const result=rollResult(cfg),{sides,value,probability}=result,useThree=cfg.three===true||/重大|傷勢|手術|買斷|簽約|轉隊|選秀|升格|大聯盟|DFA|季後測試/.test(String(cfg.title||''));
   return new Promise(resolve=>{
+    $('roll-overlay').classList.toggle('compact-roll',!useThree);
     $('roll-kicker').textContent=cfg.kicker||'拉霸判定';
     $('roll-title').textContent=cfg.title||'停下每一格';
     $('roll-sub').textContent=cfg.subtitle||'依序點擊亮起的格子，親手揭曉結果。';
@@ -2154,11 +2304,11 @@ function animatedRoll(cfg){
     $('roll-result').className='roll-result';$('roll-result').innerHTML='<small>點擊亮起的格子</small>';
     $('roll-stop').style.display='block';$('roll-accept').style.display='none';
     openFx('roll-overlay');
-    if(window.DiceFX)window.DiceFX.begin(Math.min(2,digits));
+    if(useThree&&window.DiceFX)window.DiceFX.begin(Math.min(2,digits));
     const els=Array.from(document.querySelectorAll('#roll-slots .slot-digit'));
     const text=String(value).padStart(digits,'0').split('');
     manualReels(els,text,()=>visualRi(0,9),(stopped,total,braking,final)=>{$('roll-result').innerHTML=`<small>${final?'結果鎖定中…':braking?`第 ${stopped+1} 格正在減速…`:stopped?`${stopped}/${total} 格已停下${stopped===total-1?'｜最後一格':''}`:'點擊第一格開始'}</small>`;},()=>{
-      if(window.DiceFX)window.DiceFX.settle(value);
+      if(useThree&&window.DiceFX)window.DiceFX.settle(value);
       const tone=rollTone(result),custom=cfg.resultText?cfg.resultText(result):tone.label;
       $('roll-result').className='roll-result '+tone.tone;
       const thresholdText=probability==null?'本次結果已結算':cfg.risk?`本次 ${value}｜安全需 ${Math.max(0,result.threshold-1)} 以下`:`本次 ${value}｜通過需 ${result.threshold} 以上`;
@@ -2174,6 +2324,7 @@ function animatedRoll(cfg){
 function animatedDicePool(n,min,title){
   const dice=Array.from({length:n},()=>trainingRoll(min||1));
   return new Promise(resolve=>{
+    $('roll-overlay').classList.remove('compact-roll');
     $('roll-kicker').textContent='訓練拉霸';$('roll-title').textContent=title||'季初訓練';
     $('roll-sub').textContent='依序點亮起的骰子，或按下方按鈕，一顆一顆停下。';
     $('roll-slots').innerHTML=`<div class="pool-dice">${dice.map(()=>'<div class="pool-die spinning">?</div>').join('')}</div>`;
@@ -2194,6 +2345,7 @@ function animatedDicePool(n,min,title){
 function queueAchievement(item){if(!S)return;S.achievementQueue=S.achievementQueue||[];S.achievementQueue.push(item);}
 function achievementFX(item){
   return new Promise(resolve=>{
+    $('roll-overlay').classList.remove('compact-roll');
     $('roll-kicker').textContent=item.kicker||'生涯里程碑';$('roll-title').textContent=item.title||'重大成就';$('roll-sub').textContent=item.subtitle||'這段生涯紀錄已被正式寫下。';
     const mark=item.kind==='breakthrough'?'99':item.kind==='streak'?'連霸':item.kind==='mlb'?'MLB':item.kind==='promotion'?'一軍':'★',markLabel=item.kind==='breakthrough'?'上限突破':item.kind==='streak'?'連續獎項':item.kind==='mlb'?'大聯盟初登錄':item.kind==='promotion'?'層級升格':'新特性';
     $('roll-slots').innerHTML=`<div class="achievement-mark"><span>${mark}</span><small>${markLabel}</small></div>`;
@@ -2307,28 +2459,36 @@ function runSeasonAnimation(done){
   const baseStats=pro?applySeasonAdjustments(simSeason(startLv)):simAmateurSeason(),promotion=pro?midSeasonPromotionPlan(baseStats,startLv):null,finalStats=promotion?promotion.total:baseStats;
   if(promotion){S._pendingSeasonSegments=promotion.parts;const from=LV[promotion.from].n,to=LV[promotion.to].n,role=S.pos==='P'&&S.role?roleN(S.role):S.dpos?DPN[S.dpos]:'';seasonIdentity={name:S.orgTeam,level:`${from} → ${to}${role?'・'+role:''}`};const old=timeline[promotion.monthIndex];timeline[promotion.monthIndex]={n:'一軍升格通知',d:`${from}實績通過六月／八月名單檢討，球團正式把你升上 ${to}`,m:old.m,pulse:old.pulse,callup:true};}
   if(pro)S._pendingSeasonStats=finalStats;else S._pendingAmateurStats=finalStats;
-  const monthlyStats=monthlySeasonSlices(finalStats,timeline,activeMonths);let idx=0;
+  const monthlyStats=monthlySeasonSlices(finalStats,timeline,activeMonths);let idx=0,paused=false,speed=1,skip=false,timer=null,finished=false;
   $('month-feed').innerHTML='<div class="month-table-head"><span>月份</span><span>球季狀況</span><span>當月數據</span></div>';$('sim-progress').style.width='0%';$('sim-schedule-label').textContent=promotion?'球季進度':'球隊賽程';$('sim-games').textContent=promotion?`0/${months.length} 月`:`0/${totalGames}`;$('sim-player-games').textContent='0 場';$('sim-momentum').textContent='0.0';$('sim-form').textContent='準備開季';$('sim-impact').innerHTML=`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>累積成績會固定顯示在這裡；下方只列各月當月數據。`;
+  if($('sim-cumulative'))$('sim-cumulative').textContent='等待第一個月份完成';
   $('season-sim-title').textContent=`${S.year}｜${seasonIdentity.name}｜${seasonIdentity.level}`;
   $('season-sim-sub').textContent=S.seasonContext?S.seasonContext.items.map(x=>x.n).join(' · '):'賽程與狀態正在交互作用';
-  $('season-accept').style.display='none';openFx('season-overlay');
+  $('season-accept').style.display='none';['season-pause','season-speed','season-skip'].forEach(id=>{$(id).disabled=false;});$('season-pause').textContent='暫停';$('season-speed').textContent='速度 1×';$('season-skip').textContent='直接完成';openFx('season-overlay');
+  const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const schedule=(first=false)=>{if(finished||paused)return;clearTimeout(timer);timer=setTimeout(tick,first?180:skip?24:reduced?55:Math.round(520/speed));};
+  $('season-pause').onclick=()=>{if(finished)return;paused=!paused;$('season-pause').textContent=paused?'繼續':'暫停';if(paused)clearTimeout(timer);else schedule();};
+  $('season-speed').onclick=()=>{if(finished)return;speed=speed===1?2:speed===2?4:1;$('season-speed').textContent=`速度 ${speed}×`;if(!paused)schedule();};
+  $('season-skip').onclick=()=>{if(finished)return;skip=true;paused=false;$('season-pause').textContent='暫停';$('season-skip').textContent='整理完整月份…';$('season-skip').disabled=true;clearTimeout(timer);schedule();};
   const tick=()=>{
     if(idx>=months.length){
+      finished=true;clearTimeout(timer);['season-pause','season-speed','season-skip'].forEach(id=>{$(id).disabled=true;});
       const finishState=S.seasonFactor<=0?'整季傷缺':S.seasonFactor<=.25?'重大傷病離場':S.seasonFactor<=.55?'傷病中斷球季':S.seasonFactor<.9?'缺席部分賽程':S.seasonMomentum>=1.2?'火燙收官':S.seasonMomentum<=-1.2?'艱難收官':'穩定完賽';
       $('sim-form').textContent=finishState;
       $('sim-player-games').textContent=`${finalStats.G||0} 場`;
       $('sim-momentum').textContent=(S.seasonMomentum>0?'+':'')+S.seasonMomentum.toFixed(1);
       const injuryText=injured?`｜球隊賽程已完成；個人因傷只留下 ${finalStats.G||0} 場出賽，後續月份為傷停與復健。`:Math.abs(S.seasonMomentum)<.05?'｜氣勢互相抵銷。':`｜氣勢 ${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)} 已進入數據公式。`;
-      $('sim-impact').innerHTML=`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>${pro?'例行賽':amCfg.name}最終個人成績｜<b>${compactSeasonLine(finalStats)}</b>${finalStats.outlierLabel?`｜<span class="tag">${finalStats.outlierLabel}</span>`:''}${injuryText}`;
+      if($('sim-cumulative'))$('sim-cumulative').textContent=compactSeasonLine(finalStats);
+      $('sim-impact').innerHTML=`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>${pro?'例行賽':amCfg.name}已完成${finalStats.outlierLabel?`｜${finalStats.outlierLabel}`:''}${injuryText}`;
       $('season-accept').style.display='block';$('season-accept').onclick=()=>{closeFx('season-overlay');done();};return;
     }
     const beat=timeline[idx],pulse=beat.pulse,inactive=!!beat.injured,games=Math.round(totalGames*(idx+1)/months.length),current=monthlyStats[idx],previous=idx?monthlyStats[idx-1]:null,seen=timeline.slice(0,Math.min(idx+1,activeMonths)),avg=seen.length?seen.reduce((n,x)=>n+x.pulse,0)/seen.length:0;
     const row=document.createElement('div'),monthLine=inactive?'0 場出賽｜傷病名單':monthlyDeltaLine(current,previous);row.className='month-row';row.innerHTML=`<span class="month-label">${months[idx]}</span><div class="month-event"><b>${beat.n}</b><small>${beat.d}</small></div><code class="month-current">${monthLine}</code>`;
     $('month-feed').appendChild(row);$('sim-progress').style.width=((idx+1)/months.length*100)+'%';$('sim-games').textContent=promotion?`${idx+1}/${months.length} 月`:`${games}/${totalGames}`;
-    $('sim-player-games').textContent=`${current.G||0} 場`;$('sim-momentum').textContent=(avg>0?'+':'')+avg.toFixed(1);$('sim-impact').innerHTML=inactive?`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>截至 ${months[idx]} 累積｜<b>仍在傷病名單，個人成績停在 ${compactSeasonLine(current)}</b>`:`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>截至 ${months[idx]} 累積｜<b>${compactSeasonLine(current)}</b>｜氣勢 ${(avg>0?'+':'')+avg.toFixed(1)} 已套入公式`;$('sim-form').textContent=inactive?'傷停復健':pulse>=2?'狀態火燙':pulse<=-2?'陷入低潮':'正常推進';idx++;
-    setTimeout(tick,window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?60:520);
+    $('sim-player-games').textContent=`${current.G||0} 場`;$('sim-momentum').textContent=(avg>0?'+':'')+avg.toFixed(1);if($('sim-cumulative'))$('sim-cumulative').textContent=compactSeasonLine(current);$('sim-impact').innerHTML=inactive?`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>${months[idx]}｜傷病名單與復健中，當月沒有出賽。`:`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>${months[idx]}｜${beat.n}｜氣勢 ${(avg>0?'+':'')+avg.toFixed(1)} 已套入本季公式。`;$('sim-form').textContent=inactive?'傷停復健':pulse>=2?'狀態火燙':pulse<=-2?'陷入低潮':'正常推進';idx++;
+    schedule();
   };
-  setTimeout(tick,250);
+  schedule(true);
 }
 var _curYearBody=null; /* 當前年度的內容容器 */
 var MAX_YEARS=8;         /* DOM 最多保留幾個年度區塊 */
@@ -2351,21 +2511,29 @@ function choiceStateDiff(before){
   if(before.seasonFactor!==after.seasonFactor)lines.push(`可出賽比例 ${Math.round((before.seasonFactor||0)*100)}% → <b>${Math.round((after.seasonFactor||0)*100)}%</b>`);
   return `<div class="choice-state-diff"><b>實際變動</b>${lines.length?lines.map(x=>`<span>${x}</span>`).join(''):'<span>沒有即時數值變動；此選擇影響劇情、角色安排或下一個流程。</span>'}</div>`;
 }
-function card(cls,title,html){ const d=document.createElement('div'); d.className='card '+cls;const diff=_choiceResultCapture?choiceStateDiff(_choiceResultCapture.before):'';
-  d.innerHTML=(title?`<h4>${title}</h4>`:'')+html+diff; logTarget().appendChild(d);if(_choiceResultCapture)_choiceResultCapture.hasResult=true;
-  scrollBottom(); }
+function broadcastCategory(cls,title){const t=String(title||'');if(/交易|DFA|下放|升上|升格|釋出|簽約|合約|自由球員|選秀/.test(t))return '名單／合約';if(/傷|復健|手術|健康/.test(t))return '健康';if(/獎|冠軍|明星|紀錄|名人堂|突破|稱號/.test(t))return '榮譽';if(/家庭|戀|約會|婚|孩子|球迷|公益|場外/.test(t))return '場外人生';if(/球季|大賽|比賽|成績/.test(t))return '賽事';return cls==='bad'?'重大轉折':cls==='good'?'正向進展':cls==='gold'?'生涯里程碑':'生涯動態';}
+function card(cls,title,html){
+  const d=document.createElement('article'),capture=_choiceResultCapture&&!_choiceResultCapture.hasResult?_choiceResultCapture:null,diff=capture?choiceStateDiff(capture.before):'',category=broadcastCategory(cls,title),when=S?`${S.year}｜${S.age} 歲｜${phaseName()}`:'生涯紀錄';
+  d.className='card '+cls;d.setAttribute('data-category',category);
+  const recap=capture?`<div class="choice-recap">你的選擇｜<b>${capture.choice}</b></div>`:'';
+  d.innerHTML=`<div class="timeline-meta"><span>${when}</span><b>${category}</b></div>`+(title?`<h4>${title}</h4>`:'')+recap+html+diff;
+  logTarget().appendChild(d);if(capture)capture.hasResult=true;
+  const live=$('ui-live');if(live)live.textContent=`${category}：${String(title||'新消息').replace(/<[^>]+>/g,'')}`;
+  scrollBottom();
+}
 function divider(t){ /* 每個 divider 開啟新的年度摺疊區塊 */ const log=$('log'); const blocks=log.querySelectorAll('.yr-block'); /* 替剛結束的「上一年」加上下拉箭頭標記，但保留展開（不加上 collapsed） */ const prev = blocks[blocks.length - 1]; if(prev){ const h = prev.querySelector('.yr-head'); if(h && prev.querySelector('.yr-body').children.length) h.classList.add('has-body'); } /* 找到「前年」（倒數第二個區塊）並將其摺疊起來 */ const prevPrev = blocks[blocks.length - 2]; if(prevPrev){ prevPrev.classList.add('collapsed'); } /* 建新區塊 */ const block=document.createElement('div'); block.className='yr-block'; const head=document.createElement('div'); head.className='yr-head'; head.textContent=t; const body=document.createElement('div'); body.className='yr-body'; head.onclick=()=>block.classList.toggle('collapsed'); block.appendChild(head); block.appendChild(body); log.appendChild(block); _curYearBody=body; /* 超過上限:移除最舊的年度區塊(釋放 DOM) */ const newBlocks=log.querySelectorAll('.yr-block'); if(newBlocks.length>MAX_YEARS){ for(let i=0;i<newBlocks.length-MAX_YEARS;i++)newBlocks[i].remove(); } }
 function board(phase){
   $('bd-name').innerHTML=`<b>${S.name}</b><small>${S.dpos?DPN[S.dpos]:POSN[S.pos]}${S.role?'・'+roleN(S.role):''}<i>${playerType()}${S.traits.genius?' ★':''}</i></small>`;
-  let t,level;
+  let t,level,roster='';
   if(S.stage==='HS'){t=S.team;level='高'+['一','二','三'][S.stageYr-1];}
   else if(S.stage==='U'){t=S.team;level='大'+['一','二','三','四'][S.stageYr-1];}
   else if(S.stage==='AMA'){t=S.team;level='業餘成棒';}
-  else {t=S.orgTeam||S.teamName();level=`${LV[S.lv]?LV[S.lv].n:'職業'}${S.pos==='P'&&S.role?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}${S.org==='NPB'?(npbRosterStatus().foreign?'・外籍':'・視同本土'):''}${S.org==='MiLB'?'・'+mlbRosterStatus().short:''}`;}
+  else {t=S.orgTeam||S.teamName();level=`${LV[S.lv]?LV[S.lv].n:'職業'}${S.pos==='P'&&S.role?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}${S.org==='NPB'?(npbRosterStatus().foreign?'・外籍':'・視同本土'):''}`;if(S.org==='MiLB')roster=mlbRosterStatus().short;}
   { const tc=(S.orgTeam&&TEAM_COLOR[S.orgTeam])||'var(--amber)';
     $('bd-team').style.setProperty('--team-color',tc);
-    $('bd-team').innerHTML=`<span class="team-dot"></span><small>目前所屬球隊</small><b>${t||'尚未簽約'}</b><em>${level||stageLabel()}</em>`;
-    const bt=$('broadcast-team');if(bt){bt.style.setProperty('--team-color',tc);bt.innerHTML=`<small>目前所屬</small><strong>${t||'尚未簽約'}</strong><em>${level||stageLabel()}</em>`;} }
+    const rosterHTML=roster?`<span class="team-roster-chip">${roster}</span>`:'';
+    $('bd-team').innerHTML=`<span class="team-monogram" aria-hidden="true">${teamMonogram(t)}</span><small>目前所屬球隊</small><b>${t||'尚未簽約'}</b><em>${level||stageLabel()}</em>${rosterHTML}`;
+    const bt=$('broadcast-team');if(bt){bt.style.setProperty('--team-color',tc);bt.innerHTML=`<span class="team-monogram" aria-hidden="true">${teamMonogram(t)}</span><small>目前所屬</small><strong>${t||'尚未簽約'}</strong><em>${level||stageLabel()}</em>${rosterHTML}`;} }
   if($('broadcast-now'))$('broadcast-now').textContent=`${S.year}｜${['季初','賽季中','季末'][phase]||'生涯進行中'}`;
   $('bd-age').textContent=S.age; $('bd-year').textContent=S.year;
   $('bd-ovr').textContent=ovr(); if(S.pos==='P'){const el=$('bd-tj'); if(el)el.textContent='';} $('bd-sal').textContent=Math.round(S.finance?syncFinance().cash:S.salary).toLocaleString();
@@ -2373,7 +2541,7 @@ function board(phase){
   renderRails();
 }
 function actClear(){ const a=$('act'); a.innerHTML=''; a.classList.remove('collapsed');
-  a.classList.remove('event-actions','decision-modal','decision-docked','result-continue','allocation-complete','allocation-modal');a.removeAttribute('role');a.removeAttribute('aria-modal');a.removeAttribute('aria-label');
+  a.classList.remove('event-actions','decision-modal','decision-docked','decision-major','result-continue','allocation-complete','allocation-modal');a.removeAttribute('role');a.removeAttribute('aria-modal');a.removeAttribute('aria-label');
   const career=$('career-main'),backdrop=$('decision-backdrop');if(career)career.classList.remove('decision-open');if(backdrop){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');}
   const t=$('act-toggle'); if(t)t.style.display='none'; }
 function continueAction(label,next){
@@ -2388,6 +2556,12 @@ function choiceImpactText(o){
   if(/選秀/.test(t))return '進入選秀流程；結果會影響職業起點與簽約機會';
   return '選擇後會完整公布能力、狀態、關係、金錢與生涯去向的實際變動';
 }
+function ensureChoiceOutcome(capture,tries){
+  if(!capture||_choiceResultCapture!==capture||capture.hasResult)return;tries=tries||0;
+  const waiting=['roll-overlay','season-overlay','summary-overlay','draft-overlay'].some(id=>$(id)&&$(id).classList.contains('open'));
+  if(waiting&&tries<120){setTimeout(()=>ensureChoiceOutcome(capture,tries+1),200);return;}
+  card('info','選擇結果已記錄','系統已完成這次行動；沒有另外觸發重大事件。所有即時變動整理如下。');
+}
 function actToggleSync(){
   const a=$('act'), t=$('act-toggle'); if(!t)return;
   const has=a.innerHTML.trim()!=='' && a.style.display!=='none';
@@ -2398,22 +2572,22 @@ function choose(title,opts){
   if(_choiceResultCapture&&_choiceResultCapture.hasResult){continueAction('看完選擇結果，再看下一步 ▸',()=>choose(title,opts));return;}
   actClear(); const a=$('act');
   a.classList.remove('collapsed'); /* 新選項出現時自動展開 */
-  const storyModal=/家庭|球迷|休賽季|場外|私生活|聚餐|緋聞|約會|求婚|婚姻|孩子|戀情|啦啦隊|突發|挖角|轉隊協商/.test(String(title||'')),hasEvent=storyModal||opts.some(o=>o.event||o.modal);a.classList.toggle('event-actions',hasEvent);a.classList.add(hasEvent?'decision-modal':'decision-docked');
-  if(hasEvent){a.setAttribute('role','dialog');a.setAttribute('aria-modal','true');a.setAttribute('aria-label','事件決策');}
+  const richDecision=opts.some(o=>o.event||o.modal||Number.isFinite(o.probability)),majorDecision=/選秀|簽約|合約|自由球員|DFA|指定讓渡|交易|買斷|升上|升格|降至|下放|重大傷病|手術|引退|婚姻|求婚/.test(String(title||''))||opts.some(o=>o.major);
+  a.classList.toggle('event-actions',richDecision);a.classList.toggle('decision-major',majorDecision);a.classList.add('decision-modal');
+  a.setAttribute('role','dialog');a.setAttribute('aria-modal','true');a.setAttribute('aria-label',majorDecision?'重大生涯決策':'生涯決策');
   const career=$('career-main'),backdrop=$('decision-backdrop');if(career)career.classList.add('decision-open');if(backdrop){backdrop.classList.add('open');backdrop.setAttribute('aria-hidden','false');}
-  if(!hasEvent){if(career)career.classList.remove('decision-open');if(backdrop){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');}}
-  const tools=hasEvent?'<div class="decision-tools"><button class="decision-dock" type="button">先看生涯軌跡</button></div>':'';
+  const tools='<div class="decision-tools"><button class="decision-dock" type="button">先看生涯播報｜選項會保留</button></div>';
   if(title)a.innerHTML=tools+`<div class="title">${title}</div>`;
   else a.innerHTML=tools+'<div class="title decision-heading"><span>下一步</span><b>選擇你的行動</b></div>';
-  if(hasEvent){const dock=a.querySelector('.decision-dock');dock.onclick=()=>{a.classList.remove('decision-modal');a.classList.add('decision-docked');a.removeAttribute('role');a.removeAttribute('aria-modal');if(career)career.classList.remove('decision-open');if(backdrop){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');}dock.textContent='選項保留在下方｜可先查看生涯播報';};}
+  {const dock=a.querySelector('.decision-dock');dock.onclick=()=>{a.classList.remove('decision-modal','decision-major');a.classList.add('decision-docked');a.removeAttribute('role');a.removeAttribute('aria-modal');if(career)career.classList.remove('decision-open');if(backdrop){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');}dock.textContent='選項保留中｜點選下方任一行動';};}
   opts.forEach((o,idx)=>{ const b=document.createElement('button');
-    const eventStyle=hasEvent,bounded=Number.isFinite(o.probability),direct=o.direct||!bounded;
+    const eventStyle=richDecision,bounded=Number.isFinite(o.probability),direct=o.direct||!bounded;
     b.className='btn'+(o.main?' main':'')+(o.risk?' risk':'')+(o.warn?' warn':'')+(eventStyle?' event-choice':' choice-card');
     const impact=choiceImpactText(o);
     const badge=o.risk?`<em class="choice-risk-badge">${Number.isFinite(o.probability)?`成功機會 ${Math.round(o.probability)}%｜`:''}高風險・高報酬</em>`:o.warn?'<em class="choice-cost-badge">重大代價</em>':'';
     const chanceTitle=o.sideTitle||(direct?'直接執行':`成功 ${Math.round(o.probability)}%`),chanceNote=o.sideNote||(direct?'立即結算選擇後果':o.risk?'成功 ×3｜失敗 ×2':o.mode==='safe'?'保守回報｜不加永久能力':chanceBand(o.probability));
     b.innerHTML=eventStyle?`<span class="event-key">${String.fromCharCode(65+idx)}</span><span class="event-copy"><b>${o.t}</b><small><strong>影響｜</strong>${impact}</small></span><span class="chance-num${direct?' direct':''}${o.risk?' risk':''}">${chanceTitle}<small>${chanceNote}</small></span>`:`<span class="choice-key">${String.fromCharCode(65+idx)}</span><span class="choice-content"><b>${o.t}</b><small><strong>影響｜</strong>${impact}${badge}</small></span><span class="choice-arrow">›</span>`;
-    b.onclick=()=>{_choiceResultCapture={choice:o.t,before:choiceStateSnapshot(),entries:[]};actClear();o.f();};a.appendChild(b); });
+    b.onclick=()=>{const capture={choice:o.t,before:choiceStateSnapshot(),entries:[]};_choiceResultCapture=capture;actClear();o.f();setTimeout(()=>ensureChoiceOutcome(capture,0),160);};a.appendChild(b); });
   actToggleSync(); scrollBottom();requestAnimationFrame(()=>{const first=a.querySelector('button');if(first)first.focus({preventScroll:true});});
 }
 function potentialBreakthroughRules(){
@@ -4510,11 +4684,27 @@ function careerHonorsHTML(){
   const watch=(S.awardWatch||[]).length?`<section class="report-section"><h3>最近一次獎項競爭</h3><div class="award-grid">${S.awardWatch.map(x=>`<div class="award-item">◌ ${x}</div>`).join('')}</div></section>`:'';
   return `<div class="career-award-count"><div><span>正式榮譽</span><b>${(S.honors||[]).length}</b></div><div><span>主要個人獎</span><b>${major}</b></div><div><span>得獎年度</span><b>${honorYears}</b></div></div><section class="report-section"><h3>獎項與大賽成績</h3>${blocks?`<div class="honor-groups">${blocks}</div>`:'<div class="career-empty">目前尚未獲得正式獎項；明星賽、單項王、年度獎與冠軍會在球季結算後記錄。</div>'}</section>${watch}<section class="report-section"><h3>連霸與潛力突破</h3>${potentialProgressHTML()}</section>`;
 }
+function careerTeamsHTML(){
+  const logs=(S.log||[]).filter(x=>x&&x.tm),stops=[];
+  logs.forEach(row=>{const last=stops[stops.length-1];if(last&&last.team===row.tm&&last.end===row.y-1){last.end=row.y;last.seasons++;last.last=row;last.games+=(row.st&&row.st.G)||0;}else stops.push({team:row.tm,start:row.y,end:row.y,seasons:1,last:row,games:(row.st&&row.st.G)||0});});
+  const current=S.stage==='PRO'?(S.orgTeam||S.teamName()):(S.team||stageLabel()),last=stops[stops.length-1];if(current&&(!last||!String(last.team).includes(current)))stops.push({team:current,start:S.year,end:S.year,seasons:0,last:null,games:0,current:true});else if(last)last.current=true;
+  const timeline=stops.map(x=>`<div class="career-team-stop${x.current?' current':''}"><span>${x.start===x.end?x.start:`${x.start}–${x.end}`}</span><b>${x.team}${x.current?'｜目前':''}</b><small>${x.last?x.last.line:'目前名單與合約身分'}</small><em>${x.seasons?`${x.seasons} 季・${x.games} 場`:'本季'}</em></div>`).join('');
+  const roster=S.org==='MiLB'?(()=>{const rs=mlbRosterStatus(),mr=mlbRosterState();return `<section class="report-section"><h3>MLB 名單履歷</h3><div class="hs-formula">目前｜<b>${rs.label}</b><br>選擇權使用年度｜${mr.optionSeasons.length?mr.optionSeasons.join('、'):'尚未使用'}<br>DFA ${mr.dfaCount||0} 次｜Outright ${mr.outrightCount||0} 次</div></section>`;})():'';
+  return `<section class="report-section"><h3>球隊與層級軌跡</h3>${timeline?`<div class="career-team-timeline">${timeline}</div>`:'<div class="career-empty">完成第一個年度後，球隊軌跡會出現在這裡。</div>'}</section>${roster}`;
+}
+function financeTypeLabel(row){const map={salary:'薪資入帳',bonus:'簽約金',living:'生活支出',luxury:'個人消費',family:'家庭支出',investment:'投資損益','asset-transfer':'資產配置','debt-payment':'償還負債',interest:'負債利息'};return row.label||map[row.type]||'財務紀錄';}
+function careerFinanceHTML(){
+  const f=syncFinance(),box=(label,value)=>`<div class="stat-box"><span>${label}</span><b>${value}</b></div>`,ledger=(f.ledger||[]).slice().reverse();
+  const overview=`<div class="finance-overview">${box('可動用現金',fmtMoney(f.cash))}${box('目前淨資產',fmtMoney(f.netWorth))}${box('合約總收入',fmtMoney(f.gross))}${box('累計稅負',fmtMoney(f.tax))}${box('經紀費',fmtMoney(f.agent))}${box('場外總支出',fmtMoney((f.living||0)+(f.luxury||0)+(f.family||0)))}${box('投資＋房產',fmtMoney((f.investments||0)+(f.homeEquity||0)))}${box('負債',fmtMoney(f.debt))}</div>`;
+  const contract=S.stage==='PRO'&&S.ct?`<div class="hs-formula"><b>目前合約</b>｜${S.orgTeam||'球團'}｜剩餘 ${S.ct.yrs} 年｜年薪 ${fmtLocalMoney(S.ct.annual||0,S.org)}｜保障 ${Math.round((S.ct.guaranteed||0)*100)}%${S.ct.option?`｜${S.ct.option}`:''}</div>`:'<div class="career-empty">目前沒有有效職業合約。</div>';
+  const rows=ledger.map(r=>{const expense=(r.net||0)<0||['living','luxury','family','interest'].includes(r.type),income=(r.gross||0)>0||(r.net||0)>0,amount=r.gross?`收入 ${fmtMoney(r.gross)}｜實拿 ${fmtMoney(r.net||0)}`:r.amount?fmtMoney(r.amount):fmtMoney(Math.abs(r.net||0));return `<tr><td>${r.year||'—'}</td><td style="text-align:left"><span class="finance-ledger-type ${income?'income':expense?'expense':''}">${financeTypeLabel(r)}</span></td><td>${amount}</td><td>${r.tax?fmtMoney(r.tax):'—'}</td><td>${r.agent?fmtMoney(r.agent):'—'}</td><td>${r.borrowed?`借款 ${fmtMoney(r.borrowed)}`:'—'}</td></tr>`;}).join('');
+  return `<section class="report-section"><h3>資產與現金流</h3>${overview}</section><section class="report-section"><h3>目前合約</h3>${contract}</section><section class="report-section"><h3>生涯財務明細</h3>${rows?`<div class="fin-wrap"><table class="fin"><thead><tr><th>年度</th><th style="text-align:left">項目</th><th>金額</th><th>稅</th><th>經紀費</th><th>資金缺口</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="career-empty">目前尚無收入或支出紀錄。</div>'}<div class="standings-foot">跨國合約在交易當下以當地貨幣顯示；生涯資產表統一折算為新台幣，方便比較現金、資產、稅負與負債。</div></section>`;
+}
 let careerReportTab='totals';
 function renderCareerReport(tab){
   careerReportTab=tab||careerReportTab;document.querySelectorAll('.career-tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===careerReportTab));
   const team=S.stage==='PRO'?(S.orgTeam||S.teamName()):(S.team||stageLabel());$('career-report-title').textContent=`${S.name}｜生涯資料`;$('career-report-sub').textContent=`${S.year}・${S.age} 歲・${team}｜資料統計至最近完成球季`;
-  $('career-report-body').innerHTML=careerReportTab==='years'?`<section class="report-section"><h3>逐年正式成績</h3>${careerYearRowsHTML()}</section>${amateurHistoryHTML()}`:careerReportTab==='honors'?careerHonorsHTML():careerTotalsHTML();$('career-report-body').scrollTop=0;
+  const views={totals:careerTotalsHTML,years:()=>`<section class="report-section"><h3>逐年正式成績</h3>${careerYearRowsHTML()}</section>${amateurHistoryHTML()}`,honors:careerHonorsHTML,teams:careerTeamsHTML,finance:careerFinanceHTML};$('career-report-body').innerHTML=(views[careerReportTab]||views.totals)();$('career-report-body').scrollTop=0;
 }
 function openCareerReport(tab){if(!S)return;renderCareerReport(tab||careerReportTab);openFx('career-overlay');}
 const FAN={
@@ -5060,6 +5250,13 @@ function shareImage(evals,out){
   if(t)t.onclick=()=>{ document.getElementById('act').classList.toggle('collapsed');
     t.textContent=document.getElementById('act').classList.contains('collapsed')?'⌃ 展開選項':'⌄ 收合選項'; };
 })();
+function setMobileView(view){
+  const allowed=['broadcast','player','season','finance'];view=allowed.includes(view)?view:'broadcast';$('app').dataset.mobileView=view;
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>{const on=b.dataset.mobileView===view;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false');});
+  if(view==='broadcast')requestAnimationFrame(scrollBottom);else{const panel=view==='season'?$('roll-rail'):$('player-rail');if(panel)panel.scrollTop=0;}
+}
+document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.onclick=()=>setMobileView(b.dataset.mobileView));
+setMobileView('broadcast');
 let selPos='P';
 $('seed-show').value=SEED;
 $('seed-re').onclick=e=>{e.preventDefault();SEED=makeSeed();$('seed-show').value=SEED;};
@@ -5090,6 +5287,7 @@ $('btn-start').onclick=()=>{
     return this.orgTeam+'二軍';
   };
   $('start').style.display='none';
+  document.body.classList.add('game-started');setMobileView('broadcast');
   $('board').style.display=''; $('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';
   card('info','球員誕生',`${S.year} 年春天，${POSN[S.pos]} <b class="hl">${S.name}</b> 加入 <b class="hl">${S.team}</b> 棒球隊。三年後的路，要自己選。<br><span style="color:var(--dim);font-size:13px">模式：${RNG_MODE==='destiny'?'同種子挑戰':'完全隨機'}｜22 歲前累積擲出 6 次「6」可覺醒隱藏素質。</span>`);
   startYear();
@@ -5099,7 +5297,7 @@ $('career-report-close').onclick=()=>closeFx('career-overlay');
 document.querySelectorAll('.career-tab').forEach(b=>b.onclick=()=>renderCareerReport(b.dataset.tab));
 $('career-overlay').querySelector('.fx-backdrop').onclick=()=>closeFx('career-overlay');
 $('settlement-close').onclick=closeSettlementViewer;
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('settlement-overlay').classList.contains('open'))closeSettlementViewer();else if($('career-overlay').classList.contains('open'))closeFx('career-overlay');});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('settlement-overlay').classList.contains('open'))closeSettlementViewer();else if($('career-overlay').classList.contains('open'))closeFx('career-overlay');else if($('decision-backdrop').classList.contains('open')){const dock=$('act').querySelector('.decision-dock');if(dock)dock.click();}});
 (function(){ const vb=document.getElementById('ver-badge'); if(vb)vb.textContent=APP_VER; })();
 function runLogicAudit(samples){
   samples=clamp(Number(samples)||500,50,3000);const saved={S,RNG_MODE,SEED},result={samples};RNG_MODE='destiny';
@@ -5126,6 +5324,7 @@ function runLogicAudit(samples){
   setup('IF','MLB',null,'SS');S.proYears=7;S.service.MiLB=5;mlbAddToFortyMan('audit');Object.assign(mlbRosterState(),{optionSeasons:[2027,2028,2029],fourthOptionGranted:false,outrightCount:0});const exhausted=mlbRosterStatus(),veteranRights=mlbDfaRights();S.service.MiLB=3;const threeYearRights=mlbDfaRights();S.service.MiLB=2;mlbRosterState().outrightCount=1;const priorOutrightRights=mlbDfaRights();
   setup('OF','MLB',null,'CF');S.year=2029;S.proYears=3;mlbAddToFortyMan('audit');Object.assign(mlbRosterState(),{optionSeasons:[2027,2028],fourthOptionGranted:false});consumeMlbOptionYear(2029);const fourthOption=mlbRosterStatus();result.mlbRosterRules={initialRemaining:rosterInitial.remaining,sameSeasonUsesOneYear:optionFirst.ok&&optionSecond.ok&&rosterAfter.used===1,sameSeasonAssignments:rosterAfter.assignments,sixthRequiresWaivers:!sixthAssignment.ok,outOfOptions:exhausted.remaining===0,fourthOptionGranted:fourthOption.limit===4&&fourthOption.remaining===1,fiveYearOptionConsent:veteranRights.optionConsent,fiveYearKeepsGuarantee:veteranRights.keepsGuarantee,threeYearCanRejectOutright:threeYearRights.canRejectOutright,priorOutrightCanReject:priorOutrightRights.canRejectOutright,demotionTarget:'A3'};
   let invariantViolations=0,checked=0;for(const lv of Object.keys(LV)){for(const spec of [['P','SP',null],['P','CL',null],['P','MR',null],['IF',null,'SS'],['OF',null,'CF'],['IF',null,'DH']]){setup(spec[0],lv,spec[1],spec[2]);Object.keys(S.ab).forEach(k=>S.ab[k]=ri(20,99));for(let n=0;n<50;n++){const st=simSeason(lv),r=st.role||S.role;checked++;if(st.G>(st.scheduled||LV[lv].g)||st.G<0)invariantViolations++;if(S.pos==='P'&&r!=='SP'&&(st.W+st.L+st.SV+st.HLD>st.G||(r==='MR'&&(st.HP!==st.HLD+st.W||st.HP>st.G))))invariantViolations++;if(S.pos!=='P'&&(st.H>st.AB||st.HR>st.H||st.SB>st.H+st.BB||(st._dh&&(st.DEF!==0||st.TC>0||st.defG>0))))invariantViolations++;}}}result.invariantSweep={checked,violations:invariantViolations};
+  setup('IF','MLB',null,'SS');S.log.push({y:2030,age:27,tm:S.orgTeam,line:'120 G｜500 PA',st:{G:120,PA:500,AB:450,H:130,BB:40,HR:18,RBI:70,SB:12,TC:500,E:8,DEF:9}});S.finance.ledger.push({year:2030,type:'salary',gross:1000,tax:250,agent:25,net:725});const teamView=careerTeamsHTML(),financeView=careerFinanceHTML();result.frontendViews={mobileTabs:document.querySelectorAll('.mobile-nav-btn').length,careerTabs:document.querySelectorAll('.career-tab').length,seasonControls:document.querySelectorAll('.season-control').length,teamTrackRenders:teamView.includes('career-team-stop'),financeLedgerRenders:financeView.includes('生涯財務明細')&&financeView.includes('薪資入帳')};
   setup('P','MLB','SP');S.ct={yrs:3,signedYears:3,annual:1000,mult:1,guaranteed:1};S.skipMid=true;S.rehab=1;S._proClockYear=null;settleProfessionalSeasonClock();const once={yrs:S.ct.yrs,service:S.service.MiLB};settleProfessionalSeasonClock();result.contractClock={afterRehabSeason:once,idempotent:S.ct.yrs===once.yrs&&S.service.MiLB===once.service};
   S=saved.S;RNG_MODE=saved.RNG_MODE;SEED=saved.SEED;return result;
 }
