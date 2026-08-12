@@ -167,7 +167,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 .bd-cell b{font-size:17px;color:#d8c27d;text-shadow:none}.bd-cell span{font-size:8px;color:#748d7e}
 #lamps{margin-top:4px}.lamp{font-size:9px;opacity:.72}.lamp i{width:7px;height:7px;transition:none}.lamp.on i{animation:none}
 @keyframes lampPulse{50%{box-shadow:0 0 16px var(--amber);transform:scale(1.2)}}
-#career-main{grid-area:main;min-width:0;min-height:0;height:100%;display:grid;grid-template-rows:46px minmax(0,1fr) var(--action-h);gap:12px;overflow:hidden}.broadcast-head{height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 15px;border:1px solid #4b7d62;border-radius:13px;background:linear-gradient(90deg,#0b2017,#081912);box-shadow:0 10px 28px #0007,0 0 0 1px #ffffff06 inset}.broadcast-head span{font:900 11px var(--mono);letter-spacing:.18em;color:#ff8278}.broadcast-head span::before{content:'';display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:#ff7167;box-shadow:0 0 10px #ff7167}.broadcast-head b{font-size:12px;color:var(--chalk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#log{min-width:0;min-height:0;height:100%;padding:0 5px 0 0;gap:12px;overflow-y:scroll;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#315b47 transparent}
+#career-main{grid-area:main;min-width:0;min-height:0;height:100%;display:grid;grid-template-rows:58px minmax(0,1fr) var(--action-h);gap:12px;overflow:hidden}.broadcast-head{height:58px;display:grid;grid-template-columns:auto minmax(190px,1fr) auto;align-items:center;gap:12px;padding:7px 10px;border:1px solid #4b7d62;border-radius:0;background:linear-gradient(90deg,#0b2017,#081912);box-shadow:0 10px 28px #0007,0 0 0 1px #ffffff06 inset}.broadcast-head>span{font:900 11px var(--mono);letter-spacing:.18em;color:#ff8278;white-space:nowrap}.broadcast-head>span::before{content:'';display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:#ff7167;box-shadow:0 0 10px #ff7167}.broadcast-team{--team-color:var(--amber);min-width:0;height:42px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:5px 10px;border-left:7px solid var(--team-color);background:#10261d;box-shadow:inset 0 0 0 1px #ffffff0b}.broadcast-team small{font:800 9px var(--mono);letter-spacing:.08em;color:#8da99a;white-space:nowrap}.broadcast-team strong{min-width:0;font-size:18px;color:#f4f7f3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.broadcast-team em{font:700 10px var(--mono);color:#b9c9c0;white-space:nowrap}.broadcast-head b{font-size:12px;color:var(--chalk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#log{min-width:0;min-height:0;height:100%;padding:0 5px 0 0;gap:12px;overflow-y:scroll;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#315b47 transparent}
 #act{position:relative;bottom:auto;z-index:10;border:1px solid #35654e;border-radius:16px;
   min-height:0;height:100%;padding:14px;background:linear-gradient(180deg,#183a2deb,#0c1d16f5);box-shadow:0 18px 50px #000b;backdrop-filter:blur(16px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#315b47 transparent}
 #act.event-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#act.event-actions>.title{grid-column:1/-1;margin:0}#act.event-actions>.btn{height:100%;margin:0;align-content:center}
@@ -305,7 +305,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
   #app{--board-h:152px;--action-h:max(235px,38dvh);display:flex;flex-direction:column;height:auto;min-height:100dvh;padding:0;gap:0;max-width:620px;overflow:visible}#board{width:100%;height:var(--board-h);flex:none;border-radius:0;padding:8px 12px 7px;position:sticky;top:0}
   #bd-top{grid-template-columns:minmax(0,1fr) auto;gap:7px}#bd-name{font-size:17px}#bd-tj{display:none}#btn-restart{grid-column:2;grid-row:1}#bd-team{grid-column:1/-1;grid-row:2;min-width:0;width:100%;grid-template-columns:10px minmax(0,1fr) auto;padding:6px 9px}#bd-team .team-dot{height:25px;width:8px}#bd-team b{font-size:15px}#bd-team em{font-size:9px}
   #bd-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.bd-cell{min-width:0;padding:4px 3px}.bd-cell b{font-size:16px}.bd-cell span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#lamps{display:none}
-  #career-main{order:1;width:100%;height:calc(100dvh - var(--board-h));min-height:500px;flex:none;display:grid;grid-template-rows:42px minmax(0,1fr) var(--action-h);gap:8px;overflow:hidden}.broadcast-head{height:42px;margin:8px 12px 0}
+  #career-main{order:1;width:100%;height:calc(100dvh - var(--board-h));min-height:500px;flex:none;display:grid;grid-template-rows:56px minmax(0,1fr) var(--action-h);gap:8px;overflow:hidden}.broadcast-head{height:56px;margin:8px 12px 0;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;padding:6px 8px}.broadcast-head>span{max-width:46px;font-size:9px;line-height:1.25;white-space:normal}.broadcast-team{height:42px;grid-template-columns:minmax(0,1fr);gap:0;padding:4px 7px;border-left-width:5px}.broadcast-team small{font-size:8px}.broadcast-team strong{font-size:15px}.broadcast-team em{display:none}
   #player-rail{order:2}#roll-rail{order:3}#player-rail,#roll-rail{position:static;width:calc(100% - 24px);height:auto;margin:12px 12px 0;display:grid!important;grid-template-columns:1fr;overflow:visible;scrollbar-gutter:auto}
   #act.event-actions{grid-template-columns:1fr}
   #act.event-actions>.btn{height:auto!important;min-height:78px}.btn.event-choice{grid-template-columns:32px minmax(0,1fr) 76px;gap:8px}.event-choice .event-icon{font-size:20px}.event-choice .chance-num{font-size:13px}.event-choice .event-copy b{font-size:13px}.event-choice .event-copy small{font-size:11px}
@@ -324,7 +324,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 body{font-size:16px}
 #bd-team small{font-size:11px;color:#a9bdb1}#bd-team em{font-size:12px}#bd-team b{font-size:18px}
 .bd-cell span{font-size:11px;color:#9db0a4}.lamp{font-size:11px;color:#9db0a4}
-.broadcast-head span{font-size:12px}.broadcast-head b{font-size:14px}
+.broadcast-head>span{font-size:12px}.broadcast-head b{font-size:14px}
 .card h4{font-size:15px}.card p{font-size:15px}.statline{font-size:14px}
 .rail-label{font-size:12px;color:#a9bdb1}.scout-type span{font-size:13px}.scout-ovr small{font-size:10px}
 .ability-row{grid-template-columns:70px minmax(34px,1fr) 48px;font-size:14px}.ability-row b{font-size:16px}.ability-row b small{font-size:10px;color:#a0b3a7}
@@ -370,7 +370,7 @@ body{font-size:16px}
 #act.decision-docked{overflow-y:auto;border-top:3px solid var(--amber);background:#091b13}#act.decision-docked>.btn{min-height:88px;margin-top:8px;padding:16px 17px;border-width:2px}#act.decision-docked.event-actions>.btn{min-height:108px}#act.decision-docked .decision-tools{position:sticky;top:0;z-index:2;margin:-1px -1px 8px;padding:7px;background:#091b13;border-bottom:1px solid #365b48}#act.decision-docked .decision-dock{width:100%;cursor:default}
 
 @media (max-width:760px){
-  #career-main.decision-open{grid-template-rows:42px minmax(0,1fr) 0}
+  #career-main.decision-open{grid-template-rows:56px minmax(0,1fr) 0}
   #act.decision-modal,#act.decision-modal.event-actions{left:12px;right:auto;top:50%;width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);margin:0;padding:13px;transform:translateY(-50%);grid-template-columns:minmax(0,1fr);gap:9px}
   #act.decision-modal>.btn{min-height:88px;padding:16px 14px}#act.decision-modal.event-actions>.btn{min-height:112px}
   .btn.event-choice{min-width:0;grid-template-columns:38px minmax(0,1fr) minmax(84px,94px);gap:9px}.event-key{width:34px;height:36px;font-size:14px}.event-copy,.event-stage,.event-top{min-width:0}
@@ -499,7 +499,7 @@ html *{border-radius:0!important}
     </section>
   </aside>
   <section id="career-main">
-    <div class="broadcast-head"><span>LIVE · 生涯播報</span><div class="broadcast-tools"><b id="broadcast-now">人生尚未開球</b><button id="btn-career-report" class="career-report-btn" type="button">生涯資料</button></div></div>
+    <div class="broadcast-head"><span>LIVE · 生涯播報</span><div id="broadcast-team" class="broadcast-team"><small>目前所屬</small><strong>尚未加入球隊</strong><em>等待開球</em></div><div class="broadcast-tools"><b id="broadcast-now">人生尚未開球</b><button id="btn-career-report" class="career-report-btn" type="button">生涯資料</button></div></div>
     <main id="log"></main>
     <button id="act-toggle" style="display:none">⌄ 收合選項</button>
     <footer id="act" style="display:none"></footer>
@@ -760,7 +760,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v2.8.0';
+const APP_VER='v2.8.1';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -1108,8 +1108,16 @@ function fmtIP(ip){ /* 十進位局數轉棒球表示:小數部分 →三分之�
 }
 function roleN(r){ return {SP:'先發',MR:'中繼',CL:'終結者'}[r]||'—'; }
 function reliefPoints(st,role){
-  role=role||S.role;if(role!=='MR')return 0;
+  role=role||(st&&st.role)||S.role;if(role!=='MR')return 0;
   return Number.isFinite(st&&st.HP)?st.HP:((st&&st.HLD)||0)+((st&&st.W)||0);
+}
+function reliefWins(st,role){
+  role=role||(st&&st.role)||S.role;if(role!=='MR')return 0;
+  return Math.max(0,reliefPoints(st,role)-((st&&st.HLD)||0));
+}
+function reliefPointFormula(st,role){
+  const h=(st&&st.HLD)||0,w=reliefWins(st,role),hp=reliefPoints(st,role);
+  return `${h} HLD ＋ ${w} 後援勝 ＝ ${hp} HP`;
 }
 function isSP(){ return S.role==='SP'; } /* 先發引擎判定 */
 function ovr(){
@@ -1280,7 +1288,7 @@ function simSeason(lv){
   if(S.pos==='P'&&!S.role)S.role=pitcherRole();
   const L=LV[lv], par=L.par, a=S.ab, scheduleF=(S.seasonContext&&S.seasonContext.scheduleF)||1,f=clamp(S.seasonFactor*scheduleF,0,1);
   const swing=seasonSwing(),tail=seasonOutlierProfile(lv),npbForeign=lv==='NPB1'&&npbRosterStatus().foreign;
-  const st={G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,avg:0,era:0,d:0,luck:swing.luck,swing:+swing.total.toFixed(1),scheduled:L.g,availability:Math.round(f*100),usageRole:'未定'};
+  const st={G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,avg:0,era:0,d:0,luck:swing.luck,swing:+swing.total.toFixed(1),scheduled:L.g,availability:Math.round(f*100),usageRole:'未定',role:S.pos==='P'?S.role:null};
   if(f<=0) return st;
   if(S.pos==='P'){
     /* 能力分工：球速／變化球主導揮空與被打品質，控球主導保送，體力主導角色與局數。 */
@@ -1421,12 +1429,14 @@ function defRuns(lv,st){
   return Math.round(ratingGap(skill,par)*posW*0.55*gw);
 }
 function normalizeReliefLine(st){
-  if(S.pos!=='P'||isSP()||!st)return st;
+  if(S.pos!=='P'||!st)return st;
+  const role=st.role||S.role;st.role=role;
+  if(role==='SP')return st;
   let left=Math.max(0,st.G||0);
   const take=k=>{st[k]=clamp(Math.round(st[k]||0),0,left);left-=st[k];};
-  if(S.role==='CL'){take('SV');take('HLD');take('W');take('L');}
+  if(role==='CL'){take('SV');take('HLD');take('W');take('L');}
   else{take('HLD');take('SV');take('W');take('L');}
-  st.HP=(st.HLD||0)+(st.W||0);return st;
+  st.HP=role==='MR'?(st.HLD||0)+(st.W||0):0;return st;
 }
 function enforceSeasonInvariants(st,lv){
   if(!st)return st;const maxG=(LV[lv]&&LV[lv].g)||st.scheduled||200;
@@ -1488,7 +1498,7 @@ function defenseExtra(st,short){
   return short?`FPCT ${pct}｜${st.E||0} E｜${st.DP||0} DP｜DEF ${drs}`:`守備率 ${pct}｜失誤 ${st.E||0}｜參與雙殺 ${st.DP||0}｜守備貢獻 ${drs}`;
 }
 function statLine(st){
-  if(S.pos==='P'){ const role=roleN(S.role); const relief=(S.role==='CL'&&st.SV)?`｜${st.SV}救援`:(S.role==='MR'&&st.HLD)?`｜${st.HLD}中繼｜${reliefPoints(st)}後援點`:''; return `出賽 ${st.G}｜局數 ${fmtIP(st.IP)}｜${st.W}勝${st.L}敗${relief}｜三振 ${st.SO}｜保送 ${st.BB||0}｜ERA ${st.era.toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}｜平均球速 ${veloText(st)}`; }
+  if(S.pos==='P'){ const r=st.role||S.role,role=roleN(r); const relief=r==='CL'?`｜${st.SV||0}救援｜${st.HLD||0}中繼`:r==='MR'?`｜${reliefPointFormula(st,r)}｜${st.SV||0}救援`:''; return `出賽 ${st.G}｜局數 ${fmtIP(st.IP)}｜${st.W}勝${st.L}敗${relief}｜三振 ${st.SO}｜保送 ${st.BB||0}｜ERA ${st.era.toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}｜平均球速 ${veloText(st)}`; }
   const obpN=st.PA>0?(st.H+st.BB)/st.PA:0;
   const slgN=slgOf(st);
   const obp=st.PA>0?obpN.toFixed(3).replace(/^0/,''):'-';
@@ -1504,8 +1514,8 @@ function seasonTeamInfo(){
 function statDashboard(st){
   const box=(label,value,key)=>`<div class="stat-box${key?' key':''}"><span>${label}</span><b>${value}</b></div>`;
   if(S.pos==='P'){
-    const roleLabel=S.role==='CL'?'救援':S.role==='MR'?'中繼':'K/9',roleValue=S.role==='CL'?(st.SV||0):S.role==='MR'?(st.HLD||0):(st.IP?((st.SO||0)/st.IP*9).toFixed(1):'0.0'),hp=S.role==='MR'?box('後援點',reliefPoints(st),true):'';
-    return box('出賽',st.G)+box('局數',fmtIP(st.IP))+box('勝敗',`${st.W}-${st.L}`)+box(roleLabel,roleValue,S.role!=='SP')+hp+box('平均球速',veloText(st),true)+box('三振',st.SO||0)+box('保送',st.BB||0)+box('ERA',(st.era||0).toFixed(2),true)+box('WHIP',(st.WHIP||0).toFixed(2),true);
+    const r=st.role||S.role,roleLabel=r==='CL'?'救援成功':r==='MR'?'中繼成功':'K/9',roleValue=r==='CL'?(st.SV||0):r==='MR'?(st.HLD||0):(st.IP?((st.SO||0)/st.IP*9).toFixed(1):'0.0'),sv=r==='MR'?box('救援成功',st.SV||0):'',hp=r==='MR'?box('後援點（HLD＋後援勝）',`${st.HLD||0}＋${reliefWins(st,r)}＝${reliefPoints(st,r)}`,true):'';
+    return box('出賽',st.G)+box('局數',fmtIP(st.IP))+box('勝敗',`${st.W}-${st.L}`)+box(roleLabel,roleValue,r!=='SP')+sv+hp+box('平均球速',veloText(st),true)+box('三振',st.SO||0)+box('保送',st.BB||0)+box('ERA',(st.era||0).toFixed(2),true)+box('WHIP',(st.WHIP||0).toFixed(2),true);
   }
   const obp=st.PA?(st.H+st.BB)/st.PA:0,slg=slgOf(st),ops=obp+slg,pct=v=>v?v.toFixed(3).replace(/^0/,''):'—';
   let defense='';if(st.TC>0){const dp=S.dpos||(S.pos==='C'?'C':'2B'),special=dp==='C'?box('阻殺率',st.SBA?Math.round((st.CS||0)/st.SBA*100)+'%':'—'):['LF','CF','RF'].includes(dp)?box('外野助殺',st.OFA||0):box('參與雙殺',st.DP||0);defense=box('守備率',fieldingPct(st).toFixed(3).replace(/^0/,'')||'—',true)+box('失誤',st.E||0)+special+box('守備貢獻',`${st.DEF>0?'+':''}${st.DEF||0}`,true);}
@@ -1516,9 +1526,9 @@ function seasonVerdict(st){
   if(injury&&/球季報銷|生涯威脅/.test(injury.title))return {title:`${injury.title}・球季提前結束`,text:`本季只留下 ${st.G||0} 場出賽；傷勢發生後已停止累積數據，後續月份全部列為傷病名單與復健。舊傷已寫入生涯紀錄，會影響未來受傷率與老化幅度。`};
   if(!st.G)return {title:'傷缺球季',text:'本季沒有留下正式出賽紀錄，重點轉向恢復與下一年的準備。'};
   if(S.pos==='P'){
-    const era=st.era||9.99,role=S.role==='MR'?(st.HLD>=25?'牛棚核心':'中繼戰力'):S.role==='CL'?(st.SV>=30?'可靠終結者':'後援戰力'):(st.IP>=150?'輪值支柱':'先發輪值');
+    const r=st.role||S.role,era=st.era||9.99,role=r==='MR'?(st.HLD>=25?'牛棚核心':'中繼戰力'):r==='CL'?(st.SV>=30?'可靠終結者':'後援戰力'):(st.IP>=150?'輪值支柱':'先發輪值');
     const grade=era<=2.50?'壓制級球季':era<=3.50?'優質球季':era<=4.40?'穩定球季':'艱難球季';
-    return {title:`${role}・${grade}`,text:`出賽 ${st.G} 場、${fmtIP(st.IP)} 局，留下 ${st.W} 勝 ${st.L} 敗${S.role==='MR'?`、${st.HLD||0} 次中繼成功、${reliefPoints(st)} 個後援點`:S.role==='CL'?`、${st.SV||0} 次救援成功`:''}。平均球速 ${veloText(st)}、三振 ${st.SO||0}、ERA ${era.toFixed(2)}、WHIP ${(st.WHIP||0).toFixed(2)}。`};
+    return {title:`${role}・${grade}`,text:`出賽 ${st.G} 場、${fmtIP(st.IP)} 局，留下 ${st.W} 勝 ${st.L} 敗${r==='MR'?`、${st.HLD||0} 次中繼成功、${st.SV||0} 次救援成功；後援點為 ${reliefPointFormula(st,r)}`:r==='CL'?`、${st.SV||0} 次救援成功、${st.HLD||0} 次中繼成功`:''}。平均球速 ${veloText(st)}、三振 ${st.SO||0}、ERA ${era.toFixed(2)}、WHIP ${(st.WHIP||0).toFixed(2)}。`};
   }
   const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),grade=ops>=.900?'明星級球季':ops>=.800?'主力級球季':ops>=.700?'穩定球季':ops>=.600?'低潮球季':ops>=.400?'崩盤球季':'災難級球季',def=defenseExtra(st);
   const warning=ops<.400&&st.PA>=50?'這種表現會直接觸發球團的降級或釋出審查。':ops<.600&&st.PA>=100?'名單位置與下一份合約都已受到明顯影響。':'';
@@ -2168,7 +2178,7 @@ function applySeasonAdjustments(st){
   return enforceSeasonInvariants(st,S.lv);
 }
 function compactSeasonLine(st){
-  if(S.pos==='P'){const relief=S.role==='CL'?`｜SV ${st.SV||0}`:S.role==='MR'?`｜HLD ${st.HLD||0}｜HP ${reliefPoints(st)}`:'';return `${st.G} G｜${fmtIP(st.IP)} IP｜${st.W}-${st.L}${relief}｜${st.SO||0} K｜ERA ${(st.era||0).toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}｜AVG FB ${veloText(st)}`;}
+  if(S.pos==='P'){const r=st.role||S.role,relief=r==='CL'?`｜SV ${st.SV||0}｜HLD ${st.HLD||0}`:r==='MR'?`｜HLD ${st.HLD||0}｜SV ${st.SV||0}｜HP ${reliefPoints(st,r)}（${st.HLD||0}＋${reliefWins(st,r)}勝）`:'';return `${st.G} G｜${fmtIP(st.IP)} IP｜${st.W}-${st.L}${relief}｜${st.SO||0} K｜ERA ${(st.era||0).toFixed(2)}｜WHIP ${(st.WHIP||0).toFixed(2)}｜AVG FB ${veloText(st)}`;}
   const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),pct=v=>v?v.toFixed(3).replace(/^0/,''):'—',def=defenseExtra(st,true);return `${st.G} G｜${st.PA} PA｜${st.H} H｜${st.HR} HR｜${st.RBI} RBI｜盜壘 ${st.SB||0}｜AVG ${pct(st.avg)}｜OPS ${pct(ops)}${def?`｜${def}`:''}`;
 }
 function playingTimeShare(st){
@@ -2216,7 +2226,7 @@ function monthlySeasonSlices(finalStats,timeline,activeMonths){
 function monthlyDeltaLine(current,previous){
   previous=previous||{G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0};
   if(S.pos==='P'){
-    const ip=+(current.IP-previous.IP).toFixed(1),er=Math.max(0,(current.ER||0)-(previous.ER||0)),h=Math.max(0,(current.H||0)-(previous.H||0)),bb=Math.max(0,(current.BB||0)-(previous.BB||0)),era=ip>0?er*9/ip:0,whip=ip>0?(h+bb)/ip:0,rel=S.role==='MR'?`｜${Math.max(0,(current.HLD||0)-(previous.HLD||0))} HLD｜${Math.max(0,reliefPoints(current)-reliefPoints(previous))} HP`:S.role==='CL'?`｜${Math.max(0,(current.SV||0)-(previous.SV||0))} SV`:'';
+    const r=current.role||S.role,dh=Math.max(0,(current.HLD||0)-(previous.HLD||0)),dw=Math.max(0,reliefWins(current,r)-reliefWins(previous,r)),ip=+(current.IP-previous.IP).toFixed(1),er=Math.max(0,(current.ER||0)-(previous.ER||0)),h=Math.max(0,(current.H||0)-(previous.H||0)),bb=Math.max(0,(current.BB||0)-(previous.BB||0)),era=ip>0?er*9/ip:0,whip=ip>0?(h+bb)/ip:0,rel=r==='MR'?`｜${dh} HLD｜${Math.max(0,reliefPoints(current,r)-reliefPoints(previous,r))} HP（${dh}＋${dw}勝）`:r==='CL'?`｜${Math.max(0,(current.SV||0)-(previous.SV||0))} SV`:'';
     return `${Math.max(0,current.G-previous.G)} G｜${fmtIP(ip)} IP｜${Math.max(0,(current.SO||0)-(previous.SO||0))} K${rel}｜ERA ${era.toFixed(2)}｜WHIP ${whip.toFixed(2)}｜AVG FB ${current.monthVelo?current.monthVelo.toFixed(1)+' mph':'—'}`;
   }
   const pa=Math.max(0,current.PA-previous.PA),ab=Math.max(0,current.AB-previous.AB),h=Math.max(0,current.H-previous.H),avg=ab?h/ab:0,tc=Math.max(0,(current.TC||0)-(previous.TC||0)),e=Math.max(0,(current.E||0)-(previous.E||0)),sb=Math.max(0,(current.SB||0)-(previous.SB||0)),fp=tc?((tc-e)/tc).toFixed(3).replace(/^0/,''):'—';return `${Math.max(0,current.G-previous.G)} G｜${pa} PA｜${h} H｜${Math.max(0,current.HR-previous.HR)} HR｜${Math.max(0,current.RBI-previous.RBI)} RBI｜盜壘 ${sb}｜AVG ${ab?avg.toFixed(3).replace(/^0/,''):'—'}${tc?`｜FPCT ${fp}｜${e} E`:''}`;
@@ -2293,8 +2303,9 @@ function board(phase){
   else {t=S.orgTeam||S.teamName();level=`${LV[S.lv]?LV[S.lv].n:'職業'}${S.pos==='P'&&S.role?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}${S.org==='NPB'?'・'+npbRosterStatus().label:''}`;}
   { const tc=(S.orgTeam&&TEAM_COLOR[S.orgTeam])||'var(--amber)';
     $('bd-team').style.setProperty('--team-color',tc);
-    $('bd-team').innerHTML=`<span class="team-dot"></span><small>目前所屬球隊</small><b>${t||'尚未簽約'}</b><em>${level||stageLabel()}</em>`; }
-  if($('broadcast-now'))$('broadcast-now').textContent=`${S.year}｜${t||stageLabel()}｜${['季初','賽季中','季末'][phase]||'生涯進行中'}`;
+    $('bd-team').innerHTML=`<span class="team-dot"></span><small>目前所屬球隊</small><b>${t||'尚未簽約'}</b><em>${level||stageLabel()}</em>`;
+    const bt=$('broadcast-team');if(bt){bt.style.setProperty('--team-color',tc);bt.innerHTML=`<small>目前所屬</small><strong>${t||'尚未簽約'}</strong><em>${level||stageLabel()}</em>`;} }
+  if($('broadcast-now'))$('broadcast-now').textContent=`${S.year}｜${['季初','賽季中','季末'][phase]||'生涯進行中'}`;
   $('bd-age').textContent=S.age; $('bd-year').textContent=S.year;
   $('bd-ovr').textContent=ovr(); if(S.pos==='P'){const el=$('bd-tj'); if(el)el.textContent='';} $('bd-sal').textContent=Math.round(S.finance?syncFinance().cash:S.salary).toLocaleString();
   [0,1,2].forEach(i=>$('lp'+i).classList.toggle('on',i===phase));
@@ -3135,6 +3146,7 @@ function portionOf(st,r){
   const p={...st};
   ['G','PA','AB','H','HR','RBI','SB','BB','W','L','SV','HLD','HP','SO','ER','TC','E','PO','A','DP','OFA','CS','SBA','DEF'].forEach(k=>p[k]=Math.round((st[k]||0)*r));
   p.IP=+(st.IP*r).toFixed(1);
+  if(S.pos==='P')normalizeReliefLine(p);
   p.E=Math.min(p.TC||0,p.E||0);p.avg=p.AB>0?p.H/p.AB:0;p.era=p.IP>0?p.ER*9/p.IP:0;p.WHIP=p.IP>0?(p.H+p.BB)/p.IP:0;p.FPCT=p.TC?+((p.TC-p.E)/p.TC).toFixed(3):0;
   return p;
 }
@@ -3362,9 +3374,9 @@ function awards(bucket,st){
   }else if(S.pos==='P'){
     if(isSP())S.awardWatch.push(`防禦率榜 ${st.era.toFixed(2)}｜競爭線 ${P_RULE.era.toFixed(2)}`);
     else if(S.role==='CL')S.awardWatch.push(`救援榜 ${st.SV||0}｜競爭線 ${P_RULE.sv}`);
-    else if(bucket==='NPB')S.awardWatch.push(`中繼點榜 ${reliefPoints(st)} HP｜競爭線 ${P_RULE.hp}`);
-    else if(bucket==='CPBL')S.awardWatch.push(`中繼榜 ${st.HLD||0}｜後援點 ${reliefPoints(st)} HP｜競爭線 ${P_RULE.hld}`);
-    else S.awardWatch.push(`後援表現｜${st.HLD||0} HLD・${reliefPoints(st)} HP`);
+    else if(bucket==='NPB')S.awardWatch.push(`中繼點榜 ${reliefPointFormula(st)}｜競爭線 ${P_RULE.hp}`);
+    else if(bucket==='CPBL')S.awardWatch.push(`中繼榜 ${st.HLD||0}｜${reliefPointFormula(st)}｜競爭線 ${P_RULE.hld}`);
+    else S.awardWatch.push(`後援表現｜${reliefPointFormula(st)}`);
     S.awardWatch.push(`三振榜 ${st.SO||0}｜競爭線 ${P_RULE.so}`);
     if(isSP())S.awardWatch.push(`年度最佳投手票選｜球季評價 ${st.d>=0?'+':''}${st.d.toFixed(1)}`);
   }else{
@@ -3931,6 +3943,11 @@ function crossOffers(o){
 function shuffledDraftTeams(){
   const a=CPBL_TEAMS.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;
 }
+/* 簽約金以總順位計價：每往後一順位必定下降，不會再出現後段順位比前段更高。單位為新台幣萬元。 */
+function draftSigningBonus(overall){
+  const slot=clamp(Math.round(overall||60),1,60),x=61-slot;
+  return Math.round(45+x*10+550*Math.pow(x/60,2));
+}
 function draftBroadcast(targetRound){
   const used=new Set([S.name]),targetSlot=targetRound?ri(1,CPBL_TEAMS.length):0,picks=[];
   for(let round=1;round<=10;round++){
@@ -3962,7 +3979,7 @@ function draftBroadcast(targetRound){
   function revealOne(){
     if(complete)return;cursor++;const p=picks[cursor];if(!p)return;
     $('draft-overall').textContent=String(p.overall).padStart(2,'0');$('draft-round').textContent=`第 ${p.round} 輪 · 第 ${(p.overall-1)%6+1} 順位`;$('draft-team').textContent=`${p.team} 選擇`;$('draft-title').textContent=p.name;$('draft-detail').textContent=`${p.school}｜${p.pos}`;addRow(p);
-    if(p.isPlayer){ann.classList.add('player-picked');$('draft-detail').textContent=`就是你！${p.school}｜${p.pos}｜總順位第 ${p.overall}`;setComplete(p);}
+    if(p.isPlayer){ann.classList.add('player-picked');$('draft-detail').textContent=`就是你！${p.school}｜${p.pos}｜總順位第 ${p.overall}｜簽約金行情 ${fmtContractMoney(draftSigningBonus(p.overall),'CPBL')}`;setComplete(p);}
     else if(cursor===picks.length-1){ann.classList.remove('player-picked');$('draft-team').textContent='選秀會結束';$('draft-title').textContent='未獲球團指名';$('draft-detail').textContent='十輪、六十個順位全部唱名完畢，你的名字沒有出現。';setComplete(null);}
   }
   return new Promise(resolve=>{
@@ -3981,12 +3998,12 @@ function runDraft(fromSchool,cb){
       card('bad','選秀落榜',`十輪六十個順位全部唱名完畢，始終沒有你的名字。（綜合 ${o}｜年齡加權後評價 ${score}）`);
       if(fromSchool){card('info','','回到校隊，明年再來。本年度不會重複參選。');cb('fail');}else cb('fail');return;
     }
-    const bonus=[0,1000,600,350,350,150,150,150,50,50,50][rd]||50;
+    const bonus=draftSigningBonus(result.overall);
     const lv=(rd===1&&o>=r99(50))?'CPBL1':'CPBL2',team=result.team;
     S.proEntry=S.proEntry||entryStage;S.stage='PRO';S.team='';S.svc=0;S.faElig=false;
     const paid=bookIncome(bonus,'bonus','CPBL',team);
     signTo('CPBL',lv,team,ri(2,3),1); /* 菜鳥分段短約(2~3年) */
-    card('gold','中華職棒選秀會',`第 <b class="hl">${rd}</b> 輪、總順位第 <b class="hl">${result.overall}</b> 獲 <b class="hl">${team}</b> 指名！簽約金 ${fmtContractMoney(bonus,'CPBL')}，估算稅費後入袋 <b class="hl">${fmtLocalMoney(paid.net,'CPBL')}</b>。${lv==='CPBL1'?'即戰力評價，直接放入一軍名單。':'先從二軍出發。'}`);
+    card('gold','中華職棒選秀會',`第 <b class="hl">${rd}</b> 輪、總順位第 <b class="hl">${result.overall}</b> 獲 <b class="hl">${team}</b> 指名！簽約金依總順位計價為 ${fmtContractMoney(bonus,'CPBL')}，估算稅費後入袋 <b class="hl">${fmtLocalMoney(paid.net,'CPBL')}</b>。順位越前，簽約金一定越高。${lv==='CPBL1'?'即戰力評價，直接放入一軍名單。':'先從二軍出發。'}`);
     board(0);cb();
   });
 }
@@ -4167,7 +4184,7 @@ function careerAggregate(){
 function careerOverviewHTML(){
   const st=careerAggregate(),box=(label,value,key)=>`<div class="stat-box${key?' key':''}"><span>${label}</span><b>${value}</b></div>`;
   if(!st.yr)return '<div class="career-empty">尚未留下職業賽季紀錄。進入職業並完成球季後，這裡會自動累積。</div>';
-  if(S.pos==='P')return `<div class="career-overview">${box('職業球季',st.yr)}${box('出賽',st.G)}${box('局數',fmtIP(st.IP),true)}${box('勝敗',`${st.W}-${st.L}`)}${box('救援',st.SV||0)}${box('中繼／後援點',`${st.HLD||0}/${st.HP||0}`)}${box('三振',st.SO||0)}${box('ERA',st.era.toFixed(2),true)}${box('WHIP',st.WHIP.toFixed(2),true)}${box('平均球速',veloText(st),true)}</div>`;
+  if(S.pos==='P')return `<div class="career-overview">${box('職業球季',st.yr)}${box('出賽',st.G)}${box('局數',fmtIP(st.IP),true)}${box('勝敗',`${st.W}-${st.L}`)}${box('救援成功 SV',st.SV||0)}${box('中繼 HLD／後援點 HP',`${st.HLD||0}／${st.HP||0}`)}${box('三振',st.SO||0)}${box('ERA',st.era.toFixed(2),true)}${box('WHIP',st.WHIP.toFixed(2),true)}${box('平均球速',veloText(st),true)}</div><div class="hs-formula"><b>後援點 HP</b>＝各球季的中繼成功 HLD＋後援勝；救援成功 SV 是另一項紀錄，不會算入 HP。</div>`;
   const obp=st.PA?(st.H+st.BB)/st.PA:0,slg=slgOf(st),ops=obp+slg;
   const dp=S.dpos||(S.pos==='C'?'C':'2B'),special=dp==='C'?box('阻殺',`${st.CS||0}/${st.SBA||0}`):['LF','CF','RF'].includes(dp)?box('外野助殺',st.OFA||0):box('參與雙殺',st.DP||0);
   return `<div class="career-overview">${box('職業球季',st.yr)}${box('出賽',st.G)}${box('打席',st.PA)}${box('打擊率',st.avg.toFixed(3).replace(/^0/,''),true)}${box('OPS',ops.toFixed(3).replace(/^0/,''),true)}${box('安打',st.H)}${box('全壘打',st.HR,true)}${box('打點',st.RBI)}${box('盜壘',st.SB)}${box('守備率',st.TC?fieldingPct(st).toFixed(3).replace(/^0/,''):'—',true)}${box('失誤',st.E||0)}${special}${box('守備貢獻',`${st.DEF>0?'+':''}${st.DEF||0}`)}</div>`;
@@ -4804,8 +4821,11 @@ function runLogicAudit(samples){
   const defenseRun=off=>{setup('IF','MLB',null,'SS');Object.assign(S.ab,{con:off,pow:off,eye:off,spd:60,sta:70,rng:90,fld:90,arm:90});return Array.from({length:samples},()=>simSeason('MLB'));};seedInit('audit-defense-bench');const db=defenseRun(30);seedInit('audit-defense-star');const ds=defenseRun(95);result.defensePlayingTime={bench:{avgG:mean(db,'G'),avgDEF:mean(db,'DEF'),avgDefG:mean(db,'defG')},star:{avgG:mean(ds,'G'),avgDEF:mean(ds,'DEF'),avgDefG:mean(ds,'defG')}};
   setup('IF','MLB',null,'SS');Object.assign(S.ab,{con:99,pow:99,eye:99,spd:55,sta:1,rng:80,fld:80,arm:80});seedInit('audit-dh');const dh=Array.from({length:samples},()=>simSeason('MLB')).filter(x=>x._dh);result.temporaryDH={seasons:dh.length,ghostDefense:dh.filter(x=>x.DEF!==0||x.TC>0||x.defG>0).length};
   const powerRun=pow=>{setup('IF','MLB',null,'DH');Object.assign(S.ab,{con:75,pow,eye:75,spd:60,sta:70,rng:30,fld:30,arm:30});return Array.from({length:samples},()=>{const st=simSeason('MLB'),m=seasonMarketEvaluation(st);return {...st,market:m.total,OPS:(st.PA?(st.H+st.BB)/st.PA:0)+slgOf(st)};});};seedInit('audit-power-low');const pl=powerRun(30);seedInit('audit-power-high');const ph=powerRun(99);result.powerValue={low:{avgHR:mean(pl,'HR'),avgOPS:mean(pl,'OPS'),avgMarket:mean(pl,'market')},high:{avgHR:mean(ph,'HR'),avgOPS:mean(ph,'OPS'),avgMarket:mean(ph,'market')}};
-  setup('P','CPBL1','CL');Object.assign(S.ab,{vel:99,ctl:99,brk:99,sta:45});seedInit('audit-relief');const rp=Array.from({length:samples},()=>simSeason('CPBL1'));result.relief={impossibleDecisions:rp.filter(x=>x.W+x.L+x.SV+x.HLD>x.G).length,maxDecisionOverflow:Math.max(...rp.map(x=>x.W+x.L+x.SV+x.HLD-x.G))};
-  let invariantViolations=0,checked=0;for(const lv of Object.keys(LV)){for(const spec of [['P','SP',null],['P','CL',null],['IF',null,'SS'],['OF',null,'CF'],['IF',null,'DH']]){setup(spec[0],lv,spec[1],spec[2]);Object.keys(S.ab).forEach(k=>S.ab[k]=ri(20,99));for(let n=0;n<50;n++){const st=simSeason(lv);checked++;if(st.G>(st.scheduled||LV[lv].g)||st.G<0)invariantViolations++;if(S.pos==='P'&&!isSP()&&st.W+st.L+st.SV+st.HLD>st.G)invariantViolations++;if(S.pos!=='P'&&(st.H>st.AB||st.HR>st.H||st.SB>st.H+st.BB||(st._dh&&(st.DEF!==0||st.TC>0||st.defG>0))))invariantViolations++;}}}result.invariantSweep={checked,violations:invariantViolations};
+  setup('P','CPBL1','CL');Object.assign(S.ab,{vel:99,ctl:99,brk:99,sta:45});seedInit('audit-relief-closer');const closers=Array.from({length:samples},()=>simSeason('CPBL1'));
+  setup('P','CPBL1','MR');Object.assign(S.ab,{vel:99,ctl:99,brk:99,sta:45});seedInit('audit-relief-middle');const middle=Array.from({length:samples},()=>simSeason('CPBL1')),rp=closers.concat(middle);result.relief={seasons:rp.length,impossibleDecisions:rp.filter(x=>x.W+x.L+x.SV+x.HLD>x.G).length,maxDecisionOverflow:Math.max(...rp.map(x=>x.W+x.L+x.SV+x.HLD-x.G)),hpFormulaMismatch:middle.filter(x=>x.HP!==x.HLD+x.W).length,hpOverGames:middle.filter(x=>x.HP>x.G).length};
+  result.relief.impossibleInputRepair=normalizeReliefLine({G:30,IP:30,W:3,L:2,SV:20,HLD:23,HP:26,role:'MR'});
+  const draftPay=Array.from({length:60},(_,i)=>draftSigningBonus(i+1));result.draftSigningBonus={first:draftPay[0],tenth:draftPay[9],thirtieth:draftPay[29],last:draftPay[59],strictlyDescending:draftPay.every((v,i)=>i===0||v<draftPay[i-1])};
+  let invariantViolations=0,checked=0;for(const lv of Object.keys(LV)){for(const spec of [['P','SP',null],['P','CL',null],['P','MR',null],['IF',null,'SS'],['OF',null,'CF'],['IF',null,'DH']]){setup(spec[0],lv,spec[1],spec[2]);Object.keys(S.ab).forEach(k=>S.ab[k]=ri(20,99));for(let n=0;n<50;n++){const st=simSeason(lv),r=st.role||S.role;checked++;if(st.G>(st.scheduled||LV[lv].g)||st.G<0)invariantViolations++;if(S.pos==='P'&&r!=='SP'&&(st.W+st.L+st.SV+st.HLD>st.G||(r==='MR'&&(st.HP!==st.HLD+st.W||st.HP>st.G))))invariantViolations++;if(S.pos!=='P'&&(st.H>st.AB||st.HR>st.H||st.SB>st.H+st.BB||(st._dh&&(st.DEF!==0||st.TC>0||st.defG>0))))invariantViolations++;}}}result.invariantSweep={checked,violations:invariantViolations};
   setup('P','MLB','SP');S.ct={yrs:3,signedYears:3,annual:1000,mult:1,guaranteed:1};S.skipMid=true;S.rehab=1;S._proClockYear=null;settleProfessionalSeasonClock();const once={yrs:S.ct.yrs,service:S.service.MiLB};settleProfessionalSeasonClock();result.contractClock={afterRehabSeason:once,idempotent:S.ct.yrs===once.yrs&&S.service.MiLB===once.service};
   S=saved.S;RNG_MODE=saved.RNG_MODE;SEED=saved.SEED;return result;
 }
