@@ -547,7 +547,7 @@ body::before{display:none}
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">棒球人生<br><em>CAREER SIM</em></h1>
-    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.4</div>
+    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.5</div>
     <p class="sub">做出選擇，再親手停下拉霸。從高中、選秀、旅外、傷病到引退，每次人生都不一樣。</p>
     <div class="start-grid">
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
@@ -923,7 +923,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v3.0.4';
+const APP_VER='v3.0.5';
 if(new URLSearchParams(location.search).get('logic-audit')==='1')window.addEventListener('error',e=>{document.documentElement.setAttribute('data-audit-error',`${e.message} @ ${e.lineno}:${e.colno}`);});
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
@@ -2835,11 +2835,32 @@ function agingRiskProfile(){
   const recentDamage=S.lastSt&&S.lastSt.availability<60?6:0,severityTrauma=(S.bigInj||0)*3+(S.tjCount||0)*3+recentDamage;
   return {effectiveAge,base,p:clamp(base+mod,2,97),mods,trauma:severityTrauma};
 }
-function shuffledAgingKeys(){
-  const physical=S.pos==='P'?['sta','vel','brk']:S.pos==='C'?['sta','spd','arm','rng','cat']:['sta','spd','rng','arm'];
-  const rest=POS_AB[S.pos].filter(k=>!physical.includes(k));
-  for(const a of [physical,rest])for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
-  return physical.concat(rest);
+function agingPhysicalSet(){return new Set(S.pos==='P'?['sta','vel','brk']:S.pos==='C'?['sta','spd','arm','rng','cat']:['sta','spd','rng','arm']);}
+function agingStatProfile(k,ageBand){
+  const value=clamp(Number(S.ab[k])||1,1,RATING_MAX),physical=agingPhysicalSet().has(k);
+  /* 已經偏低的身體工具更容易再次成為弱點，但絕對扣點設軟上限，避免 18 體力一年再掉 10。 */
+  const weakness=value<=20?1.75:value<=30?1.55:value<=45?1.30:value<=65?1.05:value<=84?.86:.68;
+  const baseCap=value<=20?2:value<=30?4:value<=40?6:value<=60?8:value<=80?10:12;
+  const cap=Math.min(value-1,physical?baseCap+Math.min(2,Math.floor(ageBand/2)):Math.min(baseCap,3+Math.floor(ageBand/2)));
+  return {value,physical,weakness,cap:Math.max(0,cap),weight:(physical?2.65:.62)*weakness};
+}
+function weightedAgingKey(keys,weight){
+  const rows=keys.map(k=>({k,w:Math.max(.001,Number(weight(k))||0)})),total=rows.reduce((n,x)=>n+x.w,0);let roll=R()*total;
+  for(const row of rows){roll-=row.w;if(roll<=0)return row.k;}return rows[rows.length-1].k;
+}
+function agingLossAllocation(plan){
+  const all=POS_AB[S.pos].filter(k=>agingStatProfile(k,plan.ageBand).cap>0),selected=[],losses={};
+  while(selected.length<Math.min(plan.count,all.length)){
+    const pool=all.filter(k=>!selected.includes(k)),k=weightedAgingKey(pool,x=>agingStatProfile(x,plan.ageBand).weight);selected.push(k);losses[k]=0;
+  }
+  let left=plan.planned;
+  /* 每個被波及項目先承受 1 點，再依能力類型、目前弱點與剩餘承受空間分配。 */
+  selected.forEach(k=>{if(left>0&&agingStatProfile(k,plan.ageBand).cap>0){losses[k]++;left--;}});
+  while(left>0){
+    const pool=selected.filter(k=>losses[k]<agingStatProfile(k,plan.ageBand).cap);if(!pool.length)break;
+    const k=weightedAgingKey(pool,x=>{const p=agingStatProfile(x,plan.ageBand),room=1-losses[x]/Math.max(1,p.cap);return p.weight*(.35+room*.65);});losses[k]++;left--;
+  }
+  return {keys:selected,losses,unallocated:left};
 }
 function trainingDicePlan(){
   if(S._seasonTrainingPlan&&S._seasonTrainingPlan.year===S.year)return S._seasonTrainingPlan;
@@ -2880,15 +2901,12 @@ function agingCheck(done){
       const lucky=r.value>=90?'；這次極佳的恢復狀況替你完全擋下年齡影響':'';
       card('good','身體維持住了',`判定點數 <b class="hl">${r.value}</b>，安全門檻為 <b class="hl">${info.p+1} 以上</b>。今年沒有明顯退化${S.traits.disc?'，長期自律正在兌現':''}${lucky}。<div class="statline">退化風險 ${info.p}%｜綜合能力維持 ${ovr()}/99｜${info.mods.join('｜')}</div>`);finish();return;
     }
-    const plan=agingLossPlan(info,r.value),{ageBand,margin,critical,planned,count}=plan;
-    const keys=shuffledAgingKeys().slice(0,count),losses=Object.fromEntries(keys.map(k=>[k,0])),physical=new Set(S.pos==='P'?['sta','vel','brk']:S.pos==='C'?['sta','spd','arm','rng','cat']:['sta','spd','rng','arm']);let left=planned;
-    keys.forEach(k=>{if(left>0){losses[k]++;left--;}});
-    while(left>0&&keys.length){const focus=R()<.82?keys.filter(k=>physical.has(k)):keys,k=pick(focus.length?focus:keys),limit=8+ageBand;if(losses[k]>=limit){const alt=keys.find(x=>losses[x]<limit);if(!alt)break;losses[alt]++;}else losses[k]++;left--;}
+    const plan=agingLossPlan(info,r.value),{ageBand,margin,critical}=plan,allocation=agingLossAllocation(plan),keys=allocation.keys,losses=allocation.losses;
     const changes=[],plainChanges=[];let total=0;
     keys.forEach(k=>{const before=S.ab[k];S.ab[k]=clamp(before-losses[k],1,RATING_MAX);const loss=before-S.ab[k];if(loss){total+=loss;changes.push(`${ABL[k]} <b class="dn">${before} → ${S.ab[k]}（−${loss}）</b>`);plainChanges.push(`${ABL[k]} −${loss}`);}});
     S.aging.declines++;S.aging.totalLoss+=total;if(total>=14)S.aging.major=(S.aging.major||0)+1;S.aging.last={year:S.year,roll:r.value,risk:info.p,severity:ageBand,loss:total,critical,changes:plainChanges,beforeOvr,afterOvr:ovr()};
     const grade=total<=3?'輕微退化':total<=7?'局部衰退':total<=13?'明顯退化':'重大退化';
-    card(total>=8?'bad':'info',grade,`${changes.join('｜')}<div class="statline">綜合能力 ${beforeOvr} → <b class="dn">${ovr()}/99</b>｜本年合計下降 ${total} 點${critical?'｜重大退化觸發':''}<br>判定 ${r.value}｜安全需 ${info.p+1} 以上｜有效年齡 ${info.effectiveAge}｜舊傷嚴重度 +${info.trauma||0}</div><small>${info.mods.join('｜')}。重大退化會集中傷害速度、體力、守備範圍或投手球速；舊傷與高負荷同時提高觸發率和下降幅度。</small>`);finish();
+    card(total>=8?'bad':'info',grade,`${changes.join('｜')}<div class="statline">綜合能力 ${beforeOvr} → <b class="dn">${ovr()}/99</b>｜本年合計下降 ${total} 點${critical?'｜重大退化觸發':''}<br>判定 ${r.value}｜安全需 ${info.p+1} 以上｜有效年齡 ${info.effectiveAge}｜舊傷嚴重度 +${info.trauma||0}</div><small>${info.mods.join('｜')}。低體力等身體弱項較容易再次受損，但單項扣點有保護上限；高能力身體工具有較大的下降空間，Contact、選球等技術項目通常退得較慢。舊傷與高負荷會同時提高觸發率和總下降幅度。</small>`);finish();
   });
 }
 function phasePre(){
@@ -4936,12 +4954,86 @@ function renderCareerReport(tab){
 }
 function openCareerReport(tab){if(!S)return;renderCareerReport(tab||careerReportTab);openFx('career-overlay');}
 const FAN={
- 0:['{n}退休了……我的青春也跟著結束了 QQ','以後帶小孩進場，我會指著引退背號說：爸爸看過{n}打球。','外電已經在算名人堂得票率了，根本沒有懸念','謝謝你把台灣棒球帶到世界的舞台上','這種等級的選手，一個世代只會出現一個','引退試合門票秒殺，黃牛價已經翻五倍了'],
- 1:['{n}確定引退，推文區已經滿滿的 QQ','明星賽常客就這樣說再見了，唉','生涯數據攤開來還是很漂亮，值得一面背號布幕','謝謝你每一次的全力奔跑，辛苦了','小時候牆上貼的海報就是他，時代的眼淚'],
- 2:['稱不上超級巨星，但每天打開轉播都看得到他，這樣就夠了','默默扛了這麼多年，辛苦了','這種工兵型選手才是一支球隊真正的骨幹','數據不會說謊，穩定就是他最大的天賦'],
- 3:['板凳暖了這麼多年，也是一種浪漫啦','至少他真的站上過職棒舞台，比鍵盤上的我們都強','代打人生，謝謝那幾支關鍵安打','二軍發電機引退，只有鐵粉會記得，但我們記得'],
- 4:['欸這誰？……查了一下，原來真的打過職業喔','棒球真的好難，祝福第二人生順利','又一個被現實打敗的追夢人，唏噓','看板留言只有三則，其中一則還是他本人回的'],
+ 0:['{n}退休了……我的青春也跟著結束了 QQ','以後帶小孩進場，我會指著引退背號說：爸爸看過{n}打球。','外電已經在算名人堂得票率了，根本沒有懸念','謝謝你把台灣棒球帶到世界的舞台上','這種等級的選手，一個世代只會出現一個','引退試合門票秒殺，黃牛價已經翻五倍了','數據會被後人超越，但那個時代只有一個{n}','今天不討論歷史排名，只想好好說一聲謝謝','從新人年看到最後一年，原來我們一起老了','他的精華剪輯長到可以播一整晚','每座客場都有人留下來鼓掌，這就是傳奇的份量','名人堂匾額還沒做，大家已經在爭該戴哪隊的帽子'],
+ 1:['{n}確定引退，推文區已經滿滿的 QQ','明星賽常客就這樣說再見了，唉','生涯數據攤開來還是很漂亮，值得一面背號布幕','謝謝你每一次的全力奔跑，辛苦了','小時候牆上貼的海報就是他，時代的眼淚','不是歷史第一，但一定是這個年代最熟悉的名字之一','最難忘的不是某一支安打，是他每年都還在名單上','球衣先別收，我還沒準備好接受他真的退休','客隊球迷都願意起立，這份尊重不是數據送的','那幾次季後賽關鍵表現，我大概會講給孫子聽','他把明星球員該做的事做了十幾年，真的不容易','最後一季還有人買他的球衣，答案已經很清楚了'],
+ 2:['稱不上超級巨星，但每天打開轉播都看得到他，這樣就夠了','默默扛了這麼多年，辛苦了','這種工兵型選手才是一支球隊真正的骨幹','數據不會說謊，穩定就是他最大的天賦','總教練換了好幾任，他還是能找到自己的角色','不是頭版人物，卻是隊友口中最可靠的那一個','每支冠軍隊都需要這種不搶鏡的人','生涯沒有華麗標題，但有很多重要的小事','謝謝你讓板凳、守備和跑壘也有人值得應援','他上場時我不一定尖叫，但總是覺得安心','這種球員退了之後，球隊才會發現少了多少東西','願意把每個普通球季打完，本身就是一種成就'],
+ 3:['板凳暖了這麼多年，也是一種浪漫啦','至少他真的站上過職棒舞台，比鍵盤上的我們都強','代打人生，謝謝那幾支關鍵安打','二軍發電機引退，只有鐵粉會記得，但我們記得','每次登錄名單看到他，都覺得又多一層保險','沒有固定位置還能撐這麼久，代表他真的很會生存','那支再見安打夠我們記一輩子了','替補球員的故事不會上紀錄片，但一樣值得尊敬','他可能只得到幾十個打席，準備卻從來沒有少一天','謝謝你接受每一個不起眼的任務','不是每個職業球員都能成為明星，但每個人都付過代價','最後一次被叫上場時，全隊站起來的畫面我忘不了'],
+ 4:['欸這誰？……查了一下，原來真的打過職業喔','棒球真的好難，祝福第二人生順利','又一個被現實打敗的追夢人，唏噓','看板留言只有三則，其中一則還是他本人回的','至少照片裡的他真的穿過職業球衣','二軍也有人每天提早兩小時到球場，辛苦了','沒有站穩一軍不代表那些年都是假的','希望下一份工作不需要每天擔心明天會不會被釋出','查完他的經歷，突然覺得能留下任何紀錄都很難','夢想沒有成功版本，走過就算數','也許沒多少人認識，但家人一定知道他撐了多久','祝福離開球場後，終於能好好睡一覺'],
 };
+/* 54 種基礎告別場景；依代表聯盟、成就層級與守備身分篩選，再加入生涯特性專屬版本。 */
+const RETIRE_SCENES={
+ common:[
+  {maxTier:1,t:'球場在賽前播放整段生涯年表。當年份從新人球季一路跳到今天，{n}站在休息室口，直到自己的第一張證件照出現才低頭笑了。'},
+  {maxTier:1,t:'兩隊球員在邊線排成長廊，{n}抱著花束逐一擊掌。最後一位是當年的新人隊友，如今已經成了教練。'},
+  {maxTier:2,t:'大螢幕沒有剪輯全壘打或三振，而是播放隊友談論你的片段。每個人記得的，都是鏡頭沒拍到的小事。'},
+  {maxTier:2,t:'最後一次唱名後，現場播報員停了幾秒才念完致詞。{n}把帽沿壓低，仍被攝影機拍到泛紅的眼眶。'},
+  {minTier:1,maxTier:3,t:'隊友把休息室裡的名牌完整拆下，背面寫滿每個人的留言。{n}把它放進裝備袋，成為最後帶走的球場物品。'},
+  {minTier:1,maxTier:3,t:'賽後球場沒有立刻關燈。{n}獨自走到守備位置站了一會兒，場務人員遠遠等著，沒有催促。'},
+  {minTier:2,t:'儀式很短，只有一束花、一件裱框球衣和全隊合照。當快門按下，隊友突然一起喊出你的綽號。'},
+  {minTier:2,t:'最後一趟球隊巴士離開球場前，司機把車停了幾分鐘。{n}回頭看著選手入口，才終於在座位坐下。'},
+  {minTier:3,t:'沒有全國轉播，球團只在社群上傳一支九十秒影片。留言不算多，但每一則都叫得出你曾穿過的背號。'},
+  {minTier:3,t:'整理置物櫃時，{n}找到新人年留下的交通票根。裝備已經換過無數次，這張薄紙卻一路留到了最後。'},
+  {t:'家人受邀走進場內。{n}把陪伴生涯的{gear}交給孩子，告訴他不必成為球員，只要記得自己曾經很愛棒球。'},
+  {t:'簽名會排到球場準備熄燈。工作人員幾次提醒時間，{n}還是把最後一件球衣簽完，才向空下來的看台揮手。'}],
+ CPBL:[
+  {maxTier:1,t:'{n}的引退戰選在臺北大巨蛋。四萬人看著你完成{lastPlay}，全場燈光暗下，只剩一道追光陪你繞場。'},
+  {maxTier:1,t:'母隊把外野看台排成你的背號。六隊代表各送上一顆簽名球，象徵你走過的整個中職世代。'},
+  {maxTier:1,t:'你要求把告別日辦成公益賽。門票收入投入基層棒球，曾受幫助的小球員站滿兩側，把一百顆簽名球送到手中。'},
+  {maxTier:2,t:'最後一個主場系列賽，客隊應援團先奏了一次你的應援曲。主場看台接著唱完，連主播都安靜沒有插話。'},
+  {maxTier:2,t:'球團邀回歷年隊友，從高中學長到新人學弟依序獻花。總教練講到第一次見面時，台下笑聲和眼淚混在一起。'},
+  {maxTier:2,t:'環島客場的最後一站，客隊把一壘側燈光留給{n}。不同隊球迷舉起的，竟是你效力各時期的球衣。'},
+  {minTier:1,maxTier:3,t:'熟悉的應援曲只吹奏了一遍。{n}向內野、外野與兩側休息室各鞠一躬，然後把最後一顆比賽球交給場務。'},
+  {minTier:1,maxTier:3,t:'午後大雨讓儀式延後，球迷卻沒有離場。雨停後你踏上濕紅土，全場用沒有樂器的清唱完成最後應援。'},
+  {minTier:2,t:'球團把你的第一張一軍登錄表和最後一張排在一起。兩張紙中間沒有傳奇標題，只有許多撐過二軍與低潮的年份。'},
+  {minTier:2,t:'轉播單位剪了一段「那些不在精華裡的守備」。{n}看完只說，原來有人記得，導播室裡卻先哭成一片。'},
+  {minTier:3,t:'二軍最終戰後，學弟用紙膠帶在牆上貼出「辛苦了」。沒有觀眾席煙火，但全隊把你抬出休息室一次。'},
+  {minTier:3,t:'球團官網刊出引退消息，母校棒球隊隔天全員穿你的舊背號練球。照片傳到手機時，{n}正在清空置物櫃。'}],
+ NPB:[
+  {maxTier:1,t:'球團安排正式引退試合。{lastPlay}後，監督親自上場迎接；兩軍列隊，隊友以胴上げ把{n}高高拋起。'},
+  {maxTier:1,t:'滿場球迷把多年應援毛巾拼成巨幅背號。{n}用日文與中文各說一次謝謝，最後一句被全場掌聲蓋過。'},
+  {maxTier:1,t:'東京與台北的體育報同日以你的背影做頭版。場內播放兩地生涯，字幕最後只留下「海を越えた」。'},
+  {maxTier:2,t:'客隊應援團先奏出你的舊應援曲，主場再接著唱完。{n}抱著花束慢慢繞場，走了比預定時間多一倍。'},
+  {maxTier:2,t:'車站通往球場的長廊換上告別海報。最後一戰散場後，仍有球迷排隊在每張海報前合照。'},
+  {maxTier:2,t:'昔日台灣與日本隊友透過影片致詞。翻譯坐在角落沒有工作，因為{n}已經能聽懂每一句玩笑。'},
+  {minTier:1,maxTier:3,t:'廣播念出生涯成績時，客場球迷也起立鼓掌。記者用不太標準的中文問「還會回來嗎」，你笑著點頭。'},
+  {minTier:1,maxTier:3,t:'球團送上紀念框裱球衣與花束。{n}走到投手丘旁抓起一把土，裝進新人年就在使用的小布袋。'},
+  {minTier:2,t:'最終戰後，隊友在室內練習場等你。大家沒有致詞，只把簽滿名字的練習衣套到你身上。'},
+  {minTier:2,t:'整理置物櫃那天，翻譯陪你走完最後一段球員通道。警衛伯伯深深鞠躬，你也用同樣角度回禮。'},
+  {minTier:3,t:'二軍球場只辦了簡短送別會。幾名長年追隨的球迷帶著手工中文布條，讓{n}站在原地看了很久。'},
+  {minTier:3,t:'引退消息刊在地方版一角。隔天自主訓練時，仍有十幾位球迷等在門外，把你在異鄉的每一年都寫進信裡。'}],
+ MLB:[
+  {maxTier:1,pos:'P',t:'主場最終戰，{n}完成最後一局後，總教練親自走上投手丘。你把球交出去，回到休息室後又兩度出來接受 Curtain Call。'},
+  {maxTier:1,pos:'B',t:'主場最終戰，{n}走進最後一個打席前，全場起立，主審退到一旁等待。打席結束後，你兩度走出休息室接受 Curtain Call。'},
+  {maxTier:1,t:'三十座球場在同一晚播放致敬畫面。客場大螢幕上的生涯照片停住，全場掌聲一路延續到下一名打者熱身。'},
+  {maxTier:1,t:'當地報紙用整版刊出你的背影，標題沒有寫數據，只寫「An Era Walks Away」。台灣版則一路直播到球場熄燈。'},
+  {maxTier:2,pos:'P',t:'最後一次登板後，捕手沒有把球交給裁判，而是直接塞回你的手套。兩隊打者全站在階梯前鼓掌。'},
+  {maxTier:2,pos:'B',t:'最後一個守備半局結束，你被單獨換下場。場上隊友刻意放慢腳步陪你走回休息室，全場手機燈光亮起。'},
+  {maxTier:2,t:'告別系列賽前，球隊把每個效力城市的背號都掛進球員通道。{n}從第一件一路摸到最後一件才走進場。'},
+  {minTier:1,maxTier:3,t:'球隊致贈裱框球衣與主場紅土。台灣遠道而來的球迷留在三壘側，把中文應援喊到工作人員開始拆舞台。'},
+  {minTier:1,maxTier:3,t:'最後一趟客場，對手在賽前送上酒莊年份與城市鑰匙。{n}笑說行李已經超重，卻把每件紀念品都親自帶走。'},
+  {minTier:2,t:'俱樂部只安排一段簡短賽前儀式。當地記者寫道：「他不是超級巨星，但他是每個總教練都想要的球員。」'},
+  {minTier:3,t:'你在社群貼出一張空蕩球場，配文只有「Thank you, baseball.」。台灣時間深夜，昔日小聯盟隊友一個個留下留言。'},
+  {minTier:3,t:'最後一次被移出名單後，俱樂部讓{n}穿球衣進場告別。沒有正式打席，卻有整排牛棚投手走過來擁抱。'}],
+ MINOR:[
+  {t:'沒有鎂光燈。{n}把釘鞋擦乾淨放進袋子，跟隊友一一擁抱，走出球場時回頭看了記分板最後一眼。'},
+  {t:'長途巴士出發前，全隊在車邊送上一顆簽名球。有人開玩笑說終於少一件行李，卻沒有人先上車。'},
+  {t:'寄宿家庭替你做了最後一頓晚餐。牆上仍貼著新人聯盟時的合照，那時每個人都相信自己會上大聯盟。'},
+  {t:'二軍／小聯盟球場的夕陽跟第一年一樣。{n}把打擊練習撿到的最後一顆球送給場邊唯一等候的孩子。'},
+  {t:'裝備管理員把你歷年用過的背號布章縫成一小塊紀念布。沒有官方儀式，這就是俱樂部最真誠的告別。'},
+  {t:'球隊在休息室白板寫下「下一站順利」。{n}最後一次擦掉自己的名字，發現隊友早已在背面簽滿祝福。'}]
+};
+const RETIRE_TRAIT_SCENES={
+ franchise:'球團宣布將討論退休背號。{n}站在唯一效力過的母隊主場中央，從新人席一路望向曾經坐過的核心位置。',
+ community:'受你幫助過的基層球員擔任開球嘉賓。當孩子們排成兩列，{n}才知道那些場外日子也成了生涯的一部分。',
+ iron:'大螢幕倒數連續出賽紀錄，最後停在一個難以想像的數字。醫療與防護團隊全被請到場內，和{n}一起接受掌聲。',
+ phoenix:'曾替你動手術的醫師帶著第一張術後影像到場。{n}把它和最後一件球衣放在一起：中間隔著一段沒有人敢保證能完成的路。',
+ leader:'隊友沒有送昂貴禮物，而是輪流說出低潮時被你拉住的那一天。儀式結束後，{n}成了最後離開休息室的人。',
+ fanhero:'球團把致詞時間交給看台。十名不同年代的球迷輪流說故事，{n}每一張臉竟然都認得。'};
+function retirementSceneCount(){return Object.values(RETIRE_SCENES).reduce((n,a)=>n+a.length,0)+Object.keys(RETIRE_TRAIT_SCENES).length;}
+function retirementSceneText(scene,lg,nm){
+  const last=S.pos==='P'?'最後一次登板':'最後一個打席',gear=S.pos==='P'?'手套':'球棒',team=S.orgTeam||((S.log||[]).slice(-1)[0]||{}).tm||'母隊';
+  return String(scene.t||scene).replaceAll('{n}',nm).replaceAll('{lastPlay}',last).replaceAll('{gear}',gear).replaceAll('{team}',team).replaceAll('{lg}',LG_N[lg]||'職棒');
+}
 function retireScene(tiers){
   /* tiers: {CPBL:{i,sc},NPB:...,MLB:...} 有出賽才有 */
   /* 生涯代表聯盟＝出賽最久的頂級聯盟;分級取生涯最佳(i 最小) */
@@ -4984,6 +5076,8 @@ function retireScene(tiers){
   }else{
     txt=`沒有鎂光燈。你把釘鞋擦乾淨放進袋子，跟隊友一一擁抱，走出球場時回頭看了記分板最後一眼。二軍球場的夕陽跟十年前一樣好看。`;
   }
+  /* 新版告別資料庫：代表聯盟、成就層級、投打身分與生涯特性共同篩選，不再只有少數固定句。 */
+  {const posCode=S.pos==='P'?'P':'B',basePool=(RETIRE_SCENES.common||[]).concat(RETIRE_SCENES[lg]||RETIRE_SCENES.MINOR).filter(x=>(x.minTier===undefined||i>=x.minTier)&&(x.maxTier===undefined||i<=x.maxTier)&&(!x.pos||x.pos===posCode)),traitPool=Object.entries(RETIRE_TRAIT_SCENES).filter(([k])=>S.traits[k]).map(([,t])=>({t})),scene=traitPool.length&&chance(34)?pick(traitPool):pick(basePool);if(scene)txt=retirementSceneText(scene,lg,nm);}
   card('gold','引退之日',txt);
   /* 名人堂票選(可多聯盟並存) */
   const hofs=[]; let firstBallot=false; const hofLeagues=[];
@@ -5128,7 +5222,7 @@ function endGame(reason){
     card('','生涯檔案',`隱藏素質：${tr.join(' ')||'（無）'}<br>聲望：球迷 <b class="${so.fanRep>=0?'up':'dn'}">${so.fanRep>=0?'+':''}${so.fanRep}</b>｜球員 <b class="${so.playerRep>=0?'up':'dn'}">${so.playerRep>=0?'+':''}${so.playerRep}</b>｜公益活動 ${so.communityActs} 次｜導師互動 ${so.mentorActs} 次<br>家庭：${cur}${exStr}｜子女共 ${totKids} 人${lv.affairs?`｜外遇 ${lv.affairs}(${lv.caught})`:''}<br>國際賽出賽：${S.intlCount} 次｜生涯大傷：${S.bigInj} 次｜球季報銷：${S.seasonEndingInjuries||0} 次${S.pos==='P'?`｜Tommy John 手術：${S.tjCount} 次`:''}<br><br><b>生涯財務（萬台幣）</b><br>合約與獎金收入：<b class="hl">${fmtMoney(f.gross)}</b>｜估算稅負：${fmtMoney(f.tax)}｜經紀人費：${fmtMoney(f.agent)}｜生活／家庭／奢侈支出：${fmtMoney(spend)}<br>可動用現金：${fmtMoney(f.cash)}｜投資：${fmtMoney(f.investments)}｜房產權益：${fmtMoney(f.homeEquity)}｜負債：<b class="${f.debt?'dn':''}">${fmtMoney(f.debt)}</b><br>引退時淨資產：<b class="${f.netWorth>=0?'up':'dn'}" style="font-size:19px">${fmtMoney(f.netWorth)}</b>`); }
   /* 球迷留言 */
   const pool=FAN[best].slice(); const picks=[];
-  while(picks.length<3&&pool.length)picks.push(pool.splice(Math.floor(R()*pool.length),1)[0]);
+  while(picks.length<5&&pool.length)picks.push(pool.splice(Math.floor(R()*pool.length),1)[0]);
   /* 盤子留言:低聯盟明星以上,旅外到更高聯盟卻淪替補/邊緣 */
   { const LGR={CPBL:0,NPB:1,MLB:2}, CTY={CPBL:'台灣',NPB:'日本',MLB:'美國'};
     ['CPBL','NPB','MLB'].forEach(low=>{ ['CPBL','NPB','MLB'].forEach(high=>{
@@ -5162,7 +5256,7 @@ function endGame(reason){
   if(S.traits.leader)picks.push('數據表看不到他在連敗時說過的那些話，但每個隊友都記得');
   if(S.traits.booed)picks.push('最後還是沒能把噓聲贏回來。成績之外，球迷也記得你怎麼對待人');
   if(S.love.st==='married'&&S.love.kids>=2)picks.push('引退後好好陪家人吧，孩子們等你很久了');
-  card('info','球迷看板・引退串',picks.map(p=>'「'+p.replace(/{n}/g,S.name)+'」').join('<br>'));
+  {const baseFan=picks.slice(0,5),contextFan=[...new Set(picks.slice(5))],shownFan=baseFan.concat(randomSubset(contextFan,Math.min(7,contextFan.length)));card('info','球迷看板・引退串',shownFan.map(p=>'「'+p.replace(/{n}/g,S.name)+'」').join('<br>'));}
   /* 一鍵分享 */
   const sh=document.createElement('div'); sh.className='card';
   sh.innerHTML=`<div class="title">分享這段生涯</div>
@@ -5539,6 +5633,9 @@ if(new URLSearchParams(location.search).get('visual-audit')==='hs-market'){
   RNG_MODE='destiny';seedInit('visual-audit-hs-market');S=newState('蔣孟杰','IF',null);S.age=18;S.year=2028;S.stage='HS';S.stageYr=3;S.dpos='SS';S.team='北科附工';Object.assign(S.ab,{con:58,pow:54,eye:56,spd:55,sta:54,rng:58,fld:59,arm:57});S.lastAmateurSt={G:31,PA:132,AB:113,H:39,BB:19,HR:4,RBI:25,SB:7,avg:39/113,DEF:7,TC:138,E:4};S.hsCupHistory=[{year:2028,results:[{cup:'木棒聯賽',rank:'四強',tier:2,pts:3},{cup:'黑豹旗',rank:'八強',tier:3,pts:2},{cup:'玉山盃',rank:'十六強',tier:4,pts:1}]}];
   $('start').style.display='none';document.body.classList.add('game-started');$('board').style.display='';$('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';board(0);pathChoiceHS();
 }
+if(new URLSearchParams(location.search).get('visual-audit')==='retirement'){
+  RNG_MODE='destiny';seedInit('visual-audit-retirement');S=newState('蔣孟杰','IF',null);S.stage='PRO';S.lv='MLB';S.org='MiLB';S.orgTeam='休士頓太空人';S.dpos='SS';S.age=45;S.year=2055;S.stageYr=30;S.teamName=()=>S.orgTeam;S.stats.MLB=blankStat();Object.assign(S.stats.MLB,{yr:21,G:2780,PA:10940,AB:9510,H:3012,BB:1230,HR:512,RBI:1710,SB:188,AS:14,DEF:126,TC:11700,E:92});Object.assign(S.traits,{iron:true,genius:true,franchise:true,fanhero:true,community:true,leader:true,legend:true});S.legendLeague='大聯盟';S.honors=['2032 大聯盟新人王','2037 大聯盟年度 MVP','2038 大聯盟年度 MVP','2040 世界大賽冠軍'];S.log.push({y:2054,age:44,tm:S.orgTeam,line:'最後一個完整球季',st:{G:138,PA:540,AB:470,H:137,BB:62,HR:22,RBI:81,SB:4}});$('start').style.display='none';document.body.classList.add('game-started');$('board').style.display='';$('act').style.display='';$('player-rail').style.display='none';$('roll-rail').style.display='none';board(0);endGame('完成最後一季後宣布引退。');const selected=[...$('log').querySelectorAll('.card')].filter(c=>['引退之日','球迷看板・引退串'].includes((c.querySelector('h4')||{}).textContent));actClear();$('log').innerHTML='';selected.forEach(c=>$('log').appendChild(c));$('log').scrollTop=0;
+}
 function runLogicAudit(samples){
   samples=clamp(Number(samples)||500,50,3000);const saved={S,RNG_MODE,SEED},result={samples};RNG_MODE='destiny';
   const setup=(pos,lv,role,dpos)=>{S=newState('邏輯檢查',pos,role||null);S.stage='PRO';S.lv=lv;S.org=LV[lv].org;S.orgTeam=S.org==='CPBL'?CPBL_TEAMS[0]:S.org==='NPB'?NPB_TEAMS[0]:MLB_TEAMS[0];S.role=pos==='P'?(role||pitcherRole()):null;S.age=28;S.stageYr=10;S.seasonFactor=1;S.seasonLuck=10;S.seasonMomentum=0;S.seasonContext=null;S.dpos=dpos||S.dpos;S.teamName=()=>S.orgTeam;return S;};
@@ -5554,6 +5651,7 @@ function runLogicAudit(samples){
   setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:84,pow:82,eye:83,spd:72,sta:80,rng:78,fld:78,arm:76});S.age=27;S.honors=[`${S.year} 中華職棒年度 MVP`];seedInit('audit-overseas-poaching');const overseas=crossLeaguePoachOffers(9,true);result.overseasPoaching={offers:overseas.map(x=>({org:x.org,level:x.lv,team:x.team})),countries:[...new Set(overseas.map(x=>x.org))],hasJapan:overseas.some(x=>x.org==='NPB'),hasUSA:overseas.some(x=>x.org==='MiLB')};
   const agingSample=(age,bigInj,pos='IF')=>{setup(pos,'MLB',pos==='P'?'SP':null,pos==='P'?null:'SS');S.age=age;S.bigInj=bigInj||0;Object.keys(S.ab).forEach(k=>S.ab[k]=75);S.lastSt=null;const info=agingRiskProfile(),rolls=Array.from({length:2000},()=>ri(1,100)),triggered=rolls.filter(v=>v<=info.p),losses=triggered.map(v=>agingLossPlan(info,v).planned);S._seasonTrainingPlan=null;const tp=trainingDicePlan();return {risk:info.p,triggerRate:+(triggered.length/rolls.length).toFixed(3),meanTriggeredLoss:losses.length?+(losses.reduce((a,b)=>a+b,0)/losses.length).toFixed(1):0,annualExpectedLoss:+(losses.reduce((a,b)=>a+b,0)/rolls.length).toFixed(1),trainingDice:tp.n,trainingCap:tp.ageCap,speedGrowthLimit:ageGrowthLimit('spd'),staminaGrowthLimit:ageGrowthLimit('sta')};};
   seedInit('audit-aging-curve');result.agingCurve={age30:agingSample(30,0),age33:agingSample(33,0),age36:agingSample(36,0),age39:agingSample(39,0),age36AfterMajorInjury:agingSample(36,2),clearlyEscalates:false};result.agingCurve.clearlyEscalates=result.agingCurve.age30.annualExpectedLoss<result.agingCurve.age33.annualExpectedLoss&&result.agingCurve.age33.annualExpectedLoss<result.agingCurve.age36.annualExpectedLoss&&result.agingCurve.age36.annualExpectedLoss<result.agingCurve.age39.annualExpectedLoss&&result.agingCurve.age36AfterMajorInjury.annualExpectedLoss>result.agingCurve.age36.annualExpectedLoss;
+  setup('C','CPBL1',null,'C');S.age=45;Object.assign(S.ab,{sta:26,eye:91,fld:29,con:79,pow:95,spd:32,rng:38,arm:55,cat:61});seedInit('audit-aging-allocation');const allocationPlan={ageBand:5,planned:16,count:7},allocationRuns=Array.from({length:2400},()=>agingLossAllocation(allocationPlan)),allocationMean=k=>+(allocationRuns.reduce((n,x)=>n+(x.losses[k]||0),0)/allocationRuns.length).toFixed(2),allocationMax=k=>Math.max(...allocationRuns.map(x=>x.losses[k]||0));result.agingAllocation={means:Object.fromEntries(POS_AB.C.map(k=>[k,allocationMean(k)])),maxima:Object.fromEntries(POS_AB.C.map(k=>[k,allocationMax(k)])),lowPhysicalMoreExposed:allocationMean('sta')>allocationMean('eye')&&allocationMean('spd')>allocationMean('pow'),lowStatCapsHold:allocationMax('sta')<=agingStatProfile('sta',5).cap&&allocationMax('fld')<=agingStatProfile('fld',5).cap,exampleCaps:{stamina26:agingStatProfile('sta',5).cap,fielding29:agingStatProfile('fld',5).cap,eye91:agingStatProfile('eye',5).cap}};
   /* 全層級 × 全角色 × 低／中／高能力矩陣：不只抓數學錯誤，也檢查棒球使用方式與能力方向。 */
   const matrixRoles=[['P','SP',null],['P','MR',null],['P','CL',null],['C',null,'C'],['IF',null,'SS'],['IF',null,'2B'],['IF',null,'3B'],['IF',null,'1B'],['IF',null,'DH'],['OF',null,'CF'],['OF',null,'RF'],['OF',null,'LF']],bands=[['below',-10],['average',0],['star',12]],matrix=[],matrixProblems=[];
   for(const lv of Object.keys(LV))for(const [pos,role,dpos] of matrixRoles)for(const [band,delta] of bands){setup(pos,lv,role,dpos);const par=LV[lv].par;Object.keys(S.ab).forEach(k=>S.ab[k]=clamp(par+delta,1,99));if(pos==='P'){S.role=role;S.ab.sta=clamp(par+delta+(role==='SP'?6:-8),1,99);}seedInit(`matrix-${lv}-${pos}-${role||dpos}-${band}`);const lines=[];for(let i=0;i<18;i++){S.seasonLuck=ri(1,20);S._seasonVariance=null;const st=simSeason(lv);if(pos!=='P')st.OPS=(st.PA?(st.H+st.BB)/st.PA:0)+slgOf(st);lines.push(st);const tag=`${lv}/${role||dpos}/${band}/${i}`;if(st.G<0||st.G>LV[lv].g)matrixProblems.push(tag+':games');if(pos==='P'){if(role==='SP'&&(st.G>34||st.IP>st.G*6.8+.2))matrixProblems.push(tag+':starter workload');if(role!=='SP'&&(st.G>72||st.IP>st.G*1.45+.2||st.W+st.L+st.SV+st.HLD>st.G))matrixProblems.push(tag+':relief workload/decisions');if(st.era<0||st.era>11.6||st.WHIP<0||st.WHIP>2.5)matrixProblems.push(tag+':pitch rates');}else{if(st.PA>st.G*5||st.H>st.AB||st.HR>st.H||st.SB>st.H+st.BB||st.RBI>st.PA)matrixProblems.push(tag+':hitting totals');if(st.avg<0||st.avg>.435||st.OPS<0||st.OPS>1.65)matrixProblems.push(tag+':hitting rates');if(st._dh&&(st.TC||st.E||st.DEF||st.defG))matrixProblems.push(tag+':dh defense');}}
@@ -5595,6 +5693,7 @@ function runLogicAudit(samples){
   setup('OF','MLB',null,'CF');S.year=2029;S.proYears=3;mlbAddToFortyMan('audit');Object.assign(mlbRosterState(),{optionSeasons:[2027,2028],fourthOptionGranted:false});consumeMlbOptionYear(2029);const fourthOption=mlbRosterStatus();result.mlbRosterRules={initialRemaining:rosterInitial.remaining,sameSeasonUsesOneYear:optionFirst.ok&&optionSecond.ok&&rosterAfter.used===1,sameSeasonAssignments:rosterAfter.assignments,sixthRequiresWaivers:!sixthAssignment.ok,outOfOptions:exhausted.remaining===0,fourthOptionGranted:fourthOption.limit===4&&fourthOption.remaining===1,fiveYearOptionConsent:veteranRights.optionConsent,fiveYearKeepsGuarantee:veteranRights.keepsGuarantee,threeYearCanRejectOutright:threeYearRights.canRejectOutright,priorOutrightCanReject:priorOutrightRights.canRejectOutright,demotionTarget:'A3'};
   let invariantViolations=0,checked=0;for(const lv of Object.keys(LV)){for(const spec of [['P','SP',null],['P','CL',null],['P','MR',null],['IF',null,'SS'],['OF',null,'CF'],['IF',null,'DH']]){setup(spec[0],lv,spec[1],spec[2]);Object.keys(S.ab).forEach(k=>S.ab[k]=ri(20,99));for(let n=0;n<50;n++){const st=simSeason(lv),r=st.role||S.role;checked++;if(st.G>(st.scheduled||LV[lv].g)||st.G<0)invariantViolations++;if(S.pos==='P'&&r!=='SP'&&(st.W+st.L+st.SV+st.HLD>st.G||(r==='MR'&&(st.HP!==st.HLD+st.W||st.HP>st.G))))invariantViolations++;if(S.pos!=='P'&&(st.H>st.AB||st.HR>st.H||st.SB>st.H+st.BB||(st._dh&&(st.DEF!==0||st.TC>0||st.defG>0))))invariantViolations++;}}}result.invariantSweep={checked,violations:invariantViolations};
   setup('IF','MLB',null,'SS');S.log.push({y:2030,age:27,tm:S.orgTeam,line:'120 G｜500 PA',st:{G:120,PA:500,AB:450,H:130,BB:40,HR:18,RBI:70,SB:12,TC:500,E:8,DEF:9}});S.finance.ledger.push({year:2030,type:'salary',gross:1000,tax:250,agent:25,net:725});const teamView=careerTeamsHTML(),financeView=careerFinanceHTML();result.frontendViews={mobileTabs:document.querySelectorAll('.mobile-nav-btn').length,careerTabs:document.querySelectorAll('.career-tab').length,seasonControls:document.querySelectorAll('.season-control').length,teamTrackRenders:teamView.includes('career-team-stop'),financeLedgerRenders:financeView.includes('生涯財務明細')&&financeView.includes('薪資入帳')};
+  const retirementCoverage=[];for(const lg of ['CPBL','NPB','MLB','MINOR'])for(let tier=0;tier<=4;tier++)for(const pos of ['P','B']){const eligible=(RETIRE_SCENES.common||[]).concat(RETIRE_SCENES[lg]||RETIRE_SCENES.MINOR).filter(x=>(x.minTier===undefined||tier>=x.minTier)&&(x.maxTier===undefined||tier<=x.maxTier)&&(!x.pos||x.pos===pos));retirementCoverage.push({lg,tier,pos,count:eligible.length});}result.retirementDiversity={fanBaseCount:Object.values(FAN).reduce((n,a)=>n+a.length,0),fanUniqueCount:new Set(Object.values(FAN).flat()).size,sceneBaseCount:Object.values(RETIRE_SCENES).reduce((n,a)=>n+a.length,0),sceneTraitCount:Object.keys(RETIRE_TRAIT_SCENES).length,sceneTotalCount:retirementSceneCount(),minimumEligibleScenes:Math.min(...retirementCoverage.map(x=>x.count)),allContextsCovered:retirementCoverage.every(x=>x.count>=6),coverage:retirementCoverage};
   setup('P','MLB','SP');S.ct={yrs:3,signedYears:3,annual:1000,mult:1,guaranteed:1};S.skipMid=true;S.rehab=1;S._proClockYear=null;settleProfessionalSeasonClock();const once={yrs:S.ct.yrs,service:S.service.MiLB};settleProfessionalSeasonClock();result.contractClock={afterRehabSeason:once,idempotent:S.ct.yrs===once.yrs&&S.service.MiLB===once.service};
   S=saved.S;RNG_MODE=saved.RNG_MODE;SEED=saved.SEED;return result;
 }
