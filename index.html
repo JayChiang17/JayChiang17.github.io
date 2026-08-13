@@ -547,7 +547,7 @@ body::before{display:none}
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">棒球人生<br><em>CAREER SIM</em></h1>
-    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.2</div>
+    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.3</div>
     <p class="sub">做出選擇，再親手停下拉霸。從高中、選秀、旅外、傷病到引退，每次人生都不一樣。</p>
     <div class="start-grid">
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
@@ -904,7 +904,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v3.0.2';
+const APP_VER='v3.0.3';
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
   '東京大人':'#f97709','阪神猛虎':'#ffe201','橫濱海星':'#0a3ce0','廣島紅鯉':'#e60012','神宮飛燕':'#0a7bc2','名古屋神龍':'#003a70','福岡猛禽':'#f5c400','北海道培根':'#0a2d5c','千葉海潮':'#111111','仙台金翼':'#8b0000','大阪蠻牛':'#0033a0','埼玉雄獅':'#1268b3',
@@ -3668,19 +3668,26 @@ function proSeason(){
     tjGamble(()=>S.seasonPlan&&S.seasonPlan.fan?fanPlayerInteraction(st,afterFan):afterFan());
   });
 }
-function awards(bucket,st){
+function winsStatTitle(qualified,value,line,lower){return !!qualified&&(lower?value<=line:value>=line);}
+function clearVoteLead(value,line,margin){return value>=line+(margin||0);}
+function awards(bucket,st,competitionOverride){
   S.awardWatch=[];
   if(!LV[S.lv].top||S.seasonFactor===0)return;
   const y=S.year,h=S.honors,lgN={CPBL:'中職',NPB:'日職',MLB:'大聯盟'}[bucket],add=n=>{const row=`${y} ${n}`;if(!h.includes(row))h.push(row);};
   const P_RULE={CPBL:{ip:100,w:11,so:120,era:3.05,sv:25,hld:22,hp:28},NPB:{ip:125,w:12,so:150,era:2.75,sv:30,hld:28,hp:35},MLB:{ip:155,w:14,so:190,era:3.20,sv:34,hld:30,hp:36}}[bucket];
   const H_RULE={CPBL:{pa:390,h:125,avg:.310,hr:22,rbi:82,sb:25,obp:.385},NPB:{pa:470,h:145,avg:.310,hr:28,rbi:92,sb:28,obp:.390},MLB:{pa:520,h:165,avg:.310,hr:34,rbi:102,sb:30,obp:.395}}[bucket];
-  const COMP={avg:clamp(H_RULE.avg+N0(.011),.285,.335),hr:Math.max(12,Math.round(H_RULE.hr+N0(bucket==='MLB'?4.5:3.5))),ops:clamp(({CPBL:.785,NPB:.775,MLB:.800}[bucket]||.790)+N0(.025),.730,.865),def:clamp(Math.round(7+N0(2)),4,12),cs:clamp(Math.round(31+N0(5)),22,43)};
+  const COMP=competitionOverride||{
+    avg:clamp(H_RULE.avg+N0(.011),.285,.335),h:Math.max(90,Math.round(H_RULE.h+N0(bucket==='MLB'?10:7))),hr:Math.max(12,Math.round(H_RULE.hr+N0(bucket==='MLB'?4.5:3.5))),
+    rbi:Math.max(55,Math.round(H_RULE.rbi+N0(bucket==='MLB'?9:7))),sb:Math.max(15,Math.round(H_RULE.sb+N0(5))),obp:clamp(H_RULE.obp+N0(.012),.350,.425),
+    era:clamp(P_RULE.era+N0(.18),2.15,3.75),w:Math.max(8,Math.round(P_RULE.w+N0(2))),so:Math.max(85,Math.round(P_RULE.so+N0(bucket==='MLB'?15:11))),
+    sv:Math.max(18,Math.round(P_RULE.sv+N0(4))),hld:Math.max(15,Math.round(P_RULE.hld+N0(4))),hp:Math.max(20,Math.round(P_RULE.hp+N0(4))),
+    ops:clamp(({CPBL:.785,NPB:.775,MLB:.800}[bucket]||.790)+N0(.025),.730,.865),def:clamp(Math.round(7+N0(2)),4,12),cs:clamp(Math.round(31+N0(5)),22,43)};
+  st._awardCompetition={...COMP};
   const AN={
     CPBL:{rookie:'中職年度新人王',month:'中職單月MVP',progress:'中職年度最佳進步獎',pitcher:null,first:'中職最佳十人',second:null,defense:'中職金手套',defPlayer:null,bat:'中職最佳十人',relief:'中職年度後援貢獻獎',comeback:'中職東山再起獎'},
     NPB:{rookie:'日職新人王',month:'日職月間MVP',progress:'日職復活賞',pitcher:'日職澤村賞',first:'日職最佳九人',second:null,defense:'日職金手套',defPlayer:null,bat:'日職最佳九人',relief:'日職年度最佳後援投手',comeback:'日職復活賞'},
     MLB:{rookie:'大聯盟年度新人王',month:'大聯盟單月最佳球員',week:'大聯盟單週最佳球員',progress:'大聯盟東山再起獎',pitcher:'大聯盟賽揚獎',first:'All-MLB 年度第一隊',second:'All-MLB 年度第二隊',defense:'大聯盟金手套',defPlayer:'大聯盟白金手套',bat:'大聯盟銀棒獎',relief:'大聯盟年度最佳後援投手',comeback:'大聯盟東山再起獎'}
   }[bucket];
-  const shot=(value,target,lower)=>{const ratio=lower?target/Math.max(.01,value):value/Math.max(.01,target);return clamp(Math.round(30+(ratio-1)*95),18,82);};
   const obpNow=S.pos==='P'?0:(st.PA?(st.H+st.BB)/st.PA:0),opsNow=S.pos==='P'?0:obpNow+slgOf(st);
   const eraNow=S.pos==='P'&&st.IP>0?st.ER*9/st.IP:99,whipNow=S.pos==='P'&&st.IP>0?(st.H+st.BB)/st.IP:99;
   const enoughSample=S.pos==='P'?(isSP()?st.IP>=P_RULE.ip*.3:st.G>=20&&st.IP>=15):st.PA>=H_RULE.pa*.28;
@@ -3704,12 +3711,12 @@ function awards(bucket,st){
   if(awardEligible&&st.d-(S.prevSeasonD||0)>=4&&chance(clamp(42+(st.d-(S.prevSeasonD||0))*5,48,82)))add(AN.progress);
   {const prior=S.log&&S.log.length>1?S.log[S.log.length-2]:null;if(awardEligible&&prior&&prior.inj&&st.d>=2&&S.seasonFactor>=.9&&chance(62))add(AN.comeback);}
   if(S.pos==='P'){
-    if(isSP()&&st.IP>=P_RULE.ip&&st.era<=P_RULE.era&&chance(shot(st.era,P_RULE.era,true)))add(`${lgN}防禦率王`);
-    if(isSP()&&st.W>=P_RULE.w&&chance(shot(st.W,P_RULE.w)))add(`${lgN}勝投王`);
-    if(st.SO>=P_RULE.so&&chance(shot(st.SO,P_RULE.so)))add(`${lgN}三振王`);
-    if(S.role==='CL'&&(st.SV||0)>=P_RULE.sv&&chance(shot(st.SV,P_RULE.sv)))add(`${lgN}救援王`);
-    if(S.role==='MR'&&bucket==='NPB'&&reliefPoints(st)>=P_RULE.hp&&chance(shot(reliefPoints(st),P_RULE.hp)))add('日職最優秀中繼投手');
-    if(S.role==='MR'&&bucket==='CPBL'&&(st.HLD||0)>=P_RULE.hld&&chance(shot(st.HLD,P_RULE.hld)))add('中職中繼王');
+    if(winsStatTitle(isSP()&&st.IP>=P_RULE.ip,st.era,COMP.era,true))add(`${lgN}防禦率王`);
+    if(winsStatTitle(isSP()&&st.IP>=P_RULE.ip*.72,st.W,COMP.w))add(`${lgN}勝投王`);
+    if(winsStatTitle(st.IP>=P_RULE.ip*.42,st.SO,COMP.so))add(`${lgN}三振王`);
+    if(winsStatTitle(S.role==='CL'&&st.G>=38,st.SV||0,COMP.sv))add(`${lgN}救援王`);
+    if(winsStatTitle(S.role==='MR'&&bucket==='NPB'&&st.G>=38,reliefPoints(st),COMP.hp))add('日職最優秀中繼投手');
+    if(winsStatTitle(S.role==='MR'&&bucket==='CPBL'&&st.G>=38,st.HLD||0,COMP.hld))add('中職中繼王');
     if(AN.pitcher&&isSP()&&st.d>=6&&st.era<=P_RULE.era+.2&&st.IP>=P_RULE.ip&&chance(clamp(20+st.d*3,28,65)))add(AN.pitcher);
     let firstTeam=false;
     if(st.d>=4&&((isSP()&&st.IP>=P_RULE.ip*.82)||(!isSP()&&st.G>=42))&&chance(clamp(25+st.d*3,30,68))){add(`${AN.first}・${roleN(S.role)}`);firstTeam=true;}
@@ -3718,24 +3725,26 @@ function awards(bucket,st){
     if(S.role==='MR'&&st.G>=42&&(st.HLD||0)>=Math.round(P_RULE.hld*.6)&&chance(48))add(`${lgN}球團無名英雄`);
   }else{
     const obp=st.PA?(st.H+st.BB)/st.PA:0;
-    if(st.PA>=H_RULE.pa&&st.avg>=COMP.avg&&chance(shot(st.avg,COMP.avg)))add(`${lgN}打擊王`);
-    if(st.H>=H_RULE.h&&chance(shot(st.H,H_RULE.h)))add(`${lgN}安打王`);
-    if(st.HR>=COMP.hr&&st.PA>=H_RULE.pa*.78&&chance(shot(st.HR,COMP.hr)))add(`${lgN}全壘打王`);
-    if(st.RBI>=H_RULE.rbi&&st.PA>=H_RULE.pa*.78&&chance(shot(st.RBI,H_RULE.rbi)))add(`${lgN}打點王`);
-    if(st.SB>=H_RULE.sb&&chance(shot(st.SB,H_RULE.sb)))add(`${lgN}盜壘王`);
-    if(st.PA>=H_RULE.pa&&obp>=H_RULE.obp&&chance(shot(obp,H_RULE.obp)))add(`${lgN}上壘王`);
+    if(winsStatTitle(st.PA>=H_RULE.pa,st.avg,COMP.avg))add(`${lgN}打擊王`);
+    if(winsStatTitle(st.PA>=H_RULE.pa*.78,st.H,COMP.h))add(`${lgN}安打王`);
+    if(winsStatTitle(st.PA>=H_RULE.pa*.78,st.HR,COMP.hr))add(`${lgN}全壘打王`);
+    if(winsStatTitle(st.PA>=H_RULE.pa*.78,st.RBI,COMP.rbi))add(`${lgN}打點王`);
+    if(winsStatTitle(st.PA>=H_RULE.pa*.55,st.SB,COMP.sb))add(`${lgN}盜壘王`);
+    if(winsStatTitle(st.PA>=H_RULE.pa,obp,COMP.obp))add(`${lgN}上壘王`);
     const def1=st.DEF||0;
     let wonGlove=false;
     const gloveGames=Math.ceil(LV[S.lv].g*(S.dpos==='C'?.52:.62)),gloveEligible=!st._dh&&S.dpos!=='DH'&&(st.defG||0)>=gloveGames&&(st.TC||0)>=gloveGames*2;
     const catcherRate=S.dpos==='C'&&st.SBA?Math.round((st.CS||0)/st.SBA*100):0,gloveScore=def1+(S.dpos==='C'?clamp((catcherRate-COMP.cs)/5,-2,3)+clamp((st.CALL_RUNS||0)/8,-2,3):0);
     if(gloveEligible&&gloveScore>=COMP.def&&S.seasonFactor>=0.7&&chance(clamp(24+gloveScore*2.7,30,72))){add(`${AN.defense}・${DPN[S.dpos]||'守位'}`);wonGlove=true;}
     if(AN.defPlayer&&wonGlove&&def1>=11&&chance(clamp(12+def1*2,20,48)))add(AN.defPlayer);
-    const ops=obp+slgOf(st);
-    if(st.PA>=H_RULE.pa&&ops>=.790&&chance(clamp(25+(ops-.75)*120,30,72)))add(`${AN.bat}・${DPN[S.dpos]||'指定打擊'}`);
+    const ops=obp+slgOf(st),batAward=`${AN.bat}・${DPN[S.dpos]||'指定打擊'}`,batVoteEligible=st.PA>=H_RULE.pa*.78&&ops>=COMP.ops-.035,batVoteP=clamp(Math.round(40+(ops-COMP.ops)*260+(st.d||0)*1.5),18,94),batClear=st.PA>=H_RULE.pa*.9&&clearVoteLead(ops,COMP.ops,.06),wonBatVote=batVoteEligible&&(batClear||chance(batVoteP));
+    if(wonBatVote)add(batAward);
     let firstTeam=false;
     if(bucket==='MLB'&&st.d>=4&&st.PA>=H_RULE.pa*.9&&chance(clamp(25+st.d*3,30,66))){add(`${AN.first}・${DPN[S.dpos]||'指定打擊'}`);firstTeam=true;}
     if(AN.second&&!firstTeam&&st.d>=2&&st.PA>=H_RULE.pa*.76&&chance(clamp(30+st.d*3,34,64)))add(`${AN.second}・${DPN[S.dpos]||'指定打擊'}`);
-    if(S.dpos==='DH'&&st.PA>=H_RULE.pa*.78&&ops>=.770&&chance(clamp(35+(ops-.72)*120,38,72)))add(bucket==='MLB'?'大聯盟年度最佳指定打擊獎':`${AN.bat}・指定打擊`);
+    let dhVoteP=batVoteP,wonDhVote=wonBatVote;
+    if(S.dpos==='DH'&&bucket==='MLB'){dhVoteP=clamp(Math.round(48+(ops-COMP.ops)*250+(st.d||0)*1.5),24,96);wonDhVote=batVoteEligible&&(batClear||chance(dhVoteP));if(wonDhVote)add('大聯盟年度最佳指定打擊獎');}
+    st._batVote={line:COMP.ops,p:Math.max(batVoteP,dhVoteP),won:S.dpos==='DH'?wonDhVote:wonBatVote,clear:batClear,award:S.dpos==='DH'?'最佳指定打擊':`${DPN[S.dpos]||'守位'}年度打擊獎`};
     if(gloveEligible&&def1>=5&&chance(clamp(38+def1*3,42,76)))add(`${S.orgTeam} 球團最佳防守球員`);
   }
   const mvpQual = S.pos==='P'
@@ -3751,22 +3760,22 @@ function awards(bucket,st){
     const needed=S.pos==='P'?(isSP()?`${Math.ceil(P_RULE.ip*.72)} 局`:`38 場／28 局`):`${Math.ceil(H_RULE.pa*.78)} 打席`;
     S.awardWatch.push(`未達主要個人獎競爭樣本｜目前 ${current}・參考線 ${needed}`);
   }else if(S.pos==='P'){
-    if(isSP())S.awardWatch.push(`防禦率榜 ${st.era.toFixed(2)}｜競爭線 ${P_RULE.era.toFixed(2)}`);
-    else if(S.role==='CL')S.awardWatch.push(`救援榜 ${st.SV||0}｜競爭線 ${P_RULE.sv}`);
-    else if(bucket==='NPB')S.awardWatch.push(`中繼點榜 ${reliefPoints(st)} HP｜競爭線 ${P_RULE.hp}`);
-    else if(bucket==='CPBL')S.awardWatch.push(`中繼榜 ${st.HLD||0} HLD｜${reliefPoints(st)} HP｜競爭線 ${P_RULE.hld}`);
+    if(isSP()&&!h.includes(`${y} ${lgN}防禦率王`))S.awardWatch.push(`防禦率榜 ${st.era.toFixed(2)}｜本季領先線 ${COMP.era.toFixed(2)}`);
+    else if(S.role==='CL'&&!h.includes(`${y} ${lgN}救援王`))S.awardWatch.push(`救援榜 ${st.SV||0}｜本季領先線 ${COMP.sv}`);
+    else if(bucket==='NPB'&&!h.includes(`${y} 日職最優秀中繼投手`))S.awardWatch.push(`中繼點榜 ${reliefPoints(st)} HP｜本季領先線 ${COMP.hp}`);
+    else if(bucket==='CPBL'&&!h.includes(`${y} 中職中繼王`))S.awardWatch.push(`中繼榜 ${st.HLD||0} HLD｜${reliefPoints(st)} HP｜本季領先線 ${COMP.hld}`);
     else S.awardWatch.push(`後援表現｜${st.HLD||0} HLD｜${reliefPoints(st)} HP`);
-    S.awardWatch.push(`三振榜 ${st.SO||0}｜競爭線 ${P_RULE.so}`);
+    if(!h.includes(`${y} ${lgN}三振王`))S.awardWatch.push(`三振榜 ${st.SO||0}｜本季領先線 ${COMP.so}`);
     if(isSP())S.awardWatch.push(`年度最佳投手票選｜球季評價 ${st.d>=0?'+':''}${st.d.toFixed(1)}`);
   }else{
     const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st);
-    if(st.avg>=COMP.avg-.035)S.awardWatch.push(`打擊王競爭｜目前 ${st.avg.toFixed(3).replace(/^0/,'')}・本季領先線 ${COMP.avg.toFixed(3).replace(/^0/,'')}`);
-    if((st.HR||0)>=Math.max(5,COMP.hr*.55))S.awardWatch.push(`全壘打王競爭｜目前 ${st.HR||0}・本季領先線 ${COMP.hr}`);
+    if(!h.includes(`${y} ${lgN}打擊王`)&&st.avg>=COMP.avg-.035)S.awardWatch.push(st.PA>=H_RULE.pa?`打擊王競爭｜目前 ${st.avg.toFixed(3).replace(/^0/,'')}・本季領先線 ${COMP.avg.toFixed(3).replace(/^0/,'')}`:`打擊率 ${st.avg.toFixed(3).replace(/^0/,'')}｜尚未取得打擊王資格・目前 ${st.PA} PA／規定 ${H_RULE.pa} PA`);
+    if(!h.includes(`${y} ${lgN}全壘打王`)&&(st.HR||0)>=Math.max(5,COMP.hr*.55))S.awardWatch.push(`全壘打王競爭｜目前 ${st.HR||0}・本季領先線 ${COMP.hr}`);
     if(S.dpos==='C'){
       const cs=st.SBA?Math.round((st.CS||0)/st.SBA*100):0,era=Number(st.STAFF_ERA_ADJ)||0;
       S.awardWatch.push(`最佳捕手競爭｜OPS ${ops.toFixed(3).replace(/^0/,'')}・本季票選線約 ${COMP.ops.toFixed(3).replace(/^0/,'')}・守備貢獻 ${(st.DEF||0)>=0?'+':''}${st.DEF||0}`);
       S.awardWatch.push(`捕手金手套競爭｜阻殺率 ${cs}%（競爭線約 ${COMP.cs}%）・失誤 ${st.E||0}・配球 ${st.CALL_GRADE||'—'}・配球防失分 ${(st.CALL_RUNS||0)>=0?'+':''}${st.CALL_RUNS||0}`);
-    }else S.awardWatch.push(`${S.dpos==='DH'?'最佳指定打擊':'年度攻守票選'}｜OPS ${ops.toFixed(3).replace(/^0/,'')}・本季票選線約 ${COMP.ops.toFixed(3).replace(/^0/,'')}${S.dpos!=='DH'?`・守備貢獻 ${(st.DEF||0)>=0?'+':''}${st.DEF||0}`:''}`);
+    }else if(!st._batVote||!st._batVote.won)S.awardWatch.push(`${S.dpos==='DH'?'最佳指定打擊票選未獲獎':'年度攻守票選'}｜OPS ${ops.toFixed(3).replace(/^0/,'')}・本季票選線約 ${COMP.ops.toFixed(3).replace(/^0/,'')}${st._batVote?`・估算獲獎率 ${st._batVote.p}%`:''}${S.dpos!=='DH'?`・守備貢獻 ${(st.DEF||0)>=0?'+':''}${st.DEF||0}`:''}`);
   }
   const added=h.filter(x=>x.startsWith(String(y)));
   if(added.length){ card('gold','年度獎項',`<div class="award-grid">${added.map(x=>`<div class="award-item">🏆 ${x.slice(5)}</div>`).join('')}</div>`);
@@ -5467,6 +5476,9 @@ function runLogicAudit(samples){
   const defenseRun=off=>{setup('IF','MLB',null,'SS');Object.assign(S.ab,{con:off,pow:off,eye:off,spd:60,sta:70,rng:90,fld:90,arm:90});return Array.from({length:samples},()=>simSeason('MLB'));};seedInit('audit-defense-bench');const db=defenseRun(30);seedInit('audit-defense-star');const ds=defenseRun(95);result.defensePlayingTime={bench:{avgG:mean(db,'G'),avgDEF:mean(db,'DEF'),avgDefG:mean(db,'defG')},star:{avgG:mean(ds,'G'),avgDEF:mean(ds,'DEF'),avgDefG:mean(ds,'defG')}};
   const catcherRun=value=>{setup('C','CPBL1',null,'C');Object.assign(S.ab,{con:62,pow:45,eye:58,spd:38,sta:68,rng:value,fld:value,arm:value,cat:value});return Array.from({length:samples},()=>simSeason('CPBL1'));};seedInit('audit-catcher-low');const catcherLow=catcherRun(45);seedInit('audit-catcher-high');const catcherHigh=catcherRun(85);result.catcherDefense={low:{avgE:mean(catcherLow,'E'),avgExpectedE:mean(catcherLow,'EXPECTED_E'),avgCallRuns:mean(catcherLow,'CALL_RUNS'),avgStaffEraAdj:mean(catcherLow,'STAFF_ERA_ADJ'),avgDEF:mean(catcherLow,'DEF')},high:{avgE:mean(catcherHigh,'E'),avgExpectedE:mean(catcherHigh,'EXPECTED_E'),avgCallRuns:mean(catcherHigh,'CALL_RUNS'),avgStaffEraAdj:mean(catcherHigh,'STAFF_ERA_ADJ'),avgDEF:mean(catcherHigh,'DEF')}};
   setup('C','CPBL1',null,'C');Object.assign(S.ab,{con:85,pow:42,eye:80,spd:38,sta:75,rng:72,fld:84,arm:80,cat:88});S.stats.CPBL=blankStat();S.stats.CPBL.yr=5;const awardLine={G:104,PA:456,AB:405,H:160,HR:0,RBI:38,SB:1,BB:51,avg:160/405,d:10,scheduled:120,defG:96,TC:810,E:5,EXPECTED_E:4.3,CS:34,SBA:78,DEF:18,CALL_RUNS:14,CALL_GRADE:'S',STAFF_ERA_ADJ:-.22};seedInit('audit-catcher-awards-1');awards('CPBL',awardLine);const awardWatch1=S.awardWatch.slice();S.year++;S.awardWatch=[];seedInit('audit-catcher-awards-2');awards('CPBL',awardLine);const awardWatch2=S.awardWatch.slice();result.catcherAwardWatch={first:awardWatch1,second:awardWatch2,variesBySeason:JSON.stringify(awardWatch1)!==JSON.stringify(awardWatch2),irrelevantHomeRunLine:awardWatch1.some(x=>x.includes('全壘打'))};
+  result.awardThresholdConsistency={battingLeadWins:winsStatTitle(true,.308,.303),homeRunLeadWins:winsStatTitle(true,29,21),unqualifiedDoesNotWin:!winsStatTitle(false,.308,.303),lowerEraWins:winsStatTitle(true,2.51,3.03,true),clearDhLeadWins:clearVoteLead(.925,.792,.06)};
+  setup('IF','MLB',null,'DH');S.stats.MLB=blankStat();S.stats.MLB.yr=3;const userAwardLine={G:148,PA:554,AB:500,H:154,BB:54,HR:29,RBI:91,SB:2,avg:.308,d:8,scheduled:162,defG:0,TC:0,E:0,DEF:0},userCompetition={avg:.303,h:164,hr:21,rbi:103,sb:31,obp:.397,era:3.05,w:15,so:192,sv:35,hld:31,hp:37,ops:.792,def:7,cs:31};seedInit('audit-user-award-case');awards('MLB',userAwardLine,userCompetition);const userAwardNames=S.honors.filter(x=>x.startsWith(String(S.year))).map(x=>x.slice(5)),userAwardWatch=S.awardWatch.slice();result.userAwardCase={avg:userAwardLine.avg,HR:userAwardLine.HR,OPS:+((userAwardLine.H+userAwardLine.BB)/userAwardLine.PA+slgOf(userAwardLine)).toFixed(3),lines:{avg:userAwardLine._awardCompetition.avg,HR:userAwardLine._awardCompetition.hr,OPS:userAwardLine._awardCompetition.ops},awards:userAwardNames,watch:userAwardWatch,battingTitle:userAwardNames.includes('大聯盟打擊王'),homeRunTitle:userAwardNames.includes('大聯盟全壘打王'),dhAward:userAwardNames.some(x=>/指定打擊|銀棒獎・指定打擊/.test(x)),noWonAwardsRepeatedAsWatch:!userAwardWatch.some(x=>/打擊王競爭|全壘打王競爭|最佳指定打擊/.test(x)),wonEverythingLed:userAwardLine.avg>=userAwardLine._awardCompetition.avg&&userAwardLine.HR>=userAwardLine._awardCompetition.hr&&userAwardNames.includes('大聯盟打擊王')&&userAwardNames.includes('大聯盟全壘打王')};
+  setup('IF','MLB',null,'DH');S.stats.MLB=blankStat();S.stats.MLB.yr=3;const shortBatLine={G:112,PA:450,AB:400,H:132,BB:50,HR:22,RBI:70,SB:1,avg:.330,d:5,scheduled:162,defG:0,TC:0,E:0,DEF:0};seedInit('audit-short-batting-qualification');awards('MLB',shortBatLine,userCompetition);result.battingQualification={PA:shortBatLine.PA,required:520,noBattingTitle:!S.honors.includes(`${S.year} 大聯盟打擊王`),homeRunTitleStillPossible:S.honors.includes(`${S.year} 大聯盟全壘打王`),explainsMissingQualification:S.awardWatch.some(x=>x.includes('尚未取得打擊王資格')&&x.includes('450 PA／規定 520 PA'))};
   setup('C','CPBL1',null,'C');seedInit('audit-monthly-errors');const errorFinal={...catcherHigh[0],G:98,PA:430,AB:390,H:126,HR:0,RBI:38,SB:1,BB:40,TC:760,E:10,EXPECTED_E:7.4,defG:86,CALL_RUNS:12,CALL_DEF:4,DEF:10},errorTimeline=[-1,-2,0,-2,-1,0].map((pulse,i)=>({n:i===0?'打線熄火':'測試月份',pulse,personalPulse:pulse})),errorSlices=monthlySeasonSlices(errorFinal,errorTimeline,6),errorDeltas=errorSlices.map((x,i)=>(x.E||0)-(i?errorSlices[i-1].E||0:0));result.monthlyErrors={deltas:errorDeltas,sum:errorDeltas.reduce((a,b)=>a+b,0),distinct:new Set(errorDeltas).size,final:errorSlices[5].E};
   setup('C','CPBL1',null,'C');S.age=28;seedInit('audit-training-young');S._seasonTrainingPlan=null;const youngPlan=trainingDicePlan();setup('C','CPBL1',null,'C');S.age=38;S.offseasonTrainingDice=3;seedInit('audit-training-veteran');S._seasonTrainingPlan=null;const veteranPlan=trainingDicePlan();setup('C','CPBL1',null,'C');S.age=42;S.offseasonTrainingDice=3;seedInit('audit-training-old');S._seasonTrainingPlan=null;const oldPlan=trainingDicePlan();S._seasonAgeGains={};const sta0=S.ab.sta,spd0=S.ab.spd;addAb('sta',100);addAb('sta',100);addAb('spd',100);result.agingTraining={young:{dice:youngPlan.n,cap:youngPlan.ageCap},veteran:{dice:veteranPlan.n,cap:veteranPlan.ageCap},old:{dice:oldPlan.n,cap:oldPlan.ageCap,staminaGain:S.ab.sta-sta0,speedGain:S.ab.spd-spd0}};
   setup('IF','MLB',null,'SS');Object.assign(S.ab,{con:99,pow:99,eye:99,spd:55,sta:1,rng:80,fld:80,arm:80});seedInit('audit-dh');const dh=Array.from({length:samples},()=>simSeason('MLB')).filter(x=>x._dh);result.temporaryDH={seasons:dh.length,ghostDefense:dh.filter(x=>x.DEF!==0||x.TC>0||x.defG>0).length};
