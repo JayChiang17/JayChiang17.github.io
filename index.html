@@ -547,7 +547,7 @@ body::before{display:none}
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">棒球人生<br><em>CAREER SIM</em></h1>
-    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.6</div>
+    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.7</div>
     <p class="sub">做出選擇，再親手停下拉霸。從高中、選秀、旅外、傷病到引退，每次人生都不一樣。</p>
     <div class="start-grid">
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
@@ -923,7 +923,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v3.0.6';
+const APP_VER='v3.0.7';
 if(new URLSearchParams(location.search).get('logic-audit')==='1')window.addEventListener('error',e=>{document.documentElement.setAttribute('data-audit-error',`${e.message} @ ${e.lineno}:${e.colno}`);});
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
@@ -1148,7 +1148,7 @@ function newState(name,pos,role){
     social:{fanRep:0,playerRep:0,fanActs:0,playerActs:0,communityActs:0,mentorActs:0,ignoredFans:0,ignoredPlayers:0,viral:0},
     eventProfile:{total:0,wins:0,fails:0,boldWins:0,teamWins:0,mediaWins:0,positionWins:0,positionFails:0,healthWins:0},
     traitProgress:{elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0,velocity:0,command:0,workhorse:0,stopper:0,patience:0,speed:0,postseason:0},potentialBreakthrough:{streaks:{},successes:{},history:[]},achievementQueue:[],standingsHistory:[],currentStandings:null,
-    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,cash:0,investments:0,debt:0,netWorth:0,ledger:[],homeOwned:false,homeEquity:0,investmentYears:0,discipline:0,crisesResolved:0},offseasonTrainingDice:0,awardLeverage:0,awardLeverageUntil:0,awardStreakBonusYear:0,poachCount:0,poachEffect:null,poachHistory:[],poachLeverage:0,poachLeverageUntil:0,teamStrengths:{}};
+    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,cash:0,investments:0,debt:0,netWorth:0,ledger:[],homeOwned:false,homeEquity:0,investmentYears:0,discipline:0,crisesResolved:0},offseasonTrainingDice:0,awardLeverage:0,awardLeverageUntil:0,awardStreakBonusYear:0,poachCount:0,poachEffect:null,poachHistory:[],poachLeverage:0,poachLeverageUntil:0,teamStrengths:{},tradeHistory:[],overseasDepth:{npb2:0,milb:0},returnInquiryHistory:[]};
 }
 function blankStat(){return {yr:0,qualYrs:0,eliteYrs:0,G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,AS:0,DEF:0,TC:0,E:0,PO:0,A:0,DP:0,OFA:0,CS:0,SBA:0,CALL_RUNS:0,CALL_DEF:0,CALL_SCORE_G:0,CALL_G:0,VeloIP:0,avgVelo:0};}
 function bucketOf(lv){ const l=lv&&LV[lv]; return l&&l.top?l.top:'MINOR'; } /* 業餘引退時 lv 為空,歸類 MINOR */
@@ -1904,7 +1904,7 @@ function showSeasonSummary(st,done){
   const info=seasonTeamInfo(),v=seasonVerdict(st);$('summary-title').textContent=`${S.year} 本季總結`;$('summary-sub').textContent=`${S.age} 歲・${st.usageRole||roleN(S.role)}`;
   const linked=S.pos==='P'?'球速與變化球影響三振、被安打與 ERA；控球影響保送與 WHIP；體力影響角色、出賽與局數。':'Contact 與選球影響上壘，力量影響長打，速度影響盜壘與出賽角色，守備能力影響名單位置。';
   const awards=(S.honors||[]).filter(x=>x.startsWith(String(S.year))).map(x=>x.slice(5)),watch=S.awardWatch||[],awardBox=$('summary-awards');awardBox.classList.toggle('show',awards.length>0||watch.length>0);awardBox.innerHTML=(awards.length?`<strong>本季獎項</strong>${awards.map(x=>`<span>🏆 ${x}</span>`).join('')}`:'')+(watch.length?`<strong>獎項競爭</strong>${watch.map(x=>`<span>◌ ${x}</span>`).join('')}`:'');
-  const sw=seasonSwing(),signed=v=>(v>0?'+':'')+v.toFixed(1),abilityBase=(Number(st.d)||0)-sw.total,parts=`能力基準 ${signed(abilityBase)}・手感 ${signed(sw.luckAdj)}・事件氣勢 ${signed(sw.momentum)}・選擇狀態 ${signed(sw.pending)}・環境 ${signed(sw.contextAdj)}・團隊 ${signed(sw.chemistry)}・特性 ${signed(sw.traits)}${sw.poach?`・挖角承諾 ${signed(sw.poach)}`:''}`;
+  const sw=seasonSwing(),signed=v=>(v>0?'+':'')+v.toFixed(1),abilityBase=(Number(st.d)||0)-sw.total,parts=`能力基準 ${signed(abilityBase)}・手感 ${signed(sw.luckAdj)}・事件氣勢 ${signed(sw.momentum)}・選擇狀態 ${signed(sw.pending)}・環境 ${signed(sw.contextAdj)}・團隊 ${signed(sw.chemistry)}・特性 ${signed(sw.traits)}${sw.poach?`・轉隊適應 ${signed(sw.poach)}`:''}`;
   $('summary-team').innerHTML=`<b>${info.name}</b><span>${info.level}${S.pos==='P'?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}</span>`;$('summary-stats').innerHTML=statDashboard(st);$('summary-verdict').innerHTML=`<b>${v.title}</b><p>${v.text}</p><small>成績模型：${parts}<br><b>外部狀態合計 ${signed(sw.total)}；最終表現評價 ${signed(Number(st.d)||0)}</b><br>外部狀態很好只能補強能力，無法把明顯低於聯盟的能力直接變成明星。${linked}</small>`;$('summary-standings').innerHTML=standingsHTML(S.currentStandings);
   $('summary-accept').onclick=()=>{closeFx('summary-overlay');playAchievementQueue(done);};openFx('summary-overlay');
 }
@@ -2737,7 +2737,7 @@ function potentialBreakthroughState(){return S.potentialBreakthrough||(S.potenti
 function potentialProgressHTML(){
   const ps=potentialBreakthroughState(),rules=potentialBreakthroughRules(),active=rules.filter(r=>(ps.streaks[r.id]||0)>0).sort((a,b)=>(ps.streaks[b.id]||0)-(ps.streaks[a.id]||0)),r=active[0];
   const text=r?`${r.name}｜連霸進度 ${Math.min(ps.streaks[r.id],r.need)}/${r.need}｜${r.condition}`:`尚無連霸進度｜例如${S.pos==='P'?'連續 3 年三振王或防禦率王':'連續 3 年全壘打王或打擊王'}`;
-  const leverage=(S.awardLeverageUntil||0)>=S.year&&S.awardLeverage?`目前連霸效果：下季訓練骰已加發，合約行情 +${S.awardLeverage*3}%、挖角關注提高。`:'連續兩年拿下同項年度獎，會加發 1 顆下季訓練骰並提高短期合約與挖角行情。';
+  const leverage=(S.awardLeverageUntil||0)>=S.year&&S.awardLeverage?`目前連霸效果：下季訓練骰已加發，合約行情 +${S.awardLeverage*3}%、跨聯盟關注提高。`:'連續兩年拿下同項年度獎，會加發 1 顆下季訓練骰並提高短期合約與跨聯盟行情。';
   return `<div class="potential-breakthrough"><b>連霸與實績突破</b><span>${text}</span><small>${leverage}<br>達成完整連霸後才取得低機率上限突破；能力仍須靠訓練。</small></div>`;
 }
 function potentialBreakthroughAudit(awards){
@@ -2760,8 +2760,8 @@ function potentialBreakthroughAudit(awards){
   });
   if(streakAward&&S.awardStreakBonusYear!==S.year){
     S.awardStreakBonusYear=S.year;S.offseasonTrainingDice=clamp((S.offseasonTrainingDice||0)+1,0,3);S.awardLeverage=clamp(Math.max(S.awardLeverage||0,streakAward.streak),0,4);S.awardLeverageUntil=S.year+1;
-    card('gold','連霸紅利已生效',`${streakAward.rule.name}連續 ${streakAward.streak} 年成立。球團與市場不只留下獎盃：<b class="hl">下季訓練骰 +1、合約行情 +${S.awardLeverage*3}%、挖角關注提高</b>。沒有直接送能力點，實際成長仍要靠下一次訓練。`);
-    queueAchievement({kind:'streak',kicker:'連續年度獎項',title:`${streakAward.rule.name} ×${streakAward.streak}`,subtitle:'連霸紅利正式生效',progress:`${streakAward.streak} 年連霸`,detail:'下季訓練骰 +1',result:`合約行情 +${S.awardLeverage*3}%・挖角關注提高`,note:'紅利不直接增加能力；訓練骰仍須親自分配。'});
+    card('gold','連霸紅利已生效',`${streakAward.rule.name}連續 ${streakAward.streak} 年成立。球團與市場不只留下獎盃：<b class="hl">下季訓練骰 +1、合約行情 +${S.awardLeverage*3}%、跨聯盟關注提高</b>。沒有直接送能力點，實際成長仍要靠下一次訓練。`);
+    queueAchievement({kind:'streak',kicker:'連續年度獎項',title:`${streakAward.rule.name} ×${streakAward.streak}`,subtitle:'連霸紅利正式生效',progress:`${streakAward.streak} 年連霸`,detail:'下季訓練骰 +1',result:`合約行情 +${S.awardLeverage*3}%・跨聯盟關注提高`,note:'紅利不直接增加能力；訓練骰仍須親自分配。'});
   }
 }
 /* 加點介面：mode {dice:[..]} 或 {pool:n} */
@@ -2917,7 +2917,7 @@ function phasePre(){
   S.prevSeasonD=Number.isFinite(S.lastD)?S.lastD:0;
   S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.lastD=0;S.lastMarketD=0;S.lastMarketBreakdown=null;S.seasonLuck=10;S.seasonMomentum=0;S.teamSeasonMomentum=0;S._seasonVariance=null;S._pendingSeasonStats=null;S._pendingAmateurStats=null;S._seasonTrainingPlan=null;S._seasonAgeGains={};S._seasonInjuryDecline=null;S.drawnEvents=S.drawnEvents||[];S.hsCupBonus=0;S.hsTrainingDiceMod=0;S.hsUsageBonus=0;S.hsPlan=null;S.hsPlanEffect=null;
   S.seasonPlan=makeSeasonPlan();S.seasonContext=makeSeasonContext();board(0);
-  const poach=activePoachEffect(),poachRow=poach?`<div class="reality-row"><b>挖角承諾兌現｜${poach.label}</b><p>${poach.rolePromise}</p><small>出賽競爭 +${poach.usageAdj}%｜球隊勝場環境 ${poach.teamWins>=0?'+':''}${poach.teamWins}｜表現壓力 ${poach.perfAdj>=0?'+':''}${poach.perfAdj}</small></div>`:'';
+  const poach=activePoachEffect(),poachRow=poach?`<div class="reality-row"><b>${poach.cross?'跨聯盟加盟':'交易後角色安排'}｜${poach.label}</b><p>${poach.rolePromise}</p><small>出賽競爭 +${poach.usageAdj}%｜球隊勝場環境 ${poach.teamWins>=0?'+':''}${poach.teamWins}｜表現壓力 ${poach.perfAdj>=0?'+':''}${poach.perfAdj}</small></div>`:'';
   card('info','本季現實環境',`<div class="reality-grid">${poachRow}${S.seasonContext.items.map(x=>`<div class="reality-row"><b>${x.n}</b><p>${x.d}</p><small>${x.impact}</small></div>`).join('')}</div>`+
     `<div class="statline">已套入模擬：表現 ${S.seasonContext.perf>=0?'+':''}${S.seasonContext.perf}｜可用出賽量 ×${S.seasonContext.scheduleF.toFixed(2)}｜傷病風險 ${S.seasonContext.injury>=0?'+':''}${S.seasonContext.injury}%${S.seasonContext.trade?`｜交易觸發率 +${S.seasonContext.trade}%`:''}</div><div class="season-agenda">${seasonPlanLabels(S.seasonPlan).map((x,i)=>`<span>${i===0?'<b>本季抽選</b> ':''}${x}</span>`).join('')}</div>`);
   if(S.age>=48){ endGame('身體已到極限，'+S.year+' 年春訓後宣布引退。'); return; }
@@ -3504,47 +3504,39 @@ function demotionAudit(cont){
   }
   cont();
 }
-function tradeCheck(cont){
-  if(S.stage!=='PRO'||!LV[S.lv].top||S.seasonFactor<=0){ cont(); return; }
-  if(S._poachedYear===S.year){cont();return;}
-  if(S.ct&&S.ct.option==='完整不可交易條款'){cont();return;}
-  const star = ratingGap(ovr(),LV[S.lv].par)>=4; /* 明星：換算後高於聯盟平均 4 個舊球探級距。 */
-  const rec=S.currentStandings&&S.currentStandings.mine;
-  let p=7+(S.tradeHeat||0)+((S.seasonContext&&S.seasonContext.trade)||0); /* 交易不是每年固定橋段，先由球隊方向與現實環境決定。 */
-  if(rec&&rec.pct<.47&&star&&S.age>=29)p+=14; /* 重建隊出售有價值老將 */
-  else if(rec&&rec.pct>.55&&!star)p+=7;       /* 爭冠隊升級板凳／輪替 */
-  else if(rec&&rec.pct>.55&&star)p-=4;
-  if(S.traits.cancer)p+=25; if(S.traits.ambience)p+=20;
-  if(S.traits.leader)p-=5;if(S.traits.island)p+=10;p=clamp(p,3,85);
-  if(!chance(p)){ cont(); return; }
-  if(star){
-    /* 明星:否決權詢問(同舊設定) */
-    if(S.traits.cancer){ doTradeExec(); card('bad','毒瘤交易','球團受夠了休息室的氣氛，直接把你打包送走。'); board(1); cont(); return; }
-    choose('交易大限：他隊送來報價，球團徵詢你的否決權',[
-      {t:'點頭同意，換個環境',main:true,f:()=>{ doTradeExec(); card('info','轉隊','你打包行李，前往新的城市。'); board(1); cont(); }},
-      {t:'行使否決權，我要留下',warn:true,s:'未來 3 年冠軍機率下降、下張合約薪水 −1/3',f:()=>{
-        S.tradeRefuse=3;S.tradeRefuseSetYear=S.year;card('info','否決交易',`你按下否決鍵。忠誠是一種選擇——但球團的重建計畫被你打亂了，接下來三個完整球季的團隊戰力與你的下一張合約都會受到影響。`); board(1); cont(); }}]);
-    return;
-  }
-  /* 非明星:交易傳言,可抱怨或沉默 */
-  choose('交易傳言：媒體報導你可能被交易',[
-    {t:'公開抱怨表達不滿',warn:true,s:'增加本次被交易的可能性',f:()=>{
-      S.complainCount=(S.complainCount||0)+1;
-      if(S.complainCount>=2&&!S.traits.ambience){ S.traits.ambience=true;
-        card('bad','隱藏屬性解鎖：氣氛大師','你又一次對媒體大吐苦水。球團高層看在眼裡——這種選手，留著也是不定時炸彈。<b class="dn">往後轉隊機率永久提高</b>。'); board(1); }
-      if(chance(60)){ doTradeExec(); card('bad','弄假成真',`你的抱怨上了頭條，球團順勢把你送走。新東家，好好打吧。`); board(1); }
-      else card('info','雷聲大雨點小','抱怨歸抱怨，這次交易最後沒有成局。你還在原隊，但氣氛有點僵。');
-      cont(); }},
-    {t:'保持沉默，專心打球',main:true,s:'交易機率不變',f:()=>{
-      if(chance(35)){ doTradeExec(); card('info','交易成局',`儘管你不動聲色，球團還是完成了這筆交易。'`); board(1); }
-      else card('info','留了下來','傳言就是傳言。新球季，你還是穿著同一件球衣。');
-      cont(); }}]);
+function leagueTradeProbability(){
+  const star=ratingGap(ovr(),LV[S.lv].par)>=4,rec=S.currentStandings&&S.currentStandings.mine,last=(S.tradeHistory||[]).slice(-1)[0];
+  let p=(LV[S.lv].top?3:1)+(S.tradeHeat||0)+Math.round(((S.seasonContext&&S.seasonContext.trade)||0)*.55);
+  if(rec&&rec.pct<.47&&star&&S.age>=29)p+=10;
+  else if(rec&&rec.pct>.55&&!star)p+=5;
+  else if(rec&&rec.pct>.55&&star)p-=3;
+  if(S.traits.cancer)p+=25;if(S.traits.ambience)p+=20;
+  if(S.traits.leader)p-=5;if(S.traits.island)p+=10;
+  /* 剛換隊後先留一個完整球季建立角色，避免連續幾年被當成交易籌碼。 */
+  if(last&&S.year-last.year<=1&&!(S.traits.cancer||S.traits.ambience))p=0;
+  else if(last&&S.year-last.year===2)p-=2;
+  return {p:clamp(Math.round(p),0,58),star,record:rec};
 }
-function doTradeExec(){
-  /* 季末交易 = 下季起改效力新隊(乾淨轉隊,不設 tradeFrom,避免下年被誤顯示成季中交易) */
-  S.teamYears=0; S.champThisTeam=false; S.champTeam=null;S._tradedYear=S.year;
-  const list=S.org==='CPBL'?CPBL_TEAMS:S.org==='NPB'?NPB_TEAMS:MLB_TEAMS;
-  const nt=pick(list.filter(t=>t!==S.orgTeam)); S.orgTeam=nt; board(1);
+function tradeCheck(cont){
+  if(S.stage!=='PRO'||!LV[S.lv]||S.seasonFactor<=0){ cont(); return; }
+  if(S._poachedYear===S.year){cont();return;}
+  const market=leagueTradeProbability(),p=market.p,star=market.star,rec=market.record;
+  if(!chance(p)){ cont(); return; }
+  const offers=sameLeagueTradeOffers(seasonMarketEvaluation(S.lastSt||{}).total,star),current=rec&&rec.pct<.47&&star?'contender':rec&&rec.pct>.55&&!star?'rebuild':null,offer=offers.find(x=>x.marketType===current)||pick(offers);
+  if(!offer){cont();return;}
+  const rights=S.org==='MiLB'&&S.lv==='MLB'?mlbDfaRights():null,hasVeto=!!(S.ct&&S.ct.option==='完整不可交易條款')||!!(rights&&rights.tenAndFive);
+  if(hasVeto){
+    choose(`正式交易提案｜${S.orgTeam} 與 ${offer.team} 已談妥`,[
+      {t:`批准交易至 ${offer.team}`,main:true,modal:true,s:`${offer.label}｜新隊角色：${offer.rolePromise}｜原合約由新球隊承接`,f:()=>{executeLeagueTrade(offer,'gold','球員行使同意權後交易生效');cont();}},
+      {t:'行使不可交易權，留在原隊',warn:true,modal:true,s:'交易取消｜團隊關係 −1；合約與球隊不變',f:()=>{S.chemistry=clamp((S.chemistry||0)-1,-5,5);S.tradeHeat=0;card('info','交易遭球員否決',`你依合約或年資權利否決交易。${offer.team} 撤回報價，你仍留在 ${S.orgTeam}；球團尊重白紙黑字，但團隊關係 −1。`);board(1);cont();}}
+    ]);return;
+  }
+  executeLeagueTrade(offer,S.traits.cancer?'bad':'gold',S.traits.cancer?'球團為處理更衣室問題完成交易':'球團在交易大限前完成正式交易');cont();
+}
+function executeLeagueTrade(offer,tone,reason){
+  const old=S.orgTeam,oldRecord=S.currentStandings&&S.currentStandings.mine?`${S.currentStandings.mine.W}-${S.currentStandings.mine.L}`:'未建立',contract=S.ct?`剩餘 ${S.ct.yrs} 年、年薪 ${fmtContractMoney(S.ct.annual||0,S.org)}、保障 ${Math.round((S.ct.guaranteed==null?1:S.ct.guaranteed)*100)}% 由新球隊承接`:'季末另談新約';
+  S._tradedYear=S.year;S.orgTeam=offer.team;if(S.currentStandings)S.currentStandings.mine={...offer.record,team:offer.team};const effect=activatePoachAgreement(offer,old);S.tradeHeat=0;S.tradeHistory=S.tradeHistory||[];S.tradeHistory.push({year:S.year,from:old,to:offer.team,reason,type:offer.marketType});
+  card(tone||'gold',`正式交易｜${old} → ${offer.team}`,`${reason}。這不是挖角，也不是自由球員簽約；兩支球團完成球員與資產交換，你的現有合約跟著轉移。<div class="statline">交易方向｜${offer.label}<br>原隊戰績｜${oldRecord}<br>新隊戰績｜${offer.record.W}-${offer.record.L}<br>合約｜${contract}<br>${poachEffectLine(effect)}<br>新隊戰力基準｜${offer.strengthBefore.toFixed(1)} → ${offer.strengthTarget.toFixed(1)}</div>`);board(1);
 }
 function crossLeaguePoachOffers(d,major){
   const o=ovr(),out=[],add=(org,lv,n,bonus,lo,hi)=>makeFaOffers(org,n,bonus,lo,hi,lv,null,d).forEach(of=>out.push({...of,org,cross:true}));
@@ -3559,34 +3551,34 @@ function crossLeaguePoachOffers(d,major){
   }
   return out;
 }
-function poachGroupOf(team,org){
+function tradeGroupOf(team,org){
   if(org==='MiLB')return MLB_TEAM_META[team]?MLB_TEAM_META[team][0]:'美職體系';
   if(org==='NPB')return NPB_TEAMS.indexOf(team)<6?'中央聯盟':'太平洋聯盟';
   return '中華職棒';
 }
-function poachTeamStrength(team,org){
+function tradeTeamStrength(team,org){
   S.teamStrengths=S.teamStrengths||{};const key=`${org}|${team}`;
   const rec=latestTeamRecord(team,org);
   if(rec&&Number.isFinite(rec.pct)){const actual=clamp(50+(rec.pct-.5)/.006,34,68),carry=Number.isFinite(S.teamStrengths[key])?S.teamStrengths[key]:actual;return clamp(actual*.72+carry*.28,34,68);}
   if(Number.isFinite(S.teamStrengths[key]))return S.teamStrengths[key];
-  return clamp(43+stableIndex(`${org}|${team}|挖角戰力`,17),34,68);
+  return clamp(43+stableIndex(`${org}|${team}|交易戰力`,17),34,68);
 }
-function poachRolePromise(type){
+function tradeRolePromise(type){
   const role=S.pos==='P'?(isSP()?'先發輪值':S.role==='CL'?'終結者':'牛棚'):(S.dpos==='C'?'先發捕手與配球主導權':S.dpos==='DH'?'中心打線指定打擊':'先發打線');
   if(type==='contender')return `${role}的季後賽優先席次；低潮時仍會縮短觀察期`;
   if(type==='rival')return `${role}的固定競爭順位；宿敵戰與媒體壓力會放大成敗`;
   if(type==='rebuild')return `${role}的核心養成席次；上場最多，但短期勝場支援較少`;
   return `${role}的高曝光補強席次；上場增加，但大市場容錯較低`;
 }
-const POACH_ARCHETYPES={
-  contender:{label:'爭冠隊最後拼圖',usageAdj:5,perfAdj:-.10,teamWins:1.5,chemistry:1,fan:1,leverage:1,approvalAdj:-3},
-  rival:{label:'同區宿敵直接挖核心',usageAdj:9,perfAdj:-.20,teamWins:.8,chemistry:-1,fan:0,leverage:2,approvalAdj:2},
-  rebuild:{label:'重建隊承諾核心角色',usageAdj:14,perfAdj:-.25,teamWins:-.8,chemistry:1,fan:1,leverage:2,approvalAdj:8},
-  market:{label:'大市場高曝光補強',usageAdj:7,perfAdj:-.30,teamWins:.4,chemistry:0,fan:2,leverage:2,approvalAdj:0}
+const TRADE_ARCHETYPES={
+  contender:{label:'爭冠隊交易補強',usageAdj:5,perfAdj:-.10,teamWins:1.5,chemistry:1,fan:1,leverage:1,approvalAdj:-3},
+  rival:{label:'聯盟對手完成交易',usageAdj:9,perfAdj:-.20,teamWins:.8,chemistry:-1,fan:0,leverage:2,approvalAdj:2},
+  rebuild:{label:'重建隊接手核心角色',usageAdj:14,perfAdj:-.25,teamWins:-.8,chemistry:1,fan:1,leverage:2,approvalAdj:8},
+  market:{label:'大市場交易補強',usageAdj:7,perfAdj:-.30,teamWins:.4,chemistry:0,fan:2,leverage:2,approvalAdj:0}
 };
-function sameLeaguePoachOffers(d,major){
-  const org=S.org,lv=S.lv,currentGroup=poachGroupOf(S.orgTeam,org),pool=teamListOf(org).filter(t=>t!==S.orgTeam).map(team=>{
-    const profile=teamMarketProfile(team,org,d),strength=poachTeamStrength(team,org),group=poachGroupOf(team,org);
+function sameLeagueTradeOffers(d,major){
+  const org=S.org,lv=S.lv,currentGroup=tradeGroupOf(S.orgTeam,org),pool=teamListOf(org).filter(t=>t!==S.orgTeam).map(team=>{
+    const profile=teamMarketProfile(team,org,d),strength=tradeTeamStrength(team,org),group=tradeGroupOf(team,org);
     return {team,profile,strength,group};
   }),chosen=[],used=new Set(),add=(row,type)=>{if(!row||used.has(row.team))return;used.add(row.team);chosen.push({row,type});};
   add(pool.slice().sort((a,b)=>b.strength-a.strength)[0],'contender');
@@ -3595,8 +3587,8 @@ function sameLeaguePoachOffers(d,major){
   add(pool.slice().sort((a,b)=>a.strength-b.strength).find(x=>!used.has(x.team)),'rebuild');
   if(major&&pool.length>=4){const market=pool.filter(x=>!used.has(x.team)).sort((a,b)=>b.profile.budget-a.profile.budget)[0];add(market,'market');}
   return chosen.map(({row,type})=>{
-    const spec=POACH_ARCHETYPES[type],rec=row.profile.record,before=+row.strength.toFixed(1),strengthTarget=type==='contender'?clamp(Math.max(57,row.strength)+1,34,68):type==='rival'?clamp(Math.max(52,row.strength)+2,34,68):type==='rebuild'?clamp(row.strength+3,40,50):clamp(Math.max(54,row.strength)+1,34,68);
-    return {team:row.team,org,lv,cross:false,sameTier:true,marketType:type,label:spec.label,rolePromise:poachRolePromise(type),usageAdj:spec.usageAdj,perfAdj:spec.perfAdj,teamWins:spec.teamWins,chemistryStart:spec.chemistry,fanDelta:spec.fan,leverage:spec.leverage,approvalAdj:spec.approvalAdj,strengthBefore:before,strengthTarget:+strengthTarget.toFixed(1),record:rec,fit:`${rec.W}-${rec.L}・${spec.label}`,need:row.profile.roleNeed};
+    const spec=TRADE_ARCHETYPES[type],rec=row.profile.record,before=+row.strength.toFixed(1),strengthTarget=type==='contender'?clamp(Math.max(57,row.strength)+1,34,68):type==='rival'?clamp(Math.max(52,row.strength)+2,34,68):type==='rebuild'?clamp(row.strength+3,40,50):clamp(Math.max(54,row.strength)+1,34,68);
+    return {team:row.team,org,lv,cross:false,sameTier:true,marketType:type,label:spec.label,rolePromise:tradeRolePromise(type),usageAdj:spec.usageAdj,perfAdj:spec.perfAdj,teamWins:spec.teamWins,chemistryStart:spec.chemistry,fanDelta:spec.fan,leverage:spec.leverage,approvalAdj:spec.approvalAdj,strengthBefore:before,strengthTarget:+strengthTarget.toFixed(1),record:rec,fit:`${rec.W}-${rec.L}・${spec.label}`,need:row.profile.roleNeed};
   }).slice(0,major?4:3);
 }
 function normalizedPoachEffect(of){
@@ -3620,24 +3612,23 @@ function poachEffectLine(of){
   return `角色：${of.rolePromise}<br>下季出賽競爭 +${of.usageAdj}%｜${team}｜${pressure}<br>新隊團隊關係 ${of.chemistryStart>=0?'+':''}${of.chemistryStart}｜下次談薪籌碼 +${of.leverage*2}%`;
 }
 function presentPoachingMarket(offers,d,leverage,major,baseBonus,cont){
-  const sameCount=offers.filter(x=>!x.cross).length,crossCount=offers.filter(x=>x.cross).length,finish=()=>{S._poachedYear=S.year;S.poachCount=(S.poachCount||0)+1;board(1);cont();};
+  const finish=()=>{S._poachedYear=S.year;S.poachCount=(S.poachCount||0)+1;board(1);cont();};
   const opts=offers.map(raw=>{
     const of=normalizedPoachEffect(raw),remaining=S.ct?Math.max(0,S.ct.yrs):0,approval=clamp(Math.round((of.cross?34:52)+d*3+leverage*4+(of.approvalAdj||0)-(remaining>=3?8:0)+(major?7:0)),22,94),dealM=+(1.04+d*.025+leverage*.025+(of.cross?.05:0)).toFixed(2),country=of.org==='NPB'?'日本':of.org==='MiLB'?'美國':'台灣',record=of.record&&Number.isFinite(of.record.W)?`${of.record.W}-${of.record.L}`:'季前評估';
-    const shortLabel=of.cross?'跨聯盟挖角':of.marketType==='contender'?'爭冠補強':of.marketType==='rival'?'宿敵挖角':of.marketType==='rebuild'?'重建核心':'大市場補強';
-    return {t:`${of.cross?'跨聯盟':'同級'}｜${of.team}`,risk:true,probability:approval,modal:true,sideTitle:shortLabel,sideNote:`角色承諾｜出賽 +${of.usageAdj}%`,s:`${country}・${LV[of.lv].n}｜球隊 ${record}｜${of.need||'補強需求'}｜母隊同意協商 ${approval}%<br>${poachEffectLine(of)}`,f:()=>animatedRoll({sides:100,title:'挖角／交易協商',subtitle:`${of.team} 提出具體角色方案；有約在身仍需母隊同意交易、入札或合約讓渡。`,probability:approval,modifiers:[`本季市場評價 +${d.toFixed(1)}`,of.label,`下季出賽競爭 +${of.usageAdj}%`]}).then(r=>{
-      if(r.success){const old=S.orgTeam;if(of.cross){const bonus=Math.round((of.bonus||baseBonus)*(r.critical==='success'?1.25:1));bookIncome(bonus,'bonus',of.org,of.team);signTo(of.org,of.lv,of.team,of.yrs||ri(2,4),dealM);const effect=activatePoachAgreement(of,old);card('gold','跨聯盟挖角成局',`${old} 同意轉隊／入札安排，你與 <b class="hl">${of.team}</b> 完成新約。簽約金 ${fmtContractMoney(bonus,of.org)} 已依當地稅費入帳。<div class="statline">${poachEffectLine(effect)}</div>`);}else{S.orgTeam=of.team;const effect=activatePoachAgreement(of,old),contract=S.ct?`原合約尚餘 ${S.ct.yrs} 年，年薪與保障比例不變`:'合約條件將在季末另行談判';card('gold',`同聯盟挖角成局｜${of.label}`,`<b class="hl">${old} → ${of.team}</b>。這不是單純換隊名：新球團以明確角色與球隊方向完成交易。<div class="statline">合約｜${contract}<br>${poachEffectLine(effect)}<br>球隊戰力基準｜${of.strengthBefore.toFixed(1)} → ${of.strengthTarget.toFixed(1)}</div>`);}finish();}
+    return {t:`跨聯盟｜${of.team}`,risk:true,probability:approval,modal:true,sideTitle:'跨聯盟正式接觸',sideNote:`角色承諾｜出賽 +${of.usageAdj}%`,s:`${country}・${LV[of.lv].n}｜球隊 ${record}｜${of.need||'補強需求'}｜母隊同意協商 ${approval}%<br>${poachEffectLine(of)}`,f:()=>animatedRoll({sides:100,title:'跨聯盟轉隊協商',subtitle:`${of.team} 提出具體角色方案；有約在身仍需母隊同意入札、合約讓渡或提前解約。`,probability:approval,modifiers:[`本季市場評價 +${d.toFixed(1)}`,of.label,`下季出賽競爭 +${of.usageAdj}%`]}).then(r=>{
+      if(r.success){const old=S.orgTeam,bonus=Math.round((of.bonus||baseBonus)*(r.critical==='success'?1.25:1));bookIncome(bonus,'bonus',of.org,of.team);signTo(of.org,of.lv,of.team,of.yrs||ri(2,4),dealM);const effect=activatePoachAgreement(of,old);card('gold','跨聯盟挖角成局',`${old} 同意轉隊／入札安排，你與 <b class="hl">${of.team}</b> 完成新約。簽約金 ${fmtContractMoney(bonus,of.org)} 已依當地稅費入帳。<div class="statline">${poachEffectLine(effect)}</div>`);finish();}
       else{S.tradeHeat=clamp((S.tradeHeat||0)+6,0,60);S.chemistry=clamp((S.chemistry||0)-1,-5,5);card('bad','母隊拒絕放人',`${S.orgTeam} 拒絕 ${of.team} 的協商。你仍留在原隊，但公開提出轉隊意願讓團隊關係 −1、後續交易熱度 +6；該隊的角色承諾不會生效。`);finish();}
     })};
   });
-  opts.push({t:`留在 ${S.orgTeam}，不授權任何協商`,main:true,modal:true,sideTitle:'母隊忠誠',sideNote:'拒絕本輪全部接觸',s:'團隊關係 +1｜球迷聲望 +1｜下一次談薪籌碼 +2%；沒有免費出賽保證',f:()=>{S.chemistry=clamp((S.chemistry||0)+1,-5,5);const so=socialState();so.fanRep=clamp(so.fanRep+1,-20,20);S.poachLeverage=Math.max(S.poachLeverage||0,1);S.poachLeverageUntil=S.year+1;card('good','選擇留隊｜忠誠成為籌碼',`你拒絕同級與海外接觸。${S.orgTeam} 的團隊關係 +1、球迷聲望 +1；下一次談薪係數實際增加 2%，但下季角色仍要靠成績競爭。`);finish();}});
-  choose(`挖角市場｜同級 ${sameCount} 隊・跨聯盟 ${crossCount} 隊`,opts);
+  opts.push({t:`留在 ${S.orgTeam}，不授權跨聯盟協商`,main:true,modal:true,sideTitle:'繼續履約',sideNote:'拒絕本輪海外接觸',s:'團隊關係 +1｜球迷聲望 +1｜下一次談薪籌碼 +2%；沒有免費出賽保證',f:()=>{S.chemistry=clamp((S.chemistry||0)+1,-5,5);const so=socialState();so.fanRep=clamp(so.fanRep+1,-20,20);S.poachLeverage=Math.max(S.poachLeverage||0,1);S.poachLeverageUntil=S.year+1;card('good','選擇留隊｜忠誠成為籌碼',`你拒絕海外球隊接觸。${S.orgTeam} 的團隊關係 +1、球迷聲望 +1；下一次談薪係數實際增加 2%，但下季角色仍要靠成績競爭。`);finish();}});
+  choose(`跨聯盟挖角｜${offers.length} 隊正式接觸`,opts);
 }
 function poachingCheck(st,cont){
   if(S.stage!=='PRO'||!(LV[S.lv].top||S.lv==='A3')||S.seasonFactor<.72||!st||S.skipMid||S._tradedYear===S.year){cont();return;}
   const d=seasonMarketEvaluation(st).total;if(d<3){cont();return;}const leverage=(S.awardLeverageUntil||0)>=S.year?(S.awardLeverage||0):0,major=(S.honors||[]).some(x=>x.startsWith(String(S.year))&&/MVP|王|賽揚|澤村|金手套|銀棒|最佳九人|最佳十人|All-MLB/.test(x));
-  const trigger=clamp(Math.round(18+d*5+leverage*5+(major?10:0)+(S.traits.franchise?4:0)),24,82);if(!chance(trigger)){cont();return;}
-  const baseBonus={CPBL:220,NPB:900,MiLB:2600}[S.org]||220,cross=randomSubset(crossLeaguePoachOffers(d,major),1),local=sameLeaguePoachOffers(d,major).slice(0,cross.length?3:4),offers=local.concat(cross).slice(0,4);
-  if(!offers.length){cont();return;}
+  const pool=crossLeaguePoachOffers(d,major);if(!pool.length){cont();return;}
+  const trigger=clamp(Math.round(10+d*3+leverage*4+(major?8:0)+(S.traits.franchise?3:0)),12,58);if(!chance(trigger)){cont();return;}
+  const baseBonus={CPBL:220,NPB:900,MiLB:2600}[S.org]||220,offers=randomSubset(pool,major&&pool.length>1?2:1);
   presentPoachingMarket(offers,d,leverage,major,baseBonus,cont);
 }
 function portionOf(st,r){
@@ -4131,6 +4122,9 @@ function settleProfessionalSeasonClock(){
   S._proClockYear=S.year;
   S.proYears=(S.proYears||0)+1;
   if(S.org==='NPB')S.npbYears=(S.npbYears||0)+1;
+  S.overseasDepth=S.overseasDepth||{npb2:0,milb:0};
+  S.overseasDepth.npb2=S.org==='NPB'&&S.lv==='NPB2'?(S.overseasDepth.npb2||0)+1:0;
+  S.overseasDepth.milb=S.org==='MiLB'&&S.lv!=='MLB'?(S.overseasDepth.milb||0)+1:0;
   if(LV[S.lv]&&LV[S.lv].top){
     S.service=S.service||{CPBL:0,NPB:0,MiLB:0};S.svcOrg=S.org;
     S.service[S.org]=(S.service[S.org]||0)+1;S.svc=S.service[S.org];
@@ -4184,9 +4178,9 @@ function movement(){
   }
   /* 職業：先結算服務年資與合約年，傷病／二軍觀察都不能讓合約時鐘暫停。 */
   settleProfessionalSeasonClock();
-  if(S.skipMid){if(S.ct&&S.ct.yrs<=0)resolveContractExpiry(o);else advance();return;} /* 復健年不做升降，但合約與年資已正常結算 */
+  if(S.skipMid){const afterRehab=()=>S.ct&&S.ct.yrs<=0?resolveContractExpiry(o):advance();if(maybeTaiwanReturnInquiry(o,afterRehab))return;afterRehab();return;} /* 復健年不做升降，但合約與年資已正常結算 */
   if(cpbl2RetentionAudit(o))return;
-  if(S.ct&&S.ct.yrs<=0){resolveContractExpiry(o);return;}
+  if(S.ct&&S.ct.yrs<=0){if(maybeTaiwanReturnInquiry(o,()=>resolveContractExpiry(o)))return;resolveContractExpiry(o);return;}
   const path=PATHS[S.org], idx=path.indexOf(S.lv);
   let minReq=LV[S.lv].min;
   if(S.org==='NPB'&&S.npbYears>=8){ minReq-=4; }
@@ -4280,6 +4274,7 @@ function movement(){
   contractContinuation(o);
 }
 function contractContinuation(o){
+  if(maybeTaiwanReturnInquiry(o,()=>contractContinuation(o)))return;
   if(S.stage==='PRO'&&S.org!=='CPBL'&&S.age>=32&&S.ct&&S.ct.yrs>0&&S._contractDirectionYear!==S.year){
     S._contractDirectionYear=S.year;
     choose(`合約與生涯方向｜${S.teamName()}｜合約尚餘 ${S.ct.yrs} 年`,[
@@ -4311,30 +4306,48 @@ function buyoutRemaining(){ /* 合約尚有剩餘年數：依白紙黑字的保�
   S.ct={yrs:1,mult:S.ct.mult,annual:yearly,guaranteed:0}; /* 買斷後合約結清 */
   return total;
 }
-function returnTaiwanBuyoutFlow(o,onStay){
-  if(!S.ct||S.ct.yrs<=0||S.org==='CPBL'){onStay();return;}
-  const remain=Math.max(1,S.ct.yrs),annual=Math.round(S.ct.annual||salaryFor(S.lv,contractPerformanceD())*(S.ct.mult||1)*dpMult()),guaranteed=clamp(S.ct.guaranteed==null?1:S.ct.guaranteed,0,1),guaranteedValue=Math.round(annual*remain*guaranteed),d=contractPerformanceD(),oldOrg=S.org,oldTeam=S.orgTeam,interest=clamp(Math.round(35+ratingGap(o,LV.CPBL1.min)*7+d*4-Math.max(0,S.age-35)*4),6,92),offerCount=chance(interest)?clamp(d>=4?3:d>=0?2:1,1,3):0;
-  const candidates=randomSubset(CPBL_TEAMS,offerCount).map((team,i)=>({team,mult:+clamp(.92+d*.035+R()*.13-i*.03,.72,1.45).toFixed(2)}));
+function taiwanReturnInquiryProfile(o){
+  const depth=S.overseasDepth||{npb2:0,milb:0},kind=S.org==='NPB'&&S.lv==='NPB2'?'npb2':S.org==='MiLB'&&S.lv!=='MLB'?'milb':null,years=kind?depth[kind]||0:0,threshold=kind==='npb2'?2:kind==='milb'?3:99,history=(S.returnInquiryHistory||[]).filter(x=>x.kind===kind),last=history.slice(-1)[0],first=!history.length,d=contractPerformanceD();
+  const due=!last||S.year-last.year>=2,eligible=!!kind&&years>=threshold&&due&&o>=LV.CPBL2.min-3,level=o>=LV.CPBL1.min-2&&(d>=-2||years>=threshold+1)?'CPBL1':'CPBL2',interest=clamp(Math.round(42+ratingGap(o,LV[level].min)*6+d*4+Math.min(12,(years-threshold)*4)-Math.max(0,S.age-34)*3),18,88);
+  return {kind,years,threshold,first,due,eligible,level,interest,d};
+}
+function maybeTaiwanReturnInquiry(o,onContinue){
+  if(S._returnInquiryYear===S.year)return false;
+  const p=taiwanReturnInquiryProfile(o);if(!p.eligible)return false;
+  /* 第一次達到滯留門檻必定收到詢問；拒絕後至少隔一年，之後才按市場興趣重抽。 */
+  if(!p.first&&!chance(p.interest))return false;
+  S._returnInquiryYear=S.year;const count=p.level==='CPBL1'?clamp(p.d>=4?3:2,1,3):1,source=p.kind==='npb2'?'日職二軍':'美職小聯盟',role=p.level==='CPBL1'?'一軍名單與先發／主力牛棚競爭':'二軍合約，但列為季中升一軍優先觀察',candidates=randomSubset(CPBL_TEAMS,count).map((team,i)=>({team,lv:p.level,role,mult:+clamp(.94+p.d*.025+R()*.12-i*.025,.76,1.42).toFixed(2)}));
+  const stay=()=>{S.returnInquiryHistory=S.returnInquiryHistory||[];S.returnInquiryHistory.push({year:S.year,kind:p.kind,years:p.years,outcome:'stay'});card('info','留在海外繼續競爭',`你婉拒這次中職返台接觸，繼續留在 <b class="hl">${S.orgTeam}・${LV[S.lv].n}</b>。至少隔一個完整球季後，中職才可能再度詢問；海外升降仍依下一季實績決定。`);board(1);onContinue();};
+  card('info','中職主動詢問返台意願',`你已在 <b class="hl">${source}連續 ${p.years} 季</b>，中職球團透過經紀人詢問是否願意返台。這不是同聯盟交易，也不是自動離隊；你可以先看具體球隊、層級與薪資方向，再決定是否處理海外合約。<div class="statline">目前所屬｜${S.orgTeam}・${LV[S.lv].n}<br>中職評估層級｜${LV[p.level].n}<br>本次接觸｜${candidates.length} 隊<br>若留海外｜至少隔一季才可能再次接觸</div>`);board(2);
+  returnTaiwanBuyoutFlow(o,stay,candidates,`中職返台詢問｜${source}連續 ${p.years} 季`,{kind:p.kind,years:p.years});return true;
+}
+function returnTaiwanBuyoutFlow(o,onStay,preferredCandidates,marketTitle,inquiryMeta){
+  if(S.org==='CPBL'){onStay();return;}
+  const activeContract=!!(S.ct&&S.ct.yrs>0),remain=activeContract?Math.max(1,S.ct.yrs):0,annual=activeContract?Math.round(S.ct.annual||salaryFor(S.lv,contractPerformanceD())*(S.ct.mult||1)*dpMult()):0,guaranteed=activeContract?clamp(S.ct.guaranteed==null?1:S.ct.guaranteed,0,1):0,guaranteedValue=Math.round(annual*remain*guaranteed),d=contractPerformanceD(),oldOrg=S.org,oldTeam=S.orgTeam,interest=clamp(Math.round(35+ratingGap(o,LV.CPBL1.min)*7+d*4-Math.max(0,S.age-35)*4),6,92),offerCount=preferredCandidates?preferredCandidates.length:chance(interest)?clamp(d>=4?3:d>=0?2:1,1,3):0;
+  const candidates=(preferredCandidates||randomSubset(CPBL_TEAMS,offerCount).map(team=>({team,lv:'CPBL1'}))).map((target,i)=>({...target,lv:target.lv||'CPBL1',mult:Number.isFinite(target.mult)?target.mult:+clamp(.92+d*.035+R()*.13-i*.03,.72,1.45).toFixed(2)}));
   if(!candidates.length){card('bad','返台市場沒有正式意向',`經紀人詢問六支中職球隊，但目前沒有球隊願意在你仍有海外合約時先行承諾一軍合約。<div class="statline">市場興趣 ${interest}%｜目前能力 ${o}/99｜本季評價 ${d>=0?'+':''}${d.toFixed(1)}｜年齡 ${S.age}</div>`);onStay();return;}
   const standing=teamRosterDecisionContext(d<0),clubNeed=standing.pressure||0;
+  const signTaiwanTerms=target=>{
+    const targetLv=target.lv||'CPBL1',saved={org:S.org,lv:S.lv,team:S.orgTeam};S.org='CPBL';S.lv=targetLv;S.orgTeam=target.team;S.marketHeat=clamp(4+d*2,-8,18);
+    termChoice(o,d,`${target.team}｜返台正式談薪`,(y,m,option)=>{S.org=saved.org;S.lv=saved.lv;S.orgTeam=saved.team;signTo('CPBL',targetLv,target.team,y,+(m*target.mult).toFixed(2),option);S.marketHeat=0;S.overseasDepth={npb2:0,milb:0};if(inquiryMeta){S.returnInquiryHistory=S.returnInquiryHistory||[];S.returnInquiryHistory.push({year:S.year,kind:inquiryMeta.kind,years:inquiryMeta.years,outcome:'signed',team:target.team,lv:targetLv});}card('gold','返台加盟完成',`${S.name} 與 <b class="hl">${target.team}</b> 完成 ${LV[targetLv].n} 合約。海外滯留年數已重置，下一季將依新球隊承諾的角色重新競爭。`);advance();},null,target.mult);
+  };
   const negotiate=(target,settlePct,label)=>{
     const relief=Math.round((1-settlePct)*100),approval=clamp(Math.round(70-remain*8-Math.max(0,d)*4+Math.max(0,-d)*5+clubNeed+(settlePct===0?17:settlePct<=.25?5:-10)),12,94);
     animatedRoll({sides:100,title:'合約買斷談判',subtitle:`${oldTeam} 必須同意終止剩餘 ${remain} 年合約。`,probability:approval,modifiers:[`放棄原保障 ${relief}%`,`本季評價 ${d>=0?'+':''}${d.toFixed(1)}`,`球隊戰績 ${standing.record}`]}).then(r=>{
       if(!r.success){card('bad','買斷談判破局',`${oldTeam} 拒絕提前終止合約。你仍有約在身，本次不能直接加盟台灣球隊。<div class="statline">剩餘 ${remain} 年｜剩餘保障 ${fmtContractMoney(guaranteedValue,oldOrg)}｜本次同意機會 ${approval}%</div>`);onStay();return;}
       const settlement=Math.round(guaranteedValue*settlePct);if(settlement>0)bookIncome(settlement,'buyout',oldOrg,oldTeam);
       S.ct=null;card('gold','買斷協議成立',`${oldTeam} 同意解除剩餘 ${remain} 年合約。你放棄 ${relief}% 剩餘保障${settlement?`，取得稅前和解金 ${fmtContractMoney(settlement,oldOrg)}`:'，沒有取得額外買斷金'}。<div class="statline">原剩餘保障｜${fmtContractMoney(guaranteedValue,oldOrg)}<br>談判方式｜${label}<br>下一步｜與 ${target.team} 正式談台灣合約</div>`);
-      const saved={org:S.org,lv:S.lv,team:S.orgTeam};S.org='CPBL';S.lv='CPBL1';S.orgTeam=target.team;S.marketHeat=clamp(4+d*2,-8,18);
-      termChoice(o,d,`${target.team}｜返台正式談薪`,(y,m,option)=>{S.org=saved.org;S.lv=saved.lv;S.orgTeam=saved.team;signTo('CPBL','CPBL1',target.team,y,+(m*target.mult).toFixed(2),option);S.marketHeat=0;advance();},null,target.mult);
+      signTaiwanTerms(target);
     });
   };
-  const offers=candidates.map(target=>({t:`先與 ${target.team} 達成加盟意向`,modal:true,s:`預估年薪 ${fmtContractMoney(Math.round(salaryFor('CPBL1',d)*target.mult),'CPBL')}｜買斷談成後仍要正式談年限、薪資與條款`,f:()=>choose(`向 ${oldTeam} 提出買斷方案｜剩餘保障 ${fmtContractMoney(guaranteedValue,oldOrg)}`,[
+  const offers=candidates.map(target=>({t:`聽取 ${target.team} 返台方案`,modal:true,sideTitle:LV[target.lv].n,sideNote:target.role||'返台名單競爭',s:`${target.role||'返台名單競爭'}｜預估年薪 ${fmtContractMoney(Math.round(salaryFor(target.lv,d)*target.mult),'CPBL')}｜${activeContract?'仍須處理海外剩餘合約':'海外合約已到期，可直接談新約'}`,f:()=>activeContract?choose(`向 ${oldTeam} 提出買斷方案｜剩餘保障 ${fmtContractMoney(guaranteedValue,oldOrg)}`,[
     {t:'放棄全部剩餘保障，換取自由身',main:true,s:'原球團較容易同意｜談成後原合約不再支付',f:()=>negotiate(target,0,'球員放棄全部剩餘保障')},
     {t:'要求支付 25% 剩餘保障',risk:true,s:'保留部分保障，但原球團同意機會較低',f:()=>negotiate(target,.25,'雙方以四分之一保障結清')},
     {t:'要求支付 50% 剩餘保障',risk:true,s:'金額較高，長約或好成績時很可能破局',f:()=>negotiate(target,.50,'雙方以一半保障結清')},
     {t:'取消買斷，留隊履約',s:'不改變目前合約',f:onStay}
-  ])}));
-  offers.push({t:`留在 ${oldTeam} 履行原合約`,main:true,s:`剩餘 ${remain} 年｜保障 ${Math.round(guaranteed*100)}%`,f:onStay});
-  choose(`返台意向市場｜${candidates.length} 支中職球隊接觸`,offers);
+  ]):(card('info','海外合約已屆滿',`${oldTeam} 的發展合約已結束，不需要買斷或交易；你可以直接與 ${target.team} 談返台新約。`),signTaiwanTerms(target))}));
+  offers.push({t:`留在 ${oldTeam} 繼續拚升格`,main:true,s:activeContract?`剩餘 ${remain} 年｜保障 ${Math.round(guaranteed*100)}%`:'優先再談海外發展合約｜婉拒本輪中職接觸',f:onStay});
+  choose(marketTitle||`返台意向市場｜${candidates.length} 支中職球隊接觸`,offers);
 }
 /* 旅外引退的台灣告別活動：依守位與生涯隨機抽選，不再固定同一段。 */
 function daibaFarewell(cont){
@@ -4685,7 +4698,7 @@ function ageGateJP(){ /* 旅日:窗口寬,31 歲(衰退前)都還有機會 */
   return 0; /* 32 歲起(進入衰退)關窗 */
 }
 function crossOffers(o){
-  /* 有約球員只走同一套挖角／交易狀態機；跨聯盟必須由母隊核准。合約到期則由 FA 市場處理。 */
+  /* 這裡只處理跨聯盟接觸；同聯盟換隊已由低頻正式交易流程處理。 */
   if(S._poachCheckYear!==S.year){S._poachCheckYear=S.year;poachingCheck(S.lastSt,()=>crossOffers(o));return;}
   advance();
 }
@@ -5708,7 +5721,11 @@ if(new URLSearchParams(location.search).get('visual-audit')==='retirement'){
 }
 if(new URLSearchParams(location.search).get('visual-audit')==='poaching'){
   RNG_MODE='destiny';seedInit('visual-audit-poaching');S=newState('蔣孟杰','IF',null);S.stage='PRO';S.lv='CPBL1';S.org='CPBL';S.orgTeam='台中猛瑪';S.dpos='SS';S.age=27;S.year=2037;S.stageYr=12;S.seasonFactor=1;S.ct={yrs:2,signedYears:3,mult:1.18,annual:1280,guaranteed:1};S.teamName=()=>S.orgTeam;Object.assign(S.ab,{con:84,pow:80,eye:82,spd:71,sta:78,rng:77,fld:79,arm:76});S.currentStandings={year:S.year,org:S.org,lv:S.lv,groups:[{name:'中華職棒',rows:CPBL_TEAMS.map((team,i)=>({team,W:[68,62,57,53,47,42][i],L:[52,58,63,67,73,78][i],pct:[68,62,57,53,47,42][i]/120,rank:i+1}))}]};S.currentStandings.mine=S.currentStandings.groups[0].rows[0];S.teamStrengths=Object.fromEntries(CPBL_TEAMS.map((team,i)=>[`CPBL|${team}`,[59,56,53,50,45,41][i]]));S.honors=[`${S.year} 中華職棒年度 MVP`];
-  $('start').style.display='none';document.body.classList.add('game-started');$('board').style.display='';$('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';board(1);const local=sameLeaguePoachOffers(9,true).slice(0,3),cross=randomSubset(crossLeaguePoachOffers(9,true),1);presentPoachingMarket(local.concat(cross),9,1,true,220,()=>{});
+  $('start').style.display='none';document.body.classList.add('game-started');$('board').style.display='';$('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';board(1);presentPoachingMarket(randomSubset(crossLeaguePoachOffers(9,true),2),9,1,true,220,()=>{});
+}
+if(new URLSearchParams(location.search).get('visual-audit')==='return-inquiry'){
+  RNG_MODE='destiny';seedInit('visual-audit-return-inquiry');S=newState('蔣孟杰','P','MR');S.stage='PRO';S.lv='NPB2';S.org='NPB';S.orgTeam='名古屋神龍';S.age=25;S.year=2035;S.stageYr=10;S.seasonFactor=1;S.overseasDepth={npb2:2,milb:0};S.ct={yrs:2,signedYears:3,mult:1.05,annual:1180,guaranteed:.65};S.lastD=2.4;S.teamName=()=>S.orgTeam;Object.assign(S.ab,{vel:72,ctl:73,brk:71,sta:66});
+  $('start').style.display='none';document.body.classList.add('game-started');$('board').style.display='';$('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';board(1);maybeTaiwanReturnInquiry(ovr(),()=>{});
 }
 function runLogicAudit(samples){
   samples=clamp(Number(samples)||500,50,3000);const saved={S,RNG_MODE,SEED},result={samples};RNG_MODE='destiny';
@@ -5723,8 +5740,9 @@ function runLogicAudit(samples){
   seedInit('audit-trait-steady');setup('IF','MLB',null,'SS');const loose=Array.from({length:500},()=>makeSeasonVarianceProfile().shared);seedInit('audit-trait-steady');setup('IF','MLB',null,'SS');S.traits.steady=true;const stable=Array.from({length:500},()=>makeSeasonVarianceProfile().shared);setup('IF','MLB',null,'SS');S.traits.iron=true;const ironRisk=injuryProb();setup('IF','MLB',null,'SS');S.samePickBonus=true;seedInit('audit-trait-combo');let comboHits=0;for(let i=0;i<800;i++){S.year=2026+i;S._seasonTrainingPlan=null;if(trainingDicePlan().mods.some(x=>x.includes('專精訓練')))comboHits++;}const playoffBase={...regular[0],scheduled:162};seedInit('audit-trait-october');setup('IF','MLB',null,'SS');const oct0=postseasonPlayerLine(playoffBase,7);seedInit('audit-trait-october');setup('IF','MLB',null,'SS');S.traits.october=true;const oct1=postseasonPlayerLine(playoffBase,7);
   result.traitEffects={ironRisk,comboTrainingRate:+(comboHits/800).toFixed(3),slugger:{baseHR:slug0.HR,traitHR:slug1.HR,baseRBI:slug0.RBI,traitRBI:slug1.RBI},sparkplug:{baseBB:spark0.BB,traitBB:spark1.BB,baseSB:spark0.SB,traitSB:spark1.SB},steadyNoise:{baseSd:sd(loose.map(v=>({v})),'v'),traitSd:sd(stable.map(v=>({v})),'v')},patient:{baseBB:patient0.BB,traitBB:patient1.BB},october:{baseH:oct0.H,traitH:oct1.H,baseRBI:oct0.RBI,traitRBI:oct1.RBI}};
   setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:84,pow:82,eye:83,spd:72,sta:80,rng:78,fld:78,arm:76});S.age=27;S.honors=[`${S.year} 中華職棒年度 MVP`];seedInit('audit-overseas-poaching');const overseas=crossLeaguePoachOffers(9,true);result.overseasPoaching={offers:overseas.map(x=>({org:x.org,level:x.lv,team:x.team})),countries:[...new Set(overseas.map(x=>x.org))],hasJapan:overseas.some(x=>x.org==='NPB'),hasUSA:overseas.some(x=>x.org==='MiLB')};
-  setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:76,pow:72,eye:74,spd:68,sta:72,rng:72,fld:74,arm:72});S.currentStandings={year:S.year,org:S.org,lv:S.lv,groups:[{name:'中華職棒',rows:CPBL_TEAMS.map((team,i)=>({team,W:[66,61,57,52,47,43][i],L:[54,59,63,68,73,77][i],pct:[66,61,57,52,47,43][i]/120,rank:i+1}))}]};S.currentStandings.mine=S.currentStandings.groups[0].rows[0];S.teamStrengths=Object.fromEntries(CPBL_TEAMS.map((team,i)=>[`CPBL|${team}`,[58,55,52,49,45,41][i]]));seedInit('audit-same-tier-poaching');const sameTier=sameLeaguePoachOffers(8,true),accepted=sameTier.find(x=>x.marketType==='rebuild')||sameTier[0],from=S.orgTeam;S.orgTeam=accepted.team;const acceptedEffect=activatePoachAgreement(accepted,from),storedStrength=S.teamStrengths[`CPBL|${accepted.team}`];
-  const acceptedLine=poachEffectLine(acceptedEffect),poachUsageRun=enabled=>{setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:62,pow:58,eye:61,spd:64,sta:67,rng:64,fld:65,arm:63});if(enabled)S.poachEffect={year:S.year,org:S.org,lv:S.lv,team:S.orgTeam,label:'測試角色承諾',rolePromise:'先發打線核心養成席次',usageAdj:14,perfAdj:-.25,teamWins:-.8};seedInit('audit-poach-playing-time');return Array.from({length:160},()=>{S._seasonVariance=null;S.seasonLuck=10;return simSeason('CPBL1');});},withoutPoach=poachUsageRun(false),withPoach=poachUsageRun(true);setup('IF','CPBL1',null,'SS');const baseTerms=termParams(6,'CPBL1');S.poachLeverage=2;S.poachLeverageUntil=S.year;const leveragedTerms=termParams(6,'CPBL1'),contenderOffer=sameTier.find(x=>x.marketType==='contender'),rebuildOffer=sameTier.find(x=>x.marketType==='rebuild');result.sameTierPoaching={offers:sameTier.map(x=>({team:x.team,level:x.lv,type:x.marketType,label:x.label,record:`${x.record.W}-${x.record.L}`,usage:x.usageAdj,teamWins:x.teamWins})),sameLevelOnly:sameTier.every(x=>x.org==='CPBL'&&x.lv==='CPBL1'&&!x.cross&&x.team!==from),hasContender:sameTier.some(x=>x.marketType==='contender'),hasRival:sameTier.some(x=>x.marketType==='rival'),hasRebuild:sameTier.some(x=>x.marketType==='rebuild'),recordsMatchDirection:contenderOffer.record.pct>rebuildOffer.record.pct,agreement:{team:accepted.team,effectYear:acceptedEffect.year,role:acceptedEffect.rolePromise,storedStrength,expectedStrength:accepted.strengthTarget,summaryIsValid:!acceptedLine.includes('undefined')&&!acceptedLine.includes('NaN')},playingTime:{without:mean(withoutPoach,'G'),with:mean(withPoach,'G'),promiseIncreasesGames:mean(withPoach,'G')>mean(withoutPoach,'G')+5},contractLeverage:{base:baseTerms.longM,withPoach:leveragedTerms.longM,actuallyIncreases:leveragedTerms.longM>baseTerms.longM}};
+  setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:76,pow:72,eye:74,spd:68,sta:72,rng:72,fld:74,arm:72});S.currentStandings={year:S.year,org:S.org,lv:S.lv,groups:[{name:'中華職棒',rows:CPBL_TEAMS.map((team,i)=>({team,W:[66,61,57,52,47,43][i],L:[54,59,63,68,73,77][i],pct:[66,61,57,52,47,43][i]/120,rank:i+1}))}]};S.currentStandings.mine=S.currentStandings.groups[0].rows[0];S.teamStrengths=Object.fromEntries(CPBL_TEAMS.map((team,i)=>[`CPBL|${team}`,[58,55,52,49,45,41][i]]));seedInit('audit-same-tier-trading');const sameTier=sameLeagueTradeOffers(8,true),accepted=sameTier.find(x=>x.marketType==='rebuild')||sameTier[0],from=S.orgTeam;S.orgTeam=accepted.team;const acceptedEffect=activatePoachAgreement(accepted,from),storedStrength=S.teamStrengths[`CPBL|${accepted.team}`];
+  const acceptedLine=poachEffectLine(acceptedEffect),tradeUsageRun=enabled=>{setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:62,pow:58,eye:61,spd:64,sta:67,rng:64,fld:65,arm:63});if(enabled)S.poachEffect={year:S.year,org:S.org,lv:S.lv,team:S.orgTeam,label:'測試交易後角色',rolePromise:'先發打線核心養成席次',usageAdj:14,perfAdj:-.25,teamWins:-.8};seedInit('audit-trade-playing-time');return Array.from({length:160},()=>{S._seasonVariance=null;S.seasonLuck=10;return simSeason('CPBL1');});},withoutTrade=tradeUsageRun(false),withTrade=tradeUsageRun(true);setup('IF','CPBL1',null,'SS');S.currentStandings={mine:{W:60,L:60,pct:.5}};const normalTradeP=leagueTradeProbability().p;S.tradeHeat=18;const requestedTradeP=leagueTradeProbability().p;S.tradeHistory=[{year:S.year-1,from:'A',to:'B'}];S.tradeHeat=0;const cooldownTradeP=leagueTradeProbability().p;const baseTerms=termParams(6,'CPBL1');S.poachLeverage=2;S.poachLeverageUntil=S.year;const leveragedTerms=termParams(6,'CPBL1'),contenderOffer=sameTier.find(x=>x.marketType==='contender'),rebuildOffer=sameTier.find(x=>x.marketType==='rebuild');result.sameTierTrading={offers:sameTier.map(x=>({team:x.team,level:x.lv,type:x.marketType,label:x.label,record:`${x.record.W}-${x.record.L}`,usage:x.usageAdj,teamWins:x.teamWins})),sameLevelOnly:sameTier.every(x=>x.org==='CPBL'&&x.lv==='CPBL1'&&!x.cross&&x.team!==from),oneConcreteTradeNotMarket:sameTier.length>=3,hasContender:sameTier.some(x=>x.marketType==='contender'),hasRival:sameTier.some(x=>x.marketType==='rival'),hasRebuild:sameTier.some(x=>x.marketType==='rebuild'),recordsMatchDirection:contenderOffer.record.pct>rebuildOffer.record.pct,frequency:{normal:normalTradeP,requested:requestedTradeP,cooldown:cooldownTradeP,normalIsRare:normalTradeP<=5,requestRaisesOdds:requestedTradeP>normalTradeP,cooldownBlocks:cooldownTradeP===0},agreement:{team:accepted.team,effectYear:acceptedEffect.year,role:acceptedEffect.rolePromise,storedStrength,expectedStrength:accepted.strengthTarget,summaryIsValid:!acceptedLine.includes('undefined')&&!acceptedLine.includes('NaN')},playingTime:{without:mean(withoutTrade,'G'),with:mean(withTrade,'G'),promiseIncreasesGames:mean(withTrade,'G')>mean(withoutTrade,'G')+5},contractLeverage:{base:baseTerms.longM,withTrade:leveragedTerms.longM,actuallyIncreases:leveragedTerms.longM>baseTerms.longM}};
+  setup('P','NPB2','MR');S.overseasDepth={npb2:1,milb:0};const npbBefore=taiwanReturnInquiryProfile(ovr());S.overseasDepth.npb2=2;const npbDue=taiwanReturnInquiryProfile(ovr());setup('IF','A2',null,'SS');S.overseasDepth={npb2:0,milb:2};const milbBefore=taiwanReturnInquiryProfile(ovr());S.overseasDepth.milb=3;const milbDue=taiwanReturnInquiryProfile(ovr());result.taiwanReturnInquiry={npb2:{before:npbBefore.eligible,after:npbDue.eligible,threshold:npbDue.threshold,level:npbDue.level},milb:{before:milbBefore.eligible,after:milbDue.eligible,threshold:milbDue.threshold,level:milbDue.level},onlyAfterConsecutiveThreshold:!npbBefore.eligible&&npbDue.eligible&&!milbBefore.eligible&&milbDue.eligible};
   const agingSample=(age,bigInj,pos='IF')=>{setup(pos,'MLB',pos==='P'?'SP':null,pos==='P'?null:'SS');S.age=age;S.bigInj=bigInj||0;Object.keys(S.ab).forEach(k=>S.ab[k]=75);S.lastSt=null;const info=agingRiskProfile(),rolls=Array.from({length:2000},()=>ri(1,100)),triggered=rolls.filter(v=>v<=info.p),losses=triggered.map(v=>agingLossPlan(info,v).planned);S._seasonTrainingPlan=null;const tp=trainingDicePlan();return {risk:info.p,triggerRate:+(triggered.length/rolls.length).toFixed(3),meanTriggeredLoss:losses.length?+(losses.reduce((a,b)=>a+b,0)/losses.length).toFixed(1):0,annualExpectedLoss:+(losses.reduce((a,b)=>a+b,0)/rolls.length).toFixed(1),trainingDice:tp.n,trainingCap:tp.ageCap,speedGrowthLimit:ageGrowthLimit('spd'),staminaGrowthLimit:ageGrowthLimit('sta')};};
   seedInit('audit-aging-curve');result.agingCurve={age30:agingSample(30,0),age33:agingSample(33,0),age36:agingSample(36,0),age39:agingSample(39,0),age36AfterMajorInjury:agingSample(36,2),clearlyEscalates:false};result.agingCurve.clearlyEscalates=result.agingCurve.age30.annualExpectedLoss<result.agingCurve.age33.annualExpectedLoss&&result.agingCurve.age33.annualExpectedLoss<result.agingCurve.age36.annualExpectedLoss&&result.agingCurve.age36.annualExpectedLoss<result.agingCurve.age39.annualExpectedLoss&&result.agingCurve.age36AfterMajorInjury.annualExpectedLoss>result.agingCurve.age36.annualExpectedLoss;
   setup('C','CPBL1',null,'C');S.age=45;Object.assign(S.ab,{sta:26,eye:91,fld:29,con:79,pow:95,spd:32,rng:38,arm:55,cat:61});seedInit('audit-aging-allocation');const allocationPlan={ageBand:5,planned:16,count:7},allocationRuns=Array.from({length:2400},()=>agingLossAllocation(allocationPlan)),allocationMean=k=>+(allocationRuns.reduce((n,x)=>n+(x.losses[k]||0),0)/allocationRuns.length).toFixed(2),allocationMax=k=>Math.max(...allocationRuns.map(x=>x.losses[k]||0));result.agingAllocation={means:Object.fromEntries(POS_AB.C.map(k=>[k,allocationMean(k)])),maxima:Object.fromEntries(POS_AB.C.map(k=>[k,allocationMax(k)])),lowPhysicalMoreExposed:allocationMean('sta')>allocationMean('eye')&&allocationMean('spd')>allocationMean('pow'),lowStatCapsHold:allocationMax('sta')<=agingStatProfile('sta',5).cap&&allocationMax('fld')<=agingStatProfile('fld',5).cap,exampleCaps:{stamina26:agingStatProfile('sta',5).cap,fielding29:agingStatProfile('fld',5).cap,eye91:agingStatProfile('eye',5).cap}};
