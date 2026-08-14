@@ -547,7 +547,7 @@ body::before{display:none}
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">棒球人生<br><em>CAREER SIM</em></h1>
-    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.7</div>
+    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.8</div>
     <p class="sub">做出選擇，再親手停下拉霸。從高中、選秀、旅外、傷病到引退，每次人生都不一樣。</p>
     <div class="start-grid">
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
@@ -755,8 +755,8 @@ const ratingGap=(v,baseline)=>(v-baseline)*60/79;
 const oldRating=v=>20+(v-20)*60/79;
 const ri=(a,b)=>a+Math.floor(R()*(b-a+1));
 const pick=a=>a[Math.floor(R()*a.length)];
-/* 百分骰採高骰成功：成功門檻 = 101 - 成功率；極端點數保留特殊結果。 */
-const chance=p=>ri(1,100)>=101-clamp(Math.round(p),0,100);
+/* 百分判定採連續高骰，保留 2.5% 等小數機率，不再先四捨五入扭曲實際結果。 */
+const chance=p=>R()*100>=100-clamp(Number(p)||0,0,100);
 function scrollBottom(){ /* 只捲動中央播報，不再推動整個頁面與兩側資訊欄。 */
   const log=document.getElementById('log');if(!log)return;
   try{requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight;});}
@@ -923,7 +923,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v3.0.7';
+const APP_VER='v3.0.8';
 if(new URLSearchParams(location.search).get('logic-audit')==='1')window.addEventListener('error',e=>{document.documentElement.setAttribute('data-audit-error',`${e.message} @ ${e.lineno}:${e.colno}`);});
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
@@ -3504,18 +3504,24 @@ function demotionAudit(cont){
   }
   cont();
 }
+function leagueTradeBaseRate(){
+  if(S.org==='MiLB')return S.lv==='MLB'?7:4;
+  if(S.org==='NPB')return S.lv==='NPB1'?2.5:1.5;
+  return 2; /* 中職球員交易長期明顯少於 MLB，不能套用美職交易大限的頻率。 */
+}
 function leagueTradeProbability(){
-  const star=ratingGap(ovr(),LV[S.lv].par)>=4,rec=S.currentStandings&&S.currentStandings.mine,last=(S.tradeHistory||[]).slice(-1)[0];
-  let p=(LV[S.lv].top?3:1)+(S.tradeHeat||0)+Math.round(((S.seasonContext&&S.seasonContext.trade)||0)*.55);
+  const base=leagueTradeBaseRate(),star=ratingGap(ovr(),LV[S.lv].par)>=4,rec=S.currentStandings&&S.currentStandings.mine,last=(S.tradeHistory||[]).slice(-1)[0];
+  let p=base+(S.tradeHeat||0)+Math.round(((S.seasonContext&&S.seasonContext.trade)||0)*.55);
   if(rec&&rec.pct<.47&&star&&S.age>=29)p+=10;
   else if(rec&&rec.pct>.55&&!star)p+=5;
   else if(rec&&rec.pct>.55&&star)p-=3;
+  if(rec&&rec.pct<.47&&S.ct&&S.ct.yrs<=1&&S.age>=27)p+=5; /* 賣方在合約年處理即將失去控制權的球員。 */
   if(S.traits.cancer)p+=25;if(S.traits.ambience)p+=20;
   if(S.traits.leader)p-=5;if(S.traits.island)p+=10;
-  /* 剛換隊後先留一個完整球季建立角色，避免連續幾年被當成交易籌碼。 */
-  if(last&&S.year-last.year<=1&&!(S.traits.cancer||S.traits.ambience))p=0;
+  /* 現實仍可能連兩年被交易，但屬極少數；不再用絕對 0% 鎖死。 */
+  if(last&&S.year-last.year<=1&&!(S.traits.cancer||S.traits.ambience))p=Math.min(p,base>=4?1:.5);
   else if(last&&S.year-last.year===2)p-=2;
-  return {p:clamp(Math.round(p),0,58),star,record:rec};
+  return {p:+clamp(p,.5,58).toFixed(1),base,star,record:rec};
 }
 function tradeCheck(cont){
   if(S.stage!=='PRO'||!LV[S.lv]||S.seasonFactor<=0){ cont(); return; }
@@ -5741,7 +5747,13 @@ function runLogicAudit(samples){
   result.traitEffects={ironRisk,comboTrainingRate:+(comboHits/800).toFixed(3),slugger:{baseHR:slug0.HR,traitHR:slug1.HR,baseRBI:slug0.RBI,traitRBI:slug1.RBI},sparkplug:{baseBB:spark0.BB,traitBB:spark1.BB,baseSB:spark0.SB,traitSB:spark1.SB},steadyNoise:{baseSd:sd(loose.map(v=>({v})),'v'),traitSd:sd(stable.map(v=>({v})),'v')},patient:{baseBB:patient0.BB,traitBB:patient1.BB},october:{baseH:oct0.H,traitH:oct1.H,baseRBI:oct0.RBI,traitRBI:oct1.RBI}};
   setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:84,pow:82,eye:83,spd:72,sta:80,rng:78,fld:78,arm:76});S.age=27;S.honors=[`${S.year} 中華職棒年度 MVP`];seedInit('audit-overseas-poaching');const overseas=crossLeaguePoachOffers(9,true);result.overseasPoaching={offers:overseas.map(x=>({org:x.org,level:x.lv,team:x.team})),countries:[...new Set(overseas.map(x=>x.org))],hasJapan:overseas.some(x=>x.org==='NPB'),hasUSA:overseas.some(x=>x.org==='MiLB')};
   setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:76,pow:72,eye:74,spd:68,sta:72,rng:72,fld:74,arm:72});S.currentStandings={year:S.year,org:S.org,lv:S.lv,groups:[{name:'中華職棒',rows:CPBL_TEAMS.map((team,i)=>({team,W:[66,61,57,52,47,43][i],L:[54,59,63,68,73,77][i],pct:[66,61,57,52,47,43][i]/120,rank:i+1}))}]};S.currentStandings.mine=S.currentStandings.groups[0].rows[0];S.teamStrengths=Object.fromEntries(CPBL_TEAMS.map((team,i)=>[`CPBL|${team}`,[58,55,52,49,45,41][i]]));seedInit('audit-same-tier-trading');const sameTier=sameLeagueTradeOffers(8,true),accepted=sameTier.find(x=>x.marketType==='rebuild')||sameTier[0],from=S.orgTeam;S.orgTeam=accepted.team;const acceptedEffect=activatePoachAgreement(accepted,from),storedStrength=S.teamStrengths[`CPBL|${accepted.team}`];
-  const acceptedLine=poachEffectLine(acceptedEffect),tradeUsageRun=enabled=>{setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:62,pow:58,eye:61,spd:64,sta:67,rng:64,fld:65,arm:63});if(enabled)S.poachEffect={year:S.year,org:S.org,lv:S.lv,team:S.orgTeam,label:'測試交易後角色',rolePromise:'先發打線核心養成席次',usageAdj:14,perfAdj:-.25,teamWins:-.8};seedInit('audit-trade-playing-time');return Array.from({length:160},()=>{S._seasonVariance=null;S.seasonLuck=10;return simSeason('CPBL1');});},withoutTrade=tradeUsageRun(false),withTrade=tradeUsageRun(true);setup('IF','CPBL1',null,'SS');S.currentStandings={mine:{W:60,L:60,pct:.5}};const normalTradeP=leagueTradeProbability().p;S.tradeHeat=18;const requestedTradeP=leagueTradeProbability().p;S.tradeHistory=[{year:S.year-1,from:'A',to:'B'}];S.tradeHeat=0;const cooldownTradeP=leagueTradeProbability().p;const baseTerms=termParams(6,'CPBL1');S.poachLeverage=2;S.poachLeverageUntil=S.year;const leveragedTerms=termParams(6,'CPBL1'),contenderOffer=sameTier.find(x=>x.marketType==='contender'),rebuildOffer=sameTier.find(x=>x.marketType==='rebuild');result.sameTierTrading={offers:sameTier.map(x=>({team:x.team,level:x.lv,type:x.marketType,label:x.label,record:`${x.record.W}-${x.record.L}`,usage:x.usageAdj,teamWins:x.teamWins})),sameLevelOnly:sameTier.every(x=>x.org==='CPBL'&&x.lv==='CPBL1'&&!x.cross&&x.team!==from),oneConcreteTradeNotMarket:sameTier.length>=3,hasContender:sameTier.some(x=>x.marketType==='contender'),hasRival:sameTier.some(x=>x.marketType==='rival'),hasRebuild:sameTier.some(x=>x.marketType==='rebuild'),recordsMatchDirection:contenderOffer.record.pct>rebuildOffer.record.pct,frequency:{normal:normalTradeP,requested:requestedTradeP,cooldown:cooldownTradeP,normalIsRare:normalTradeP<=5,requestRaisesOdds:requestedTradeP>normalTradeP,cooldownBlocks:cooldownTradeP===0},agreement:{team:accepted.team,effectYear:acceptedEffect.year,role:acceptedEffect.rolePromise,storedStrength,expectedStrength:accepted.strengthTarget,summaryIsValid:!acceptedLine.includes('undefined')&&!acceptedLine.includes('NaN')},playingTime:{without:mean(withoutTrade,'G'),with:mean(withTrade,'G'),promiseIncreasesGames:mean(withTrade,'G')>mean(withoutTrade,'G')+5},contractLeverage:{base:baseTerms.longM,withTrade:leveragedTerms.longM,actuallyIncreases:leveragedTerms.longM>baseTerms.longM}};
+  const acceptedLine=poachEffectLine(acceptedEffect),tradeUsageRun=enabled=>{setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:62,pow:58,eye:61,spd:64,sta:67,rng:64,fld:65,arm:63});if(enabled)S.poachEffect={year:S.year,org:S.org,lv:S.lv,team:S.orgTeam,label:'測試交易後角色',rolePromise:'先發打線核心養成席次',usageAdj:14,perfAdj:-.25,teamWins:-.8};seedInit('audit-trade-playing-time');return Array.from({length:160},()=>{S._seasonVariance=null;S.seasonLuck=10;return simSeason('CPBL1');});},withoutTrade=tradeUsageRun(false),withTrade=tradeUsageRun(true);
+  const tradeBaseline={};[['MLB','IF',null,'SS'],['A2','IF',null,'SS'],['NPB1','IF',null,'SS'],['NPB2','P','MR',null],['CPBL1','IF',null,'SS'],['CPBL2','P','MR',null]].forEach(([lv,pos,role,dpos])=>{setup(pos,lv,role,dpos);tradeBaseline[lv]=leagueTradeProbability().p;});
+  setup('IF','CPBL1',null,'SS');S.currentStandings={mine:{W:60,L:60,pct:.5}};const normalTradeP=leagueTradeProbability().p;S.tradeHeat=18;const requestedTradeP=leagueTradeProbability().p;S.tradeHistory=[{year:S.year-1,from:'A',to:'B'}];S.tradeHeat=0;const cooldownTradeP=leagueTradeProbability().p;
+  setup('IF','CPBL1',null,'SS');const baseTerms=termParams(6,'CPBL1');S.poachLeverage=2;S.poachLeverageUntil=S.year;const leveragedTerms=termParams(6,'CPBL1'),contenderOffer=sameTier.find(x=>x.marketType==='contender'),rebuildOffer=sameTier.find(x=>x.marketType==='rebuild');
+  result.sameTierTrading={offers:sameTier.map(x=>({team:x.team,level:x.lv,type:x.marketType,label:x.label,record:`${x.record.W}-${x.record.L}`,usage:x.usageAdj,teamWins:x.teamWins})),sameLevelOnly:sameTier.every(x=>x.org==='CPBL'&&x.lv==='CPBL1'&&!x.cross&&x.team!==from),oneConcreteTradeNotMarket:sameTier.length>=3,hasContender:sameTier.some(x=>x.marketType==='contender'),hasRival:sameTier.some(x=>x.marketType==='rival'),hasRebuild:sameTier.some(x=>x.marketType==='rebuild'),recordsMatchDirection:contenderOffer.record.pct>rebuildOffer.record.pct,frequency:{normal:normalTradeP,requested:requestedTradeP,cooldown:cooldownTradeP,normalIsRare:normalTradeP<=5,requestRaisesOdds:requestedTradeP>normalTradeP,cooldownIsRareNotImpossible:cooldownTradeP>0&&cooldownTradeP<=1},agreement:{team:accepted.team,effectYear:acceptedEffect.year,role:acceptedEffect.rolePromise,storedStrength,expectedStrength:accepted.strengthTarget,summaryIsValid:!acceptedLine.includes('undefined')&&!acceptedLine.includes('NaN')},playingTime:{without:mean(withoutTrade,'G'),with:mean(withTrade,'G'),promiseIncreasesGames:mean(withTrade,'G')>mean(withoutTrade,'G')+5},contractLeverage:{base:baseTerms.longM,withTrade:leveragedTerms.longM,actuallyIncreases:leveragedTerms.longM>baseTerms.longM}};
+  result.tradeRateCalibration={rates:tradeBaseline,exact:tradeBaseline.MLB===7&&tradeBaseline.A2===4&&tradeBaseline.NPB1===2.5&&tradeBaseline.NPB2===1.5&&tradeBaseline.CPBL1===2&&tradeBaseline.CPBL2===2,mlbAboveAsia:tradeBaseline.MLB>tradeBaseline.NPB1&&tradeBaseline.MLB>tradeBaseline.CPBL1,minorAboveNpbFarm:tradeBaseline.A2>tradeBaseline.NPB2};
+  seedInit('audit-trade-rate-rolls');result.tradeRateCalibration.observed=Object.fromEntries(Object.entries(tradeBaseline).map(([lv,p])=>{let hits=0;for(let i=0;i<8000;i++)if(chance(p))hits++;return [lv,+(hits/80).toFixed(2)];}));result.tradeRateCalibration.rollsPerLevel=8000;result.tradeRateCalibration.withinTolerance=Object.entries(tradeBaseline).every(([lv,p])=>Math.abs(result.tradeRateCalibration.observed[lv]-p)<=.8);
   setup('P','NPB2','MR');S.overseasDepth={npb2:1,milb:0};const npbBefore=taiwanReturnInquiryProfile(ovr());S.overseasDepth.npb2=2;const npbDue=taiwanReturnInquiryProfile(ovr());setup('IF','A2',null,'SS');S.overseasDepth={npb2:0,milb:2};const milbBefore=taiwanReturnInquiryProfile(ovr());S.overseasDepth.milb=3;const milbDue=taiwanReturnInquiryProfile(ovr());result.taiwanReturnInquiry={npb2:{before:npbBefore.eligible,after:npbDue.eligible,threshold:npbDue.threshold,level:npbDue.level},milb:{before:milbBefore.eligible,after:milbDue.eligible,threshold:milbDue.threshold,level:milbDue.level},onlyAfterConsecutiveThreshold:!npbBefore.eligible&&npbDue.eligible&&!milbBefore.eligible&&milbDue.eligible};
   const agingSample=(age,bigInj,pos='IF')=>{setup(pos,'MLB',pos==='P'?'SP':null,pos==='P'?null:'SS');S.age=age;S.bigInj=bigInj||0;Object.keys(S.ab).forEach(k=>S.ab[k]=75);S.lastSt=null;const info=agingRiskProfile(),rolls=Array.from({length:2000},()=>ri(1,100)),triggered=rolls.filter(v=>v<=info.p),losses=triggered.map(v=>agingLossPlan(info,v).planned);S._seasonTrainingPlan=null;const tp=trainingDicePlan();return {risk:info.p,triggerRate:+(triggered.length/rolls.length).toFixed(3),meanTriggeredLoss:losses.length?+(losses.reduce((a,b)=>a+b,0)/losses.length).toFixed(1):0,annualExpectedLoss:+(losses.reduce((a,b)=>a+b,0)/rolls.length).toFixed(1),trainingDice:tp.n,trainingCap:tp.ageCap,speedGrowthLimit:ageGrowthLimit('spd'),staminaGrowthLimit:ageGrowthLimit('sta')};};
   seedInit('audit-aging-curve');result.agingCurve={age30:agingSample(30,0),age33:agingSample(33,0),age36:agingSample(36,0),age39:agingSample(39,0),age36AfterMajorInjury:agingSample(36,2),clearlyEscalates:false};result.agingCurve.clearlyEscalates=result.agingCurve.age30.annualExpectedLoss<result.agingCurve.age33.annualExpectedLoss&&result.agingCurve.age33.annualExpectedLoss<result.agingCurve.age36.annualExpectedLoss&&result.agingCurve.age36.annualExpectedLoss<result.agingCurve.age39.annualExpectedLoss&&result.agingCurve.age36AfterMajorInjury.annualExpectedLoss>result.agingCurve.age36.annualExpectedLoss;
