@@ -547,7 +547,7 @@ body::before{display:none}
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">棒球人生<br><em>CAREER SIM</em></h1>
-    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.8</div>
+    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v3.0.9</div>
     <p class="sub">做出選擇，再親手停下拉霸。從高中、選秀、旅外、傷病到引退，每次人生都不一樣。</p>
     <div class="start-grid">
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
@@ -923,7 +923,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v3.0.8';
+const APP_VER='v3.0.9';
 if(new URLSearchParams(location.search).get('logic-audit')==='1')window.addEventListener('error',e=>{document.documentElement.setAttribute('data-audit-error',`${e.message} @ ${e.lineno}:${e.colno}`);});
 const TEAM_COLOR={
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
@@ -4312,10 +4312,17 @@ function buyoutRemaining(){ /* 合約尚有剩餘年數：依白紙黑字的保�
   S.ct={yrs:1,mult:S.ct.mult,annual:yearly,guaranteed:0}; /* 買斷後合約結清 */
   return total;
 }
+function taiwanReturnInquiryThreshold(kind,age){
+  age=Number(age)||18;
+  if(kind==='npb2')return age<=20?4:age<=23?3:age<=29?2:1;
+  if(kind==='milb')return age<=20?5:age<=23?4:age<=27?3:age<=30?2:1;
+  return 99;
+}
 function taiwanReturnInquiryProfile(o){
-  const depth=S.overseasDepth||{npb2:0,milb:0},kind=S.org==='NPB'&&S.lv==='NPB2'?'npb2':S.org==='MiLB'&&S.lv!=='MLB'?'milb':null,years=kind?depth[kind]||0:0,threshold=kind==='npb2'?2:kind==='milb'?3:99,history=(S.returnInquiryHistory||[]).filter(x=>x.kind===kind),last=history.slice(-1)[0],first=!history.length,d=contractPerformanceD();
+  const depth=S.overseasDepth||{npb2:0,milb:0},kind=S.org==='NPB'&&S.lv==='NPB2'?'npb2':S.org==='MiLB'&&S.lv!=='MLB'?'milb':null,years=kind?depth[kind]||0:0,threshold=taiwanReturnInquiryThreshold(kind,S.age),history=(S.returnInquiryHistory||[]).filter(x=>x.kind===kind),last=history.slice(-1)[0],first=!history.length,d=contractPerformanceD();
   const due=!last||S.year-last.year>=2,eligible=!!kind&&years>=threshold&&due&&o>=LV.CPBL2.min-3,level=o>=LV.CPBL1.min-2&&(d>=-2||years>=threshold+1)?'CPBL1':'CPBL2',interest=clamp(Math.round(42+ratingGap(o,LV[level].min)*6+d*4+Math.min(12,(years-threshold)*4)-Math.max(0,S.age-34)*3),18,88);
-  return {kind,years,threshold,first,due,eligible,level,interest,d};
+  const ageRule=kind==='npb2'?(S.age<=20?'20 歲以下養成期':S.age<=23?'21–23 歲發展期':S.age<=29?'24–29 歲戰力評估':'30 歲以上即戰力評估'):(S.age<=20?'20 歲以下長期養成':S.age<=23?'21–23 歲新秀發展':S.age<=27?'24–27 歲升格窗口':S.age<=30?'28–30 歲即戰力評估':'31 歲以上返台窗口');
+  return {kind,years,threshold,first,due,eligible,level,interest,d,ageRule};
 }
 function maybeTaiwanReturnInquiry(o,onContinue){
   if(S._returnInquiryYear===S.year)return false;
@@ -4323,9 +4330,9 @@ function maybeTaiwanReturnInquiry(o,onContinue){
   /* 第一次達到滯留門檻必定收到詢問；拒絕後至少隔一年，之後才按市場興趣重抽。 */
   if(!p.first&&!chance(p.interest))return false;
   S._returnInquiryYear=S.year;const count=p.level==='CPBL1'?clamp(p.d>=4?3:2,1,3):1,source=p.kind==='npb2'?'日職二軍':'美職小聯盟',role=p.level==='CPBL1'?'一軍名單與先發／主力牛棚競爭':'二軍合約，但列為季中升一軍優先觀察',candidates=randomSubset(CPBL_TEAMS,count).map((team,i)=>({team,lv:p.level,role,mult:+clamp(.94+p.d*.025+R()*.12-i*.025,.76,1.42).toFixed(2)}));
-  const stay=()=>{S.returnInquiryHistory=S.returnInquiryHistory||[];S.returnInquiryHistory.push({year:S.year,kind:p.kind,years:p.years,outcome:'stay'});card('info','留在海外繼續競爭',`你婉拒這次中職返台接觸，繼續留在 <b class="hl">${S.orgTeam}・${LV[S.lv].n}</b>。至少隔一個完整球季後，中職才可能再度詢問；海外升降仍依下一季實績決定。`);board(1);onContinue();};
-  card('info','中職主動詢問返台意願',`你已在 <b class="hl">${source}連續 ${p.years} 季</b>，中職球團透過經紀人詢問是否願意返台。這不是同聯盟交易，也不是自動離隊；你可以先看具體球隊、層級與薪資方向，再決定是否處理海外合約。<div class="statline">目前所屬｜${S.orgTeam}・${LV[S.lv].n}<br>中職評估層級｜${LV[p.level].n}<br>本次接觸｜${candidates.length} 隊<br>若留海外｜至少隔一季才可能再次接觸</div>`);board(2);
-  returnTaiwanBuyoutFlow(o,stay,candidates,`中職返台詢問｜${source}連續 ${p.years} 季`,{kind:p.kind,years:p.years});return true;
+  const stay=()=>{S.returnInquiryHistory=S.returnInquiryHistory||[];S.returnInquiryHistory.push({year:S.year,kind:p.kind,years:p.years,age:S.age,threshold:p.threshold,outcome:'stay'});card('info','留在海外繼續競爭',`你婉拒這次中職返台接觸，繼續留在 <b class="hl">${S.orgTeam}・${LV[S.lv].n}</b>。至少隔一個完整球季後，中職才可能依當時年齡、層級與實績再次詢問；海外升降仍依下一季成績決定。`);board(1);onContinue();};
+  card('info','中職主動詢問返台意願',`你今年 <b class="hl">${S.age} 歲</b>，已在 <b class="hl">${source}連續 ${p.years} 季</b>；目前年齡帶的返台詢問門檻為 ${p.threshold} 季，因此中職球團透過經紀人詢問意願。這不是同聯盟交易，也不是自動離隊；你可以先看具體球隊、層級與薪資方向，再決定是否處理海外合約。<div class="statline">目前所屬｜${S.orgTeam}・${LV[S.lv].n}<br>年齡判定｜${p.ageRule}・門檻 ${p.threshold} 季<br>實際滯留｜連續 ${p.years} 季<br>中職評估層級｜${LV[p.level].n}<br>本次接觸｜${candidates.length} 隊<br>若留海外｜至少隔一季才可能再次接觸</div>`);board(2);
+  returnTaiwanBuyoutFlow(o,stay,candidates,`中職返台詢問｜${S.age} 歲・${source}連續 ${p.years} 季`,{kind:p.kind,years:p.years,age:S.age,threshold:p.threshold});return true;
 }
 function returnTaiwanBuyoutFlow(o,onStay,preferredCandidates,marketTitle,inquiryMeta){
   if(S.org==='CPBL'){onStay();return;}
@@ -4335,7 +4342,7 @@ function returnTaiwanBuyoutFlow(o,onStay,preferredCandidates,marketTitle,inquiry
   const standing=teamRosterDecisionContext(d<0),clubNeed=standing.pressure||0;
   const signTaiwanTerms=target=>{
     const targetLv=target.lv||'CPBL1',saved={org:S.org,lv:S.lv,team:S.orgTeam};S.org='CPBL';S.lv=targetLv;S.orgTeam=target.team;S.marketHeat=clamp(4+d*2,-8,18);
-    termChoice(o,d,`${target.team}｜返台正式談薪`,(y,m,option)=>{S.org=saved.org;S.lv=saved.lv;S.orgTeam=saved.team;signTo('CPBL',targetLv,target.team,y,+(m*target.mult).toFixed(2),option);S.marketHeat=0;S.overseasDepth={npb2:0,milb:0};if(inquiryMeta){S.returnInquiryHistory=S.returnInquiryHistory||[];S.returnInquiryHistory.push({year:S.year,kind:inquiryMeta.kind,years:inquiryMeta.years,outcome:'signed',team:target.team,lv:targetLv});}card('gold','返台加盟完成',`${S.name} 與 <b class="hl">${target.team}</b> 完成 ${LV[targetLv].n} 合約。海外滯留年數已重置，下一季將依新球隊承諾的角色重新競爭。`);advance();},null,target.mult);
+    termChoice(o,d,`${target.team}｜返台正式談薪`,(y,m,option)=>{S.org=saved.org;S.lv=saved.lv;S.orgTeam=saved.team;signTo('CPBL',targetLv,target.team,y,+(m*target.mult).toFixed(2),option);S.marketHeat=0;S.overseasDepth={npb2:0,milb:0};if(inquiryMeta){S.returnInquiryHistory=S.returnInquiryHistory||[];S.returnInquiryHistory.push({year:S.year,kind:inquiryMeta.kind,years:inquiryMeta.years,age:inquiryMeta.age,threshold:inquiryMeta.threshold,outcome:'signed',team:target.team,lv:targetLv});}card('gold','返台加盟完成',`${S.name} 與 <b class="hl">${target.team}</b> 完成 ${LV[targetLv].n} 合約。海外滯留年數已重置，下一季將依新球隊承諾的角色重新競爭。`);advance();},null,target.mult);
   };
   const negotiate=(target,settlePct,label)=>{
     const relief=Math.round((1-settlePct)*100),approval=clamp(Math.round(70-remain*8-Math.max(0,d)*4+Math.max(0,-d)*5+clubNeed+(settlePct===0?17:settlePct<=.25?5:-10)),12,94);
@@ -5730,7 +5737,7 @@ if(new URLSearchParams(location.search).get('visual-audit')==='poaching'){
   $('start').style.display='none';document.body.classList.add('game-started');$('board').style.display='';$('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';board(1);presentPoachingMarket(randomSubset(crossLeaguePoachOffers(9,true),2),9,1,true,220,()=>{});
 }
 if(new URLSearchParams(location.search).get('visual-audit')==='return-inquiry'){
-  RNG_MODE='destiny';seedInit('visual-audit-return-inquiry');S=newState('蔣孟杰','P','MR');S.stage='PRO';S.lv='NPB2';S.org='NPB';S.orgTeam='名古屋神龍';S.age=25;S.year=2035;S.stageYr=10;S.seasonFactor=1;S.overseasDepth={npb2:2,milb:0};S.ct={yrs:2,signedYears:3,mult:1.05,annual:1180,guaranteed:.65};S.lastD=2.4;S.teamName=()=>S.orgTeam;Object.assign(S.ab,{vel:72,ctl:73,brk:71,sta:66});
+  RNG_MODE='destiny';seedInit('visual-audit-return-inquiry');S=newState('蔣孟杰','P','MR');S.stage='PRO';S.lv='NPB2';S.org='NPB';S.orgTeam='名古屋神龍';S.age=22;S.year=2035;S.stageYr=7;S.seasonFactor=1;S.overseasDepth={npb2:3,milb:0};S.ct={yrs:2,signedYears:3,mult:1.05,annual:1180,guaranteed:.65};S.lastD=2.4;S.teamName=()=>S.orgTeam;Object.assign(S.ab,{vel:72,ctl:73,brk:71,sta:66});
   $('start').style.display='none';document.body.classList.add('game-started');$('board').style.display='';$('act').style.display='';$('player-rail').style.display='';$('roll-rail').style.display='';board(1);maybeTaiwanReturnInquiry(ovr(),()=>{});
 }
 function runLogicAudit(samples){
@@ -5754,7 +5761,10 @@ function runLogicAudit(samples){
   result.sameTierTrading={offers:sameTier.map(x=>({team:x.team,level:x.lv,type:x.marketType,label:x.label,record:`${x.record.W}-${x.record.L}`,usage:x.usageAdj,teamWins:x.teamWins})),sameLevelOnly:sameTier.every(x=>x.org==='CPBL'&&x.lv==='CPBL1'&&!x.cross&&x.team!==from),oneConcreteTradeNotMarket:sameTier.length>=3,hasContender:sameTier.some(x=>x.marketType==='contender'),hasRival:sameTier.some(x=>x.marketType==='rival'),hasRebuild:sameTier.some(x=>x.marketType==='rebuild'),recordsMatchDirection:contenderOffer.record.pct>rebuildOffer.record.pct,frequency:{normal:normalTradeP,requested:requestedTradeP,cooldown:cooldownTradeP,normalIsRare:normalTradeP<=5,requestRaisesOdds:requestedTradeP>normalTradeP,cooldownIsRareNotImpossible:cooldownTradeP>0&&cooldownTradeP<=1},agreement:{team:accepted.team,effectYear:acceptedEffect.year,role:acceptedEffect.rolePromise,storedStrength,expectedStrength:accepted.strengthTarget,summaryIsValid:!acceptedLine.includes('undefined')&&!acceptedLine.includes('NaN')},playingTime:{without:mean(withoutTrade,'G'),with:mean(withTrade,'G'),promiseIncreasesGames:mean(withTrade,'G')>mean(withoutTrade,'G')+5},contractLeverage:{base:baseTerms.longM,withTrade:leveragedTerms.longM,actuallyIncreases:leveragedTerms.longM>baseTerms.longM}};
   result.tradeRateCalibration={rates:tradeBaseline,exact:tradeBaseline.MLB===7&&tradeBaseline.A2===4&&tradeBaseline.NPB1===2.5&&tradeBaseline.NPB2===1.5&&tradeBaseline.CPBL1===2&&tradeBaseline.CPBL2===2,mlbAboveAsia:tradeBaseline.MLB>tradeBaseline.NPB1&&tradeBaseline.MLB>tradeBaseline.CPBL1,minorAboveNpbFarm:tradeBaseline.A2>tradeBaseline.NPB2};
   seedInit('audit-trade-rate-rolls');result.tradeRateCalibration.observed=Object.fromEntries(Object.entries(tradeBaseline).map(([lv,p])=>{let hits=0;for(let i=0;i<8000;i++)if(chance(p))hits++;return [lv,+(hits/80).toFixed(2)];}));result.tradeRateCalibration.rollsPerLevel=8000;result.tradeRateCalibration.withinTolerance=Object.entries(tradeBaseline).every(([lv,p])=>Math.abs(result.tradeRateCalibration.observed[lv]-p)<=.8);
-  setup('P','NPB2','MR');S.overseasDepth={npb2:1,milb:0};const npbBefore=taiwanReturnInquiryProfile(ovr());S.overseasDepth.npb2=2;const npbDue=taiwanReturnInquiryProfile(ovr());setup('IF','A2',null,'SS');S.overseasDepth={npb2:0,milb:2};const milbBefore=taiwanReturnInquiryProfile(ovr());S.overseasDepth.milb=3;const milbDue=taiwanReturnInquiryProfile(ovr());result.taiwanReturnInquiry={npb2:{before:npbBefore.eligible,after:npbDue.eligible,threshold:npbDue.threshold,level:npbDue.level},milb:{before:milbBefore.eligible,after:milbDue.eligible,threshold:milbDue.threshold,level:milbDue.level},onlyAfterConsecutiveThreshold:!npbBefore.eligible&&npbDue.eligible&&!milbBefore.eligible&&milbDue.eligible};
+  const returnProfileAt=(lv,age,years)=>{setup(lv==='NPB2'?'P':'IF',lv,lv==='NPB2'?'MR':null,lv==='NPB2'?null:'SS');S.age=age;S.overseasDepth={npb2:lv==='NPB2'?years:0,milb:lv==='NPB2'?0:years};return taiwanReturnInquiryProfile(ovr());};
+  const npbYoungBefore=returnProfileAt('NPB2',20,3),npbYoungDue=returnProfileAt('NPB2',20,4),npbPrimeDue=returnProfileAt('NPB2',25,2),npbVeteranDue=returnProfileAt('NPB2',31,1),milbYoungBefore=returnProfileAt('A2',19,4),milbYoungDue=returnProfileAt('A2',19,5),milbPrimeDue=returnProfileAt('A2',25,3),milbOlderDue=returnProfileAt('A2',29,2),milbVeteranDue=returnProfileAt('A2',32,1);
+  const thresholdMatrix={npb2:{age20:taiwanReturnInquiryThreshold('npb2',20),age22:taiwanReturnInquiryThreshold('npb2',22),age25:taiwanReturnInquiryThreshold('npb2',25),age31:taiwanReturnInquiryThreshold('npb2',31)},milb:{age19:taiwanReturnInquiryThreshold('milb',19),age22:taiwanReturnInquiryThreshold('milb',22),age25:taiwanReturnInquiryThreshold('milb',25),age29:taiwanReturnInquiryThreshold('milb',29),age32:taiwanReturnInquiryThreshold('milb',32)}};
+  result.taiwanReturnInquiry={thresholds:thresholdMatrix,youngPlayersGetTime:!npbYoungBefore.eligible&&npbYoungDue.eligible&&!milbYoungBefore.eligible&&milbYoungDue.eligible,primeWindows:{npb25:npbPrimeDue.eligible,milb25:milbPrimeDue.eligible,milb29:milbOlderDue.eligible},veteransContactedAfterOne:{npb31:npbVeteranDue.eligible,milb32:milbVeteranDue.eligible},exactAgeBands:JSON.stringify(thresholdMatrix)===JSON.stringify({npb2:{age20:4,age22:3,age25:2,age31:1},milb:{age19:5,age22:4,age25:3,age29:2,age32:1}})};
   const agingSample=(age,bigInj,pos='IF')=>{setup(pos,'MLB',pos==='P'?'SP':null,pos==='P'?null:'SS');S.age=age;S.bigInj=bigInj||0;Object.keys(S.ab).forEach(k=>S.ab[k]=75);S.lastSt=null;const info=agingRiskProfile(),rolls=Array.from({length:2000},()=>ri(1,100)),triggered=rolls.filter(v=>v<=info.p),losses=triggered.map(v=>agingLossPlan(info,v).planned);S._seasonTrainingPlan=null;const tp=trainingDicePlan();return {risk:info.p,triggerRate:+(triggered.length/rolls.length).toFixed(3),meanTriggeredLoss:losses.length?+(losses.reduce((a,b)=>a+b,0)/losses.length).toFixed(1):0,annualExpectedLoss:+(losses.reduce((a,b)=>a+b,0)/rolls.length).toFixed(1),trainingDice:tp.n,trainingCap:tp.ageCap,speedGrowthLimit:ageGrowthLimit('spd'),staminaGrowthLimit:ageGrowthLimit('sta')};};
   seedInit('audit-aging-curve');result.agingCurve={age30:agingSample(30,0),age33:agingSample(33,0),age36:agingSample(36,0),age39:agingSample(39,0),age36AfterMajorInjury:agingSample(36,2),clearlyEscalates:false};result.agingCurve.clearlyEscalates=result.agingCurve.age30.annualExpectedLoss<result.agingCurve.age33.annualExpectedLoss&&result.agingCurve.age33.annualExpectedLoss<result.agingCurve.age36.annualExpectedLoss&&result.agingCurve.age36.annualExpectedLoss<result.agingCurve.age39.annualExpectedLoss&&result.agingCurve.age36AfterMajorInjury.annualExpectedLoss>result.agingCurve.age36.annualExpectedLoss;
   setup('C','CPBL1',null,'C');S.age=45;Object.assign(S.ab,{sta:26,eye:91,fld:29,con:79,pow:95,spd:32,rng:38,arm:55,cat:61});seedInit('audit-aging-allocation');const allocationPlan={ageBand:5,planned:16,count:7},allocationRuns=Array.from({length:2400},()=>agingLossAllocation(allocationPlan)),allocationMean=k=>+(allocationRuns.reduce((n,x)=>n+(x.losses[k]||0),0)/allocationRuns.length).toFixed(2),allocationMax=k=>Math.max(...allocationRuns.map(x=>x.losses[k]||0));result.agingAllocation={means:Object.fromEntries(POS_AB.C.map(k=>[k,allocationMean(k)])),maxima:Object.fromEntries(POS_AB.C.map(k=>[k,allocationMax(k)])),lowPhysicalMoreExposed:allocationMean('sta')>allocationMean('eye')&&allocationMean('spd')>allocationMean('pow'),lowStatCapsHold:allocationMax('sta')<=agingStatProfile('sta',5).cap&&allocationMax('fld')<=agingStatProfile('fld',5).cap,exampleCaps:{stamina26:agingStatProfile('sta',5).cap,fielding29:agingStatProfile('fld',5).cap,eye91:agingStatProfile('eye',5).cap}};
