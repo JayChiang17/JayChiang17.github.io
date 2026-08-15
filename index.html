@@ -46,6 +46,18 @@
           · <a href="#" id="seed-re" style="color:var(--blue)">換一個</a><br>相同種子＋相同選擇＝相同宇宙，可與朋友比較不同決策。</p>
       </div>
     </div>
+    <section class="purpose-picker" aria-labelledby="purpose-picker-title">
+      <div class="purpose-picker-head"><span>生涯志向</span><b id="purpose-picker-title">這輩子想成為誰？</b></div>
+      <div class="purpose-options" id="purpose-options">
+        <button class="on" type="button" data-asp="world"><b>世界舞台</b><small>挑戰日職與大聯盟</small></button>
+        <button type="button" data-asp="champion"><b>冠軍核心</b><small>帶領球隊建立王朝</small></button>
+        <button type="button" data-asp="franchise"><b>母隊傳奇</b><small>讓一座城市記住背號</small></button>
+        <button type="button" data-asp="records"><b>歷史紀錄</b><small>追逐沒人碰過的數字</small></button>
+        <button type="button" data-asp="wealth"><b>財富自由</b><small>把球員生涯變成未來</small></button>
+        <button type="button" data-asp="life"><b>人生圓滿</b><small>球場、家人與關係都不缺席</small></button>
+      </div>
+      <div id="meta-legacy" class="meta-legacy">傳承收藏尚未開始</div>
+    </section>
     <section class="save-entry" aria-label="繼續既有生涯"><strong>繼續既有生涯</strong><div id="start-save-list" class="save-entry-grid"></div><div id="start-save-status" class="save-entry-status" aria-live="polite"></div></section>
     <button class="btn main" style="margin-top:28px" id="btn-start">開始生涯 ▸ 高一春天</button>
   </div>
@@ -66,6 +78,13 @@
     </div>
   </header>
   <aside id="player-rail" class="side-rail" style="display:none">
+    <section class="rail-card rail-purpose">
+      <div class="rail-label">生涯志向</div>
+      <div class="purpose-rail-head"><b id="rail-purpose-name">尚未選擇</b><span id="rail-purpose-score">0%</span></div>
+      <div class="purpose-track"><i id="rail-purpose-bar"></i></div>
+      <div id="rail-purpose-next" class="purpose-next">開局後開始追逐</div>
+      <div id="rail-purpose-path" class="purpose-path"></div>
+    </section>
     <section class="rail-card rail-player">
       <div class="rail-label">球員能力</div>
       <div class="scout-head"><div class="scout-ovr" id="scout-ring"><b id="rail-ovr">—</b><small>/ 99</small></div><div class="scout-type"><b id="rail-type">等待開季</b><span id="rail-role">球探報告尚未建立</span></div></div>
@@ -176,7 +195,7 @@
   <div class="fx-backdrop"></div>
   <section class="summary-machine" role="dialog" aria-modal="true" aria-labelledby="summary-title">
     <div class="machine-top"><div class="machine-kicker">球季結束</div><div class="machine-title" id="summary-title">本季總結</div><div class="machine-sub" id="summary-sub">球季紀錄已整理完成</div></div>
-    <div class="summary-body"><div id="summary-team" class="season-team-head"></div><div id="summary-stats" class="stat-dashboard"></div><div id="summary-awards" class="summary-awards"></div><div id="summary-verdict" class="summary-verdict"></div><div id="summary-standings"></div><button class="btn main" id="summary-accept">完成球季 ▸</button></div>
+    <div class="summary-body"><div id="summary-team" class="season-team-head"></div><div id="summary-stats" class="stat-dashboard"></div><div id="summary-purpose" class="summary-purpose"></div><div id="summary-awards" class="summary-awards"></div><div id="summary-verdict" class="summary-verdict"></div><div id="summary-standings"></div><button class="btn main" id="summary-accept">完成球季 ▸</button></div>
   </section>
 </div>
 
@@ -184,8 +203,25 @@
   <div class="fx-backdrop"></div>
   <section class="career-machine" role="dialog" aria-modal="true" aria-labelledby="career-report-title">
     <header class="career-report-head"><div><small>PLAYER ARCHIVE</small><h2 id="career-report-title">生涯資料</h2><p id="career-report-sub">累積數據、逐年成績與正式獎項</p></div><button id="career-report-close" class="career-close" type="button" aria-label="關閉生涯資料">×</button></header>
-    <nav class="career-tabs" aria-label="生涯資料分類"><button class="career-tab on" data-tab="totals" type="button">生涯累積</button><button class="career-tab" data-tab="years" type="button">逐年成績</button><button class="career-tab" data-tab="honors" type="button">獎項榮譽</button><button class="career-tab" data-tab="teams" type="button">球隊軌跡</button><button class="career-tab" data-tab="finance" type="button">合約財務</button></nav>
+    <nav class="career-tabs" aria-label="生涯資料分類"><button class="career-tab on" data-tab="totals" type="button">生涯累積</button><button class="career-tab" data-tab="years" type="button">逐年成績</button><button class="career-tab" data-tab="honors" type="button">獎項榮譽</button><button class="career-tab" data-tab="teams" type="button">球隊軌跡</button><button class="career-tab" data-tab="legacy" type="button">生涯遺產</button><button class="career-tab" data-tab="finance" type="button">合約財務</button></nav>
     <div id="career-report-body" class="career-report-body"></div>
+  </section>
+</div>
+
+<div id="legacy-overlay" aria-hidden="true">
+  <div class="legacy-backdrop"></div>
+  <section class="legacy-machine" role="dialog" aria-modal="true" aria-labelledby="legacy-title">
+    <header class="legacy-head"><div><small>CAREER LEGACY</small><h2 id="legacy-title">生涯長廊</h2><p id="legacy-subtitle">每個選擇，都在這裡留下位置</p></div><button id="legacy-close" class="legacy-close" type="button" aria-label="關閉生涯長廊">×</button></header>
+    <div id="legacy-three-stage" aria-hidden="true"></div>
+    <div class="legacy-story">
+      <div class="legacy-index" id="legacy-index">01 / 01</div>
+      <div class="legacy-year" id="legacy-year">2026</div>
+      <h3 id="legacy-moment-title">生涯起點</h3>
+      <p id="legacy-moment-text">故事正在開始。</p>
+      <div id="legacy-cast-line" class="legacy-cast-line"></div>
+    </div>
+    <div id="legacy-dots" class="legacy-dots" aria-label="生涯節點"></div>
+    <footer class="legacy-controls"><button id="legacy-prev" type="button">← 上一幕</button><button id="legacy-play" type="button">自動回顧</button><button id="legacy-next" type="button">下一幕 →</button></footer>
   </section>
 </div>
 
@@ -221,7 +257,7 @@
     </div>
   </section>
 </div>
-<script src="app.js?v=5.1.1"></script>
-<script type="module" src="fx.js?v=5.1.1"></script>
+<script src="app.js?v=5.2.0"></script>
+<script type="module" src="fx.js?v=5.2.0"></script>
 </body>
 </html>
