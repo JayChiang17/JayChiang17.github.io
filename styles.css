@@ -244,9 +244,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.16;b
 .roll-result{margin-top:12px;text-align:center;min-height:56px}.roll-result strong{display:block;font-size:23px}.roll-result small{color:var(--dim)}
 #roll-stop{display:none;max-width:300px;margin:10px auto 0;text-align:center;touch-action:manipulation}
 .roll-result.good strong{color:var(--good)}.roll-result.bad strong{color:var(--bad)}.roll-result.critical strong{animation:criticalGlow .75s ease-in-out infinite alternate}
+.roll-result.jackpot strong{color:#ffe39a;letter-spacing:.12em;animation:jackpotText .55s ease-in-out infinite alternate}.roll-result.jackpot small{color:#f3d892;font-weight:800}.pool-die.jackpot{outline:4px solid #f3c969;box-shadow:0 0 0 7px #f3c96922,0 0 28px #f3c96988;animation:jackpotDie .62s ease-in-out infinite alternate}
 @keyframes criticalGlow{to{text-shadow:0 0 24px currentColor;transform:scale(1.035)}}
 #roll-overlay.finalizing .roll-machine{animation:machineTension .11s linear infinite}#roll-overlay.finalizing .fx-backdrop{background:#020906f3}
 #roll-overlay.reveal-good .roll-machine{box-shadow:0 40px 100px #000d,0 0 54px #76d49a55}#roll-overlay.reveal-bad .roll-machine{box-shadow:0 40px 100px #000d,0 0 54px #ff716755}
+#roll-overlay.reveal-jackpot .roll-machine{border-color:#f3c969;box-shadow:0 40px 100px #000d,0 0 28px #f3c96988,0 0 82px #f3c96944;animation:jackpotMachine .7s ease-in-out infinite alternate}
+@keyframes jackpotText{to{text-shadow:0 0 18px #f3c969;transform:scale(1.04)}}@keyframes jackpotDie{to{transform:translateY(-5px) scale(1.05);filter:brightness(1.16)}}@keyframes jackpotMachine{to{box-shadow:0 40px 100px #000d,0 0 46px #f3c969aa,0 0 110px #f3c96955}}
 @keyframes machineTension{50%{transform:translateX(1px)}}
 #roll-accept,#season-accept{display:none;margin:15px auto 0;max-width:300px;text-align:center}
 
