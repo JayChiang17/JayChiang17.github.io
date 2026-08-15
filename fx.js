@@ -29,21 +29,30 @@
     const handleGeo=new THREE.TorusGeometry(.36,.07,14,38,Math.PI*1.25),h1=new THREE.Mesh(handleGeo,gold),h2=new THREE.Mesh(handleGeo,gold);h1.position.set(-.63,.48,0);h1.rotation.z=-.62;h2.position.set(.63,.48,0);h2.rotation.z=Math.PI+.62;
     const halo=new THREE.Mesh(new THREE.TorusGeometry(1.35,.025,10,72),new THREE.MeshBasicMaterial({color:0xffd66d,transparent:true,opacity:.75}));halo.rotation.x=Math.PI/2;halo.position.y=.18;
     trophyGroup.add(cup,lip,stem,base1,base2,h1,h2,halo);trophyGroup.visible=false;trophyGroup.scale.setScalar(.7);scene.add(trophyGroup);
+    const retireGroup=new THREE.Group(),ivory=new THREE.MeshStandardMaterial({color:0xf3ead2,roughness:.58,metalness:.04}),wood=new THREE.MeshStandardMaterial({color:0xb86d3d,roughness:.5}),red=new THREE.MeshBasicMaterial({color:0xc94f45}),retireGold=new THREE.MeshStandardMaterial({color:0xe7bd5a,metalness:.55,roughness:.3});
+    const plateShape=new THREE.Shape();plateShape.moveTo(-.82,.52);plateShape.lineTo(.82,.52);plateShape.lineTo(.82,-.12);plateShape.lineTo(0,-.78);plateShape.lineTo(-.82,-.12);plateShape.closePath();const plate=new THREE.Mesh(new THREE.ShapeGeometry(plateShape),ivory);plate.rotation.x=-Math.PI/2;plate.position.set(0,-1.02,.12);
+    const ball=new THREE.Mesh(new THREE.SphereGeometry(.5,42,28),ivory);ball.position.set(.48,.05,.12);const seam1=new THREE.Mesh(new THREE.TorusGeometry(.405,.018,8,60),red),seam2=seam1.clone();seam1.position.copy(ball.position);seam1.rotation.set(0,.28,.34);seam2.position.copy(ball.position);seam2.rotation.set(Math.PI/2,-.25,-.34);
+    const bat=new THREE.Mesh(new THREE.CylinderGeometry(.09,.17,2.55,28),wood);bat.position.set(-.72,.05,-.08);bat.rotation.z=-.55;const knob=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.12,24),wood);knob.position.set(-1.39,-1.02,-.08);knob.rotation.z=-.55;
+    const retireRing=new THREE.Mesh(new THREE.TorusGeometry(1.56,.035,12,80),retireGold);retireRing.rotation.x=Math.PI/2;retireRing.position.y=-.9;const lightCone=new THREE.Mesh(new THREE.ConeGeometry(2.3,4.2,48,1,true),new THREE.MeshBasicMaterial({color:0xf4d98a,transparent:true,opacity:.055,side:THREE.DoubleSide,depthWrite:false}));lightCone.position.y=.85;lightCone.rotation.z=Math.PI;
+    retireGroup.add(plate,ball,seam1,seam2,bat,knob,retireRing,lightCone);retireGroup.visible=false;retireGroup.scale.setScalar(.76);scene.add(retireGroup);
     const floor=new THREE.Mesh(new THREE.CircleGeometry(3.4,64),new THREE.MeshBasicMaterial({color:0x163b2b,transparent:true,opacity:.3}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.45;scene.add(floor);
     const points=new Float32Array(120*3);for(let i=0;i<points.length;i+=3){points[i]=(Math.random()-.5)*9;points[i+1]=(Math.random()-.5)*4;points[i+2]=(Math.random()-.5)*5;}
     const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(points,3));const stars=new THREE.Points(pg,new THREE.PointsMaterial({color:0xffc857,size:.035,transparent:true,opacity:.7}));scene.add(stars);
-    let spinning=false,awardMode=false,last=performance.now();
+    let spinning=false,mode='idle',last=performance.now();
     function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
     new ResizeObserver(resize).observe(host);resize();
     renderer.setAnimationLoop(now=>{const dt=Math.min(.04,(now-last)/1000);last=now;
       if(spinning){d1.rotation.x+=dt*8.2;d1.rotation.y+=dt*11.4;d2.rotation.x-=dt*10.1;d2.rotation.z+=dt*8.8;group.rotation.y+=dt*2.3;}
       else{group.rotation.y+=dt*.22;d1.rotation.y+=dt*.15;d2.rotation.y-=dt*.12;}
-      group.position.y=Math.sin(now*.004)*.13;if(awardMode){trophyGroup.rotation.y+=dt*.75;trophyGroup.position.y=Math.sin(now*.003)*.08;halo.rotation.z+=dt*.8;}stars.rotation.z+=dt*(awardMode?.11:.025);renderer.render(scene,camera);
+      group.position.y=Math.sin(now*.004)*.13;if(mode==='award'){trophyGroup.rotation.y+=dt*.75;trophyGroup.position.y=Math.sin(now*.003)*.08;halo.rotation.z+=dt*.8;}if(mode==='retire'){retireGroup.rotation.y=Math.sin(now*.00055)*.13;retireGroup.position.y=Math.sin(now*.0022)*.045;retireRing.rotation.z+=dt*.32;ball.rotation.y+=dt*.42;lightCone.material.opacity=.045+(Math.sin(now*.002)+1)*.018;}stars.rotation.z+=dt*(mode==='award'?.11:mode==='retire'?.055:.025);renderer.render(scene,camera);
     });
     window.DiceFX={
-      begin(count){awardMode=false;trophyGroup.visible=false;group.visible=true;d1.visible=true;d2.visible=count>1;spinning=true;group.scale.setScalar(.88);setTimeout(()=>group.scale.setScalar(1),120);},
+      begin(count){mode='dice';retireGroup.visible=false;trophyGroup.visible=false;group.visible=true;d1.visible=true;d2.visible=count>1;spinning=true;group.scale.setScalar(.88);setTimeout(()=>group.scale.setScalar(1),120);},
       settle(value){spinning=false;const a=(value%6)*Math.PI/2;d1.rotation.set(a,a*.7,0);d2.rotation.set(a*.45,-a,.2);},
-      award(){spinning=false;awardMode=true;group.visible=false;trophyGroup.visible=true;trophyGroup.rotation.set(0,0,0);trophyGroup.scale.setScalar(.72);setTimeout(()=>trophyGroup.scale.setScalar(1),90);}
+      award(kind){spinning=false;mode='award';retireGroup.visible=false;group.visible=false;trophyGroup.visible=true;trophyGroup.rotation.set(0,0,0);trophyGroup.scale.setScalar(.72);halo.material.color.set(kind==='mlb'?0x79b9ee:kind==='championship'?0xffd45f:0xffd66d);setTimeout(()=>trophyGroup.scale.setScalar(1),90);},
+      retire(){spinning=false;mode='retire';group.visible=false;trophyGroup.visible=false;retireGroup.visible=true;retireGroup.rotation.set(0,0,0);retireGroup.scale.setScalar(.72);stars.material.opacity=.82;setTimeout(()=>retireGroup.scale.setScalar(1),180);}
     };
+    /* 模組若在告別視窗開啟後才載入，仍要立刻切到引退場景，避免停在預設骰子。 */
+    if(document.getElementById('roll-overlay')?.classList.contains('retirement-mode'))window.DiceFX.retire();
   }catch(err){console.warn('Three.js dice fallback active',err);}
 })();
