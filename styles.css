@@ -524,3 +524,40 @@ body::before{display:none}
 .save-entry{margin-top:16px;padding:12px;border:1px solid #315441;background:#071610}.save-entry>strong{display:block;color:#dfeae4;font-size:13px}.save-entry>p{margin:4px 0 10px;color:#8fa699;font-size:11px;line-height:1.5}.save-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.save-entry-grid .btn{min-height:46px;margin:0;padding:8px 10px;font-size:12px}.save-entry-grid .wide{grid-column:1/-1}.save-machine{position:relative;z-index:2;width:min(820px,calc(100vw - 32px));max-height:calc(100dvh - 32px);display:grid;grid-template-rows:auto minmax(0,1fr) auto;border:1px solid #52705e;background:#07140f;box-shadow:0 30px 90px #000e}.save-head{display:grid;grid-template-columns:1fr auto;gap:12px;padding:16px 18px;border-bottom:1px solid #315441;background:#0d2118}.save-head small{display:block;color:#8fc4a5;font:800 10px var(--mono);letter-spacing:.14em}.save-head h2{font-size:23px}.save-head p{margin-top:3px;color:#91a79a;font-size:11px}.save-close{width:44px;height:44px;border:1px solid #456552;background:#081710;color:#e5eee9;font-size:20px;cursor:pointer}.save-list{min-height:0;overflow:auto;padding:14px;display:grid;gap:8px}.save-slot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 13px;border:1px solid #315441;background:#0a1b14}.save-slot.current{border-left:5px solid var(--accent)}.save-slot-copy span{display:block;color:#8fa699;font:800 10px var(--mono)}.save-slot-copy b{display:block;margin-top:2px;color:#e5eee9;font-size:15px}.save-slot-copy small{display:block;margin-top:3px;color:#9eb0a6;font-size:11px;line-height:1.45}.save-slot-actions{display:flex;gap:5px}.save-slot-actions button{min-height:42px;padding:7px 11px;border:1px solid #42634f;background:#10291e;color:#dce8e1;font:750 11px var(--sans);cursor:pointer}.save-slot-actions button.primary{border-color:#6a9a7b;background:#18452f}.save-slot-actions button.danger{color:#e7aaa1}.save-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px 14px;border-top:1px solid #315441;background:#0a1b14}.save-actions .btn{margin:0;min-height:48px;text-align:center}.save-status{grid-column:1/-1;min-height:18px;color:#9fc5ad;font-size:11px;text-align:center}.season-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:1px;background:#29483a}.season-stat-grid span{min-width:0;padding:6px 7px;background:#081710;color:#91a79a;font:800 9px/1.2 var(--mono);letter-spacing:0}.season-stat-grid strong{display:block;margin-top:3px;color:#edf3ef;font:900 13px/1.2 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.season-controls{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch!important}.season-control{min-width:0;width:auto!important;white-space:normal}
 .effect-ledger{display:grid;gap:1px;margin-top:9px;border:1px solid #355443;background:#355443}.effect-row{display:grid;grid-template-columns:minmax(120px,.7fr) minmax(0,1.5fr);gap:10px;padding:7px 9px;background:#0a1b14}.effect-row span{color:#91a79a;font-size:10px}.effect-row b{color:#dfe9e3;font:800 11px/1.45 var(--mono);text-align:right}.effect-row.good b{color:#9ad8b2}.effect-row.bad b{color:#e9a29a}
 @media(max-width:760px){.save-machine{width:100%;height:100dvh;max-height:none;border:0}.save-head{padding:12px}.save-head h2{font-size:20px}.save-list{padding:9px}.save-slot{grid-template-columns:1fr;padding:10px}.save-slot-actions{display:grid;grid-template-columns:1fr 1fr}.save-slot-actions button{width:100%;min-height:46px}.save-actions{padding:9px}.season-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.season-stat-grid span{padding:5px}.season-stat-grid strong{font-size:12px}.season-cumulative{overflow:hidden}.season-cumulative b{display:block;min-width:0}.season-controls{width:100%;max-width:100%;overflow:hidden}.season-control{padding:5px 2px!important;font-size:10.5px!important}.effect-row{grid-template-columns:1fr}.effect-row b{text-align:left}}
+
+/* ---------- v4.1 FIXED MOBILE READING & TOUCH TARGETS ---------- */
+@media (max-width:760px){
+  #start .wrap{padding:24px 14px max(42px,env(safe-area-inset-bottom))}
+  #start h1{font-size:clamp(36px,12vw,50px)}
+  #start .sub{margin-bottom:20px;font-size:14px;line-height:1.65}
+  .start-grid{gap:13px}
+  .field label{font-size:13px}
+  .field input{min-height:54px;font-size:17px}
+  .seg{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .seg button{min-height:52px;padding:10px 7px;font-size:14px;line-height:1.35;touch-action:manipulation}
+  .mode-panel{padding:12px;font-size:13px;line-height:1.6}
+  #btn-start{min-height:58px;font-size:17px}
+
+  #act.decision-modal,#act.decision-modal.event-actions,#act.decision-modal.decision-major{max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+  #act.decision-modal>.title{font-size:16px;line-height:1.6}
+  #act.decision-modal>.btn,#act.decision-modal.event-actions>.btn{min-height:82px;padding:12px}
+  #act.decision-modal .choice-content b,.event-choice .event-copy b{font-size:16px;line-height:1.45}
+  #act.decision-modal .choice-content small,.event-choice .event-copy small{font-size:13px;line-height:1.55}
+  .event-choice .chance-num{font-size:12px;line-height:1.4}
+
+  .season-machine{display:flex!important;flex-direction:column;min-height:0}
+  .season-machine .machine-top,.season-score,.season-cumulative,.season-impact,.season-controls,.month-track,#season-accept{flex:0 0 auto}
+  .season-score span{font-size:10.5px}
+  .season-score b{font-size:17px}
+  .season-cumulative b{font-size:13px!important;line-height:1.6}
+  .season-impact{font-size:12px!important;line-height:1.55}
+  .season-control{min-height:48px;padding:7px 5px!important;font-size:12px!important}
+  .month-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable;padding-bottom:6px}
+  .month-row{grid-template-columns:58px minmax(0,1fr)!important}
+  .month-row .month-label{font-size:12px}
+  .month-event b{font-size:14px}
+  .month-event small{font-size:12px;line-height:1.55}
+  .month-row code{font-size:12px!important;line-height:1.65;padding:8px 9px!important}
+  .season-stat-grid span{padding:7px 6px;font-size:10px}
+  .season-stat-grid strong{font-size:13px}
+}

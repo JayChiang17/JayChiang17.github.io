@@ -78,17 +78,18 @@ function randomNpcName(org,used){
   }
   do{name=(org==='MiLB'?pick(US_FIRST)+' '+pick(US_SURNAMES):org==='NPB'?pick(NPB_SURNAMES)+pick(NPB_GIVEN):pick(PROSPECT_SURNAMES)+pick(PROSPECT_GIVEN_A))+' '+ri(10,99);}while(isPlayerName(name)||used.has(name));used.add(name);return name;
 }
-const NPC_ROSTER_ROLES=['SP','SP','RP','RP','C','SS','2B','3B','1B','CF','RF','LF','DH'];
-function npcWorld(){const world=S.leagueWorld||(S.leagueWorld={version:1,rosters:{},lastYear:0,history:[]});world.rosters=world.rosters||{};world.history=world.history||[];return world;}
+/* 每個競賽層級都有自己的 26 人代表名單；一、二軍不再共用同一批隊友。 */
+const NPC_ROSTER_ROLES=['SP','SP','SP','SP','SP','RP','RP','RP','RP','RP','RP','RP','RP','C','C','SS','2B','3B','1B','IF','CF','RF','LF','OF','DH','UTIL'];
+function npcWorld(){const world=S.leagueWorld||(S.leagueWorld={version:2,rosters:{},lastYear:0,history:[]});world.rosters=world.rosters||{};world.history=world.history||[];world.version=2;return world;}
 function npcRoleKey(){if(S.pos==='P')return S.role==='SP'?'SP':'RP';if(S.pos==='C'||S.dpos==='C')return 'C';return S.dpos||'DH';}
 function npcTeamsForOrg(org){return org==='CPBL'?CPBL_TEAMS:org==='NPB'?NPB_TEAMS:MLB_TEAMS;}
-function npcRosterKey(org,team){return `${org}|${team}`;}
+function npcRosterKey(org,team,lv){return `${org}|${team}|${lv||'TOP'}`;}
 function createNpcPlayer(org,team,lv,role,used,rookie){
   const par=lv&&LV[lv]?LV[lv].par:r99(50),age=rookie?ri(18,23):ri(20,34),ageCurve=age<=24?1:age>=32?-2:0,overall=clamp(par+ageCurve+ri(-9,11),25,94);
   return {id:`${S.year}-${secureUint32().toString(36)}-${ri(10,99)}`,name:randomNpcName(org,used),team,role,age,overall,potential:clamp(overall+ri(rookie?4:0,rookie?15:8),overall,96),years:rookie?0:ri(1,8),contract:ri(1,4),status:rookie?'新人':'現役',lastMove:null,lastYear:S.year};
 }
 function ensureNpcRoster(org,team,lv){
-  const world=npcWorld(),key=npcRosterKey(org,team);if(world.rosters[key])return world.rosters[key];const used=new Set([S.name]);
+  const world=npcWorld(),key=npcRosterKey(org,team,lv);if(world.rosters[key])return world.rosters[key];const used=new Set([S.name]);
   Object.values(world.rosters).flat().forEach(p=>used.add(p.name));world.rosters[key]=NPC_ROSTER_ROLES.map(role=>createNpcPlayer(org,team,lv,role,used,false));return world.rosters[key];
 }
 function evolveNpcRoster(org,team,lv,year){
@@ -99,7 +100,8 @@ function evolveNpcRoster(org,team,lv,year){
 }
 function evolveNpcLeague(org,lv){
   const world=npcWorld(),teams=npcTeamsForOrg(org);teams.forEach(team=>evolveNpcRoster(org,team,lv,S.year));
-  if(world.lastTradeYear!==S.year){const swaps=org==='MiLB'?8:org==='NPB'?4:2;for(let i=0;i<swaps;i++){const a=pick(teams),b=pick(teams.filter(x=>x!==a)),ra=ensureNpcRoster(org,a,lv),rb=ensureNpcRoster(org,b,lv),role=pick(NPC_ROSTER_ROLES),ia=ra.findIndex(p=>p.role===role),ib=rb.findIndex(p=>p.role===role);if(ia>=0&&ib>=0){const pa=ra[ia],pb=rb[ib];pa.team=b;pb.team=a;pa.lastMove={year:S.year,from:a,to:b};pb.lastMove={year:S.year,from:b,to:a};ra[ia]=pb;rb[ib]=pa;world.history.push({year:S.year,type:'trade',a,b,players:[pa.name,pb.name],role});}}world.lastTradeYear=S.year;world.history=world.history.slice(-60);}
+  const tradeKey=`${S.year}|${org}|${lv}`;world.tradedKeys=world.tradedKeys||{};
+  if(!world.tradedKeys[tradeKey]){const swaps=org==='MiLB'?8:org==='NPB'?4:2;for(let i=0;i<swaps;i++){const a=pick(teams),b=pick(teams.filter(x=>x!==a)),ra=ensureNpcRoster(org,a,lv),rb=ensureNpcRoster(org,b,lv),role=pick(NPC_ROSTER_ROLES),ia=ra.findIndex(p=>p.role===role),ib=rb.findIndex(p=>p.role===role);if(ia>=0&&ib>=0){const pa=ra[ia],pb=rb[ib];pa.team=b;pb.team=a;pa.lastMove={year:S.year,from:a,to:b,lv};pb.lastMove={year:S.year,from:b,to:a,lv};ra[ia]=pb;rb[ib]=pa;world.history.push({year:S.year,type:'trade',a,b,players:[pa.name,pb.name],role,lv});}}world.tradedKeys[tradeKey]=true;Object.keys(world.tradedKeys).filter(k=>Number(k.split('|')[0])<S.year-2).forEach(k=>delete world.tradedKeys[k]);world.history=world.history.slice(-120);}
   world.lastYear=S.year;
 }
 function npcRosterStrength(org,team,lv){const roster=ensureNpcRoster(org,team,lv);return roster.length?roster.reduce((n,p)=>n+p.overall,0)/roster.length:(LV[lv]?LV[lv].par:r99(50));}
@@ -221,7 +223,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v4.0.0';
+const APP_VER='v4.1.0';
 const SAVE_SCHEMA=4,SAVE_PREFIX='baseball-career-save-v4',SAVE_AUTO=`${SAVE_PREFIX}:auto`;
 let _yearStartSnapshot=null;
 function stateTeamName(){
@@ -251,7 +253,8 @@ function normalizeSavePackage(raw){
   const cursor=Number.isFinite(raw.rngCursor)?raw.rngCursor:_s,oldCursor=_s,oldMode=RNG_MODE;RNG_MODE=raw.rngMode==='destiny'?'destiny':'random';
   const template=newState(raw.state.name,raw.state.pos,raw.state.role||null);_s=cursor;RNG_MODE=oldMode;
   const state=attachStateMethods(mergeSaveDefaults(template,raw.state));_s=oldCursor;
-  state.rngMode=raw.rngMode==='destiny'?'destiny':'random';state.drawnEvents=state.drawnEvents||[];state.finance=state.finance||template.finance;state.social=state.social||template.social;state.eventProfile=state.eventProfile||template.eventProfile;state.leagueWorld=state.leagueWorld||{version:1,rosters:{},lastYear:0};state.promiseHistory=state.promiseHistory||[];state.effectHistory=state.effectHistory||[];
+  state.rngMode=raw.rngMode==='destiny'?'destiny':'random';state.drawnEvents=state.drawnEvents||[];state.finance=state.finance||template.finance;state.social=state.social||template.social;state.eventProfile=state.eventProfile||template.eventProfile;state.leagueWorld=state.leagueWorld||{version:2,rosters:{},lastYear:0};state.promiseHistory=state.promiseHistory||[];state.effectHistory=state.effectHistory||[];state.cpblFaSignings=state.cpblFaSignings||{};state.cpblFaMarketByYear=state.cpblFaMarketByYear||{};
+  if((state.leagueWorld.version||1)<2){state.leagueWorld.rosters={};state.leagueWorld.history=[];state.leagueWorld.lastYear=0;state.leagueWorld.version=2;}
   return {...raw,schema:SAVE_SCHEMA,appVersion:APP_VER,rngMode:state.rngMode,rngCursor:cursor,state,meta:saveMetaFromState(state),logHTML:String(raw.logHTML||'')};
 }
 function readSave(slot){try{const raw=localStorage.getItem(saveSlotKey(slot));return raw?normalizeSavePackage(JSON.parse(raw)):null;}catch(err){console.warn('save read failed',err);return null;}}
@@ -513,14 +516,14 @@ function newState(name,pos,role){
     cntSave:0,cntSaveWin:0,cntSnack:0,cntBoldWin:0,cntBoldFail:0,samePick:0,samePickKey:null,teamYears:0,
     six:0,bigInj:0,seasonEndingInjuries:0,injuryHistory:[],ironStreak:0,npbYears:0,hsCupBonus:0,hsTrainingDiceMod:0,hsUsageBonus:0,hsPlan:null,hsPlanEffect:null,hsCupHistory:[],
     injNext:0,tmpInj:0,rehab:0,salary:0,pool:0,seasonFactor:1,lastD:0,lastMarketD:0,lastMarketBreakdown:null,minorStruggle:0,developmentWatch:null,formerPro:false,
-    stats:{CPBL:null,NPB:null,MLB:null,MINOR:null},honors:[],awardWatch:[],intlCount:0,intlLock:null,intlStat:{G:0,PA:0,AB:0,H:0,HR:0,RBI:0,IP:0,SO:0,ER:0,W:0,SV:0},intlBest:null,dpos:null,dposYears:{},roleYears:{},tradeRefuse:0,champThisTeam:false,svc:0,service:{CPBL:0,NPB:0,MiLB:0},proYears:0,mlbRoster:{forty:false,optionSeasons:[],optionAssignments:{},outrightCount:0,dfaCount:0,history:[],fourthOptionGranted:false},proEntry:null,draftDecision:null,svcOrg:null,faElig:false,tradeHeat:0,complainCount:0,demotionRefused:false,tj:0,tjCount:0,effort:'普通',tjSuccess:0,love:{st:'single',partner:null,partnerJob:null,affection:0,kids:0,caught:0,affairs:0,exes:[],dyrs:0,datedTimes:0},traits2:{},log:[],ct:null,done:false,
+    stats:{CPBL:null,NPB:null,MLB:null,MINOR:null},honors:[],awardWatch:[],intlCount:0,intlLock:null,intlStat:{G:0,PA:0,AB:0,H:0,HR:0,RBI:0,IP:0,SO:0,ER:0,W:0,SV:0},intlBest:null,dpos:null,dposYears:{},roleYears:{},tradeRefuse:0,champThisTeam:false,svc:0,service:{CPBL:0,NPB:0,MiLB:0},serviceDays:{CPBL:0,NPB:0,MiLB:0},proYears:0,mlbRoster:{forty:false,optionSeasons:[],optionAssignments:{},outrightCount:0,dfaCount:0,history:[],fourthOptionGranted:false},proEntry:null,draftDecision:null,svcOrg:null,faElig:false,tradeHeat:0,complainCount:0,demotionRefused:false,tj:0,tjCount:0,effort:'普通',tjSuccess:0,love:{st:'single',partner:null,partnerJob:null,affection:0,kids:0,caught:0,affairs:0,exes:[],dyrs:0,datedTimes:0},traits2:{},log:[],ct:null,done:false,
     rngMode:RNG_MODE,rolls:[],lastRoll:null,drawnEvents:[],seasonContext:null,seasonLuck:10,seasonMomentum:0,_seasonVariance:null,teammate:null,chemistry:0,aging:{checks:0,declines:0,totalLoss:0,last:null},
     social:{fanRep:0,playerRep:0,fanActs:0,playerActs:0,communityActs:0,mentorActs:0,ignoredFans:0,ignoredPlayers:0,viral:0},
     eventProfile:{total:0,wins:0,fails:0,boldWins:0,teamWins:0,mediaWins:0,positionWins:0,positionFails:0,healthWins:0},
     traitProgress:{elite:0,power:0,spark:0,defense:0,steady:0,cold:0,eliteCold:0,powerCold:0,sparkCold:0,defenseCold:0,velocity:0,command:0,workhorse:0,stopper:0,patience:0,speed:0,postseason:0},potentialBreakthrough:{streaks:{},successes:{},history:[]},achievementQueue:[],standingsHistory:[],currentStandings:null,
-    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,cash:0,investments:0,debt:0,netWorth:0,ledger:[],homeOwned:false,homeEquity:0,investmentYears:0,discipline:0,crisesResolved:0},offseasonTrainingDice:0,awardLeverage:0,awardLeverageUntil:0,awardStreakBonusYear:0,poachCount:0,poachEffect:null,poachHistory:[],poachLeverage:0,poachLeverageUntil:0,teamStrengths:{},tradeHistory:[],overseasDepth:{npb2:0,milb:0},returnInquiryHistory:[],leagueWorld:{version:1,rosters:{},lastYear:0},npcSeasonContext:null,promiseHistory:[],effectHistory:[]};
+    finance:{gross:0,tax:0,agent:0,living:0,luxury:0,family:0,cash:0,investments:0,debt:0,netWorth:0,ledger:[],taxableByYear:{},homeOwned:false,homeEquity:0,investmentYears:0,discipline:0,crisesResolved:0},offseasonTrainingDice:0,awardLeverage:0,awardLeverageUntil:0,awardStreakBonusYear:0,poachCount:0,poachEffect:null,poachHistory:[],poachLeverage:0,poachLeverageUntil:0,teamStrengths:{},tradeHistory:[],overseasDepth:{npb2:0,milb:0},returnInquiryHistory:[],cpblFaSignings:{},cpblFaMarketByYear:{},leagueWorld:{version:2,rosters:{},lastYear:0},npcSeasonContext:null,promiseHistory:[],effectHistory:[]};
 }
-function blankStat(){return {yr:0,qualYrs:0,eliteYrs:0,G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,AS:0,DEF:0,TC:0,E:0,PO:0,A:0,DP:0,OFA:0,CS:0,SBA:0,CALL_RUNS:0,CALL_DEF:0,CALL_SCORE_G:0,CALL_G:0,VeloIP:0,avgVelo:0};}
+function blankStat(){return {yr:0,qualYrs:0,eliteYrs:0,G:0,PA:0,AB:0,H:0,_1B:0,_2B:0,_3B:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,AS:0,DEF:0,TC:0,E:0,PO:0,A:0,DP:0,OFA:0,CS:0,SBA:0,CALL_RUNS:0,CALL_DEF:0,CALL_SCORE_G:0,CALL_G:0,VeloIP:0,avgVelo:0};}
 function bucketOf(lv){ const l=lv&&LV[lv]; return l&&l.top?l.top:'MINOR'; } /* 業餘引退時 lv 為空,歸類 MINOR */
 function traitCard(key,name,desc,tone){ S.traits[key]=true;
   card(tone||'gold','隱藏屬性解鎖：'+name,desc); board(0); }
@@ -851,11 +854,12 @@ function simAmateurSeason(){
     let share,paG;if(talent>=6){share=.96;paG=4.25;st.usageRole='中心打線主力';}else if(talent>=1){share=.84;paG=4.0;st.usageRole='固定先發';}else if(talent>=-4){share=.62;paG=3.35;st.usageRole='輪替先發';}else{share=.34;paG=1.9;st.usageRole='替補／代打';}
     const roleVol=talent>=6?.82:talent>=1?1:talent>=-4?1.18:1.38,usageVol=S.dpos==='C'?.78:1;
     share=clamp(share+swing.total*.014+roleShare+variance.workload*.072*roleVol*usageVol-ratingGap(r99(45),a.sta)*.006,.12,1);st.G=clamp(Math.round(C.games*f*share*(.91+R()*.18)),1,Math.round(C.games*f));st.PA=Math.round(st.G*paG*clamp(1+variance.workload*.025,.90,1.08));st.BB=Math.round(st.PA*clamp(.065+ratingGap(a.eye,par)*.0035+variance.discipline*.010*roleVol,.025,.21));st.AB=Math.max(1,st.PA-st.BB);
-    st.avg=clamp(.258+d*.0062+ratingGap(a.spd,par)*.0006+variance.contact*.020*roleVol+N0(.019),.095,.445);st.H=Math.round(st.AB*st.avg);st.avg=st.H/st.AB;st.HR=Math.min(st.H,Math.round(st.AB*clamp(.009+ratingGap(a.pow,par)*.0024,.001,.09)*(.78+R()*.44)*clamp(1+variance.power*.20*roleVol,.40,1.80)));st.RBI=Math.round((st.HR*2.05+(st.H-st.HR)*.31)*clamp(1+variance.support*.12,.68,1.38));
+    st.avg=clamp(.258+d*.0062+ratingGap(a.spd,par)*.0006+variance.contact*.020*roleVol+N0(.019),.095,.445);st.H=Math.round(st.AB*st.avg);st.avg=st.H/st.AB;st.HR=Math.min(st.H,binomialCount(st.AB,clamp(.009+ratingGap(a.pow,par)*.0024,.001,.09)*clamp(1+variance.power*.20*roleVol,.40,1.80)));st.RBI=Math.round((st.HR*2.05+(st.H-st.HR)*.31)*clamp(1+variance.support*.12,.68,1.38));
     const timesOnBase=st.H+st.BB,speedGap=ratingGap(a.spd,par),attemptRate=clamp(.05+speedGap*.006,.012,.30),successRate=clamp(.68+speedGap*.007,.48,.93);
     st.SB=Math.min(Math.floor(timesOnBase*.42),Math.round(timesOnBase*attemptRate*successRate*(.78+R()*.44)*clamp(1+variance.running*.20,.42,1.72)));
     st._varianceDefense=variance.defense;applyDefenseStats(st,par);applyCatcherCalling(st,par);st.DEF=Math.round(defRunsAmateur(par,f)*Math.min(1,(st.defG||0)/Math.max(1,C.games*.9)))+(st.CALL_DEF||0)+Math.round(variance.defense*1.25*Math.sqrt((st.defG||0)/Math.max(1,C.games)));
   }
+  if(S.pos!=='P')assignHitTypes(st,null);
   return st;
 }
 function defRunsAmateur(par,f){
@@ -865,6 +869,15 @@ function binomialCount(trials,p){
   let hits=0;trials=Math.max(0,Math.round(trials||0));p=clamp(Number(p)||0,0,1);
   for(let i=0;i<trials;i++)if(R()<p)hits++;
   return hits;
+}
+function assignHitTypes(st,lv){
+  if(!st||S.pos==='P'||!(st.AB>0))return st;
+  const par=(lv&&LV[lv]?LV[lv].par:amateurSeasonConfig().par),nonHR=Math.max(0,(st.H||0)-(st.HR||0));
+  const powerGap=ratingGap(S.ab.pow||par,par),speedGap=ratingGap(S.ab.spd||par,par),variance=currentSeasonVariance();
+  const tripleRate=clamp(.018+speedGap*.0010+(variance.running||0)*.003,.002,.075);
+  const doubleRate=clamp(.205+powerGap*.0017+speedGap*.00025+(variance.power||0)*.006,.10,.37);
+  const triples=binomialCount(nonHR,tripleRate),doubles=binomialCount(Math.max(0,nonHR-triples),doubleRate);
+  st._3B=triples;st._2B=doubles;st._1B=Math.max(0,nonHR-doubles-triples);return st;
 }
 function catcherCallingGrade(score,par){
   const gap=ratingGap(score,par);
@@ -986,7 +999,8 @@ function simSeason(lv){
       rest=Math.max(.025,rest-.07);dhThisYear=true;paPerGame=4.3;st.usageRole='主力指定打擊';
     }
     const foreignPenalty=npbForeign?(talent>=7?.02:talent>=2?.08:.15):0,share=clamp(roleShare+formAdj-rest-foreignPenalty,.12,1);
-    const maxRoleGames=S.dpos==='C'?Math.round(L.g*f*.84):Math.round(L.g*f);st.G=clamp(Math.round(L.g*f*share*(.94+R()*.12)),1,maxRoleGames);
+    /* 捕手不是固定只能打 84% 賽程：體力與守備負荷共同決定合理上限，鐵人型捕手可接近全季。 */
+    const catcherCeiling=clamp(.88+ratingGap(a.sta,r99(52))*.004,.80,.96),maxRoleGames=S.dpos==='C'?Math.round(L.g*f*catcherCeiling):Math.round(L.g*f);st.G=clamp(Math.round(L.g*f*share*(.94+R()*.12)),1,maxRoleGames);
     st.PA=Math.round(st.G*paPerGame*clamp(1+variance.workload*.025*roleVol,.88,1.10));
     st._dh=dhThisYear; /* 供 accStat 記 DH 年 */
     st.BB=Math.round(st.PA*clamp(env.bb+ratingGap(a.eye,par)*0.0034+variance.discipline*.0085*roleVol,0.025,0.22));
@@ -994,7 +1008,7 @@ function simSeason(lv){
     st.avg=clamp(env.avg+d*0.0058+ratingGap(a.sta,r99(50))*0.0003+ratingGap(a.spd,par)*0.0006+variance.contact*.0165*roleVol+N0(0.016)+tail.avg,0.085,0.430);
     st.H=Math.round(st.AB*st.avg); st.avg=st.AB?st.H/st.AB:0;
     const hrCap={MLB:75,NPB1:62,CPBL1:45,A3:48,A2:45,A1:42,R:25}[lv]||40,sbCap={MLB:95,NPB1:110,CPBL1:75,A3:80,A2:75,A1:70,R:45}[lv]||70;
-    st.HR=clamp(Math.round(st.AB*clamp(env.hr+ratingGap(a.pow,par)*0.0022,0.001,0.085)*(0.80+R()*0.40)*clamp(1+variance.power*.17*roleVol,.42,1.72)*tail.power),0,hrCap);
+    st.HR=clamp(binomialCount(st.AB,clamp(env.hr+ratingGap(a.pow,par)*0.0022,0.001,0.085)*clamp(1+variance.power*.17*roleVol,.42,1.72)*tail.power),0,Math.min(st.H,hrCap));
     const timesOnBase=st.H+st.BB,speedGap=ratingGap(a.spd,par),attemptRate=clamp(.055+speedGap*.0065,.012,.32),successRate=clamp(.69+speedGap*.0065,.48,.94);
     st.SB=Math.min(sbCap,Math.floor(timesOnBase*.45),Math.round(timesOnBase*attemptRate*successRate*(.78+R()*.44)*clamp(1+variance.running*.18*roleVol,.45,1.65)*tail.speed));
     st.RBI=Math.round((st.HR*2.1+(st.H-st.HR)*0.30)*clamp(1+variance.support*.11,.68,1.38));
@@ -1028,7 +1042,7 @@ function simSeason(lv){
     if(st.HR>finalHrCap){const cut=st.HR-finalHrCap;st.HR=finalHrCap;st.RBI=Math.max(st.HR,st.RBI-cut*2);}
     st.SB=Math.min(st.SB,finalSbCap);
   }
-  if(S.pos!=='P'){st._varianceDefense=variance.defense;applyDefenseStats(st,par);applyCatcherCalling(st,par);st.DEF=defRuns(lv,st)+(st.CALL_DEF||0)+Math.round(variance.defense*(S.dpos==='C'?1.35:1.8)*Math.sqrt((st.defG||0)/Math.max(1,L.g)));if(S.traits.defchief&&st.TC>0){const add=Math.max(1,Math.round((st.defG||0)/Math.max(1,L.g)*1.2));st.DEF+=add;noteTrait('守備指揮官',`守備貢獻 +${add}${st.STAFF_ERA_ADJ?`｜投手群 ERA ${st.STAFF_ERA_ADJ.toFixed(2)}`:''}`);}}
+  if(S.pos!=='P'){assignHitTypes(st,lv);st._varianceDefense=variance.defense;applyDefenseStats(st,par);applyCatcherCalling(st,par);st.DEF=defRuns(lv,st)+(st.CALL_DEF||0)+Math.round(variance.defense*(S.dpos==='C'?1.35:1.8)*Math.sqrt((st.defG||0)/Math.max(1,L.g)));if(S.traits.defchief&&st.TC>0){const add=Math.max(1,Math.round((st.defG||0)/Math.max(1,L.g)*1.2));st.DEF+=add;noteTrait('守備指揮官',`守備貢獻 +${add}${st.STAFF_ERA_ADJ?`｜投手群 ERA ${st.STAFF_ERA_ADJ.toFixed(2)}`:''}`);}}
   else normalizeReliefLine(st);
   enforceSeasonInvariants(st,lv);
   st.rawD=st.d;st.d=seasonCorePerformance(st,lv,st.rawD);
@@ -1105,13 +1119,17 @@ function accStat(bucket,st,lvOverride,countRole){
     tb[S.orgTeam]=(tb[S.orgTeam]||0)+1; }
   if(countRole&&S.pos!=='P'){ const dp=(st&&st._dh)?'DH':(S.dpos||'—'); S.dposYears[dp]=(S.dposYears[dp]||0)+1; }
   else if(countRole&&S.role){ S.roleYears[S.role]=(S.roleYears[S.role]||0)+1; }
-  ['G','PA','AB','H','HR','RBI','SB','BB','W','L','SV','HLD','HP','SO','ER','TC','E','PO','A','DP','OFA','CS','SBA'].forEach(k=>t[k]+=(st[k]||0));
+  ['G','PA','AB','H','_1B','_2B','_3B','HR','RBI','SB','BB','W','L','SV','HLD','HP','SO','ER','TC','E','PO','A','DP','OFA','CS','SBA'].forEach(k=>t[k]+=(st[k]||0));
   t.DEF+=(st.DEF||0);
   t.CALL_RUNS+=(st.CALL_RUNS||0);t.CALL_DEF+=(st.CALL_DEF||0);t.CALL_SCORE_G+=(st.CALL_SCORE||0)*(st.defG||0);t.CALL_G+=(st.defG||0);t.CALL_SCORE=t.CALL_G?+(t.CALL_SCORE_G/t.CALL_G).toFixed(1):0;
   t.FPCT=t.TC?+((t.TC-t.E)/t.TC).toFixed(3):0;
   t.VeloIP=(t.VeloIP||0)+(st.avgVelo||0)*(st.IP||0);
   t.IP=+(t.IP+st.IP).toFixed(1);
   t.avgVelo=t.IP>0?+(t.VeloIP/t.IP).toFixed(1):0;
+}
+function accSeasonSegments(segments){
+  const grouped=[];for(const part of segments){const bucket=bucketOf(part.lv),row=grouped.find(x=>x.bucket===bucket);if(row)row.parts.push(part);else grouped.push({bucket,parts:[part]});}
+  grouped.forEach((g,i)=>{const merged=mergeSeasonSegments(g.parts),last=g.parts[g.parts.length-1];accStat(g.bucket,merged,last.lv,i===grouped.length-1);});
 }
 function fieldingPct(st){return st.TC?Math.max(0,(st.TC-(st.E||0))/st.TC):0;}
 function defenseExtra(st,short){
@@ -1178,6 +1196,14 @@ function weightedTeamPick(rows){
   const weights=rows.map(r=>Math.max(1,(r.pct-.38)*120+(r.team===S.orgTeam?Math.max(-4,(S.lastD||0)*.7)+(S.traits.clutch?4:0):0))),sum=weights.reduce((a,b)=>a+b,0);
   let roll=R()*sum;for(let i=0;i<rows.length;i++){roll-=weights[i];if(roll<=0)return rows[i];}return rows[rows.length-1];
 }
+function balanceStandingsRows(rows,games){
+  const target=Math.round(rows.length*games/2);let diff=target-rows.reduce((n,r)=>n+r.W,0),guard=0;
+  while(diff!==0&&guard++<games*rows.length*2){
+    const candidates=rows.filter(r=>diff>0?r.W<games:r.W>0).sort((a,b)=>diff>0?(b.rawPct-a.rawPct):(a.rawPct-b.rawPct));
+    if(!candidates.length)break;const r=pick(candidates.slice(0,Math.min(4,candidates.length)));r.W+=diff>0?1:-1;r.L=games-r.W;diff+=diff>0?-1:1;
+  }
+  rows.forEach(r=>{r.pct=r.W/games;delete r.rawPct;});return rows;
+}
 function simulateSeries(label,a,b,bestOf,st,startA,startB){
   const target=Math.floor(bestOf/2)+1;let aw=startA||0,bw=startB||0,games=0;
   const market=seasonMarketEvaluation(st).total,share=playingTimeShare(st),disruption=S.tradeRefuse>0?.008*Math.min(3,S.tradeRefuse):0;
@@ -1209,7 +1235,7 @@ function simulateLeagueStandings(st){
   const groups=standingsGroupsFor(S.lv),games=LV[S.lv]?LV[S.lv].g:120;
   S.teamStrengths=S.teamStrengths||{};const activeRecruit=activePoachEffect();
   const reportGroups=groups.map(group=>{
-    const rows=group.teams.map(team=>{
+    let rows=group.teams.map(team=>{
       const key=`${S.org}|${team}`,old=Number.isFinite(S.teamStrengths[key])?S.teamStrengths[key]:42+R()*16;
       /* 球隊強弱有延續性但會向平均回歸；休賽季補強與傷病每年再帶來變動。 */
       const budget=S.org==='MiLB'&&MLB_TEAM_META[team]?MLB_TEAM_META[team][1]:.88+(stableIndex(team,30)/100);
@@ -1221,8 +1247,9 @@ function simulateLeagueStandings(st){
       const playerWins=team===S.orgTeam?clamp(market*.62*share+callingWins+recruitingFit-refusalCost,-5,9):0;
       const teamForm=team===S.orgTeam?(Number(S.teamSeasonMomentum)||0)*.006:0,winPct=clamp(.5+(talent-50)*.006+N0(.034)+playerWins/games+teamForm,.285,.715);
       const W=clamp(Math.round(games*winPct),0,games),L=games-W;
-      return {team,W,L,pct:W/games,playerWins:+playerWins.toFixed(1),playoff:false,champion:false};
-    }).sort((a,b)=>b.W-a.W||a.L-b.L);
+      return {team,W,L,pct:W/games,rawPct:winPct,playerWins:+playerWins.toFixed(1),playoff:false,champion:false};
+    });
+    rows=balanceStandingsRows(rows,games).sort((a,b)=>b.W-a.W||a.L-b.L);
     const leader=rows[0];rows.forEach((r,i)=>{r.rank=i+1;r.GB=i===0?0:+(((leader.W-r.W)+(r.L-leader.L))/2).toFixed(1);});
     return {name:group.name,rows};
   });
@@ -1286,12 +1313,12 @@ function showSeasonSummary(st,done){
   $('summary-team').innerHTML=`<b>${info.name}</b><span>${info.level}${S.pos==='P'?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}</span>`;$('summary-stats').innerHTML=statDashboard(st);$('summary-verdict').innerHTML=`<b>${v.title}</b><p>${v.text}</p>${seasonEffectHTML(st)}<small>成績模型：${parts}<br><b>外部狀態合計 ${signed(external)}；最終表現評價 ${signed(Number(st.d)||0)}</b><br>外部狀態很好只能補強能力，無法把明顯低於聯盟的能力直接變成明星。${linked}</small>`;$('summary-standings').innerHTML=standingsHTML(S.currentStandings);
   $('summary-accept').onclick=()=>{closeFx('summary-overlay');playAchievementQueue(done);};openFx('summary-overlay');
 }
-/* 長打率估算:無二三壘數據,依全壘打比例與力量推估壘打數 */
+/* 長打率優先使用模擬出的實際一、二、三壘安打；舊存檔才使用能力估算。 */
 function slgOf(st){
   if(!st.AB)return 0;
-  const hr=st.HR, nonHR=Math.max(0,st.H-hr);
-  /* 非全壘打安打中,約 22% 二壘打、3% 三壘打(依聯盟慣例估) */
-  const doubles=nonHR*0.22, triples=nonHR*0.03, singles=nonHR-doubles-triples;
+  const hr=st.HR||0,nonHR=Math.max(0,(st.H||0)-hr),exact=Number.isFinite(st._2B)&&Number.isFinite(st._3B);
+  const par=S&&S.stage==='PRO'&&S.lv&&LV[S.lv]?LV[S.lv].par:r99(50),powGap=S&&S.ab?ratingGap(S.ab.pow||par,par):0,spdGap=S&&S.ab?ratingGap(S.ab.spd||par,par):0;
+  const doubles=exact?st._2B:nonHR*clamp(.205+powGap*.0017,.11,.36),triples=exact?st._3B:nonHR*clamp(.018+spdGap*.001,.003,.07),singles=exact?(Number.isFinite(st._1B)?st._1B:Math.max(0,nonHR-doubles-triples)):Math.max(0,nonHR-doubles-triples);
   const tb=singles + doubles*2 + triples*3 + hr*4;
   return tb/st.AB;
 }
@@ -1326,9 +1353,9 @@ function taiwanTax(wan){
   return Math.max(0,tax/10000);
 }
 function usFederalTax(wan){
-  const usd=Math.max(0,wan*10000/32),br=[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[640600,.35],[Infinity,.37]];
+  const usd=Math.max(0,wan*10000/GAME_FX.USD_TWD),br=[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[640600,.35],[Infinity,.37]];
   let prev=0,tax=0;for(const [top,rate] of br){const chunk=Math.max(0,Math.min(usd,top)-prev);tax+=chunk*rate;if(usd<=top)break;prev=top;}
-  return tax*32/10000;
+  return tax*GAME_FX.USD_TWD/10000;
 }
 function estimatedTax(wan,org,team){
   if(org==='CPBL')return taiwanTax(wan);
@@ -1342,8 +1369,10 @@ function syncFinance(){
 }
 function financeSnapshotText(org){const f=syncFinance();return `可動用現金 ${fmtContractMoney(f.cash,org||S.org)}｜投資 ${fmtContractMoney(f.investments,org||S.org)}｜房產權益 ${fmtContractMoney(f.homeEquity,org||S.org)}｜負債 ${fmtContractMoney(f.debt,org||S.org)}｜淨資產 ${fmtContractMoney(f.netWorth,org||S.org)}`;}
 function bookIncome(amount,type,org,team){
-  amount=Math.max(0,Math.round(amount));const f=S.finance;
-  const tax=estimatedTax(amount,org||S.org,team||S.orgTeam),agent=amount*((type==='bonus'||LV[S.lv]&&LV[S.lv].top)?.045:.025),net=amount-tax-agent;
+  amount=Math.max(0,Math.round(amount));const f=S.finance,taxOrg=org||S.org,taxTeam=team||S.orgTeam;
+  f.taxableByYear=f.taxableByYear||{};const key=`${S.year}|${taxOrg}|${taxTeam||''}`,before=Number(f.taxableByYear[key])||0,after=before+amount;
+  /* 累進稅率按同一年度的累積收入計算，而不是每筆獎金各自從最低級距重算。 */
+  const tax=Math.max(0,estimatedTax(after,taxOrg,taxTeam)-estimatedTax(before,taxOrg,taxTeam)),agent=amount*((type==='bonus'||S.lv&&LV[S.lv]&&LV[S.lv].top)?.045:.025),net=amount-tax-agent;f.taxableByYear[key]=after;
   syncFinance();S.salary+=amount;f.gross+=amount;f.tax+=tax;f.agent+=agent;f.cash+=net;syncFinance();
   const row={year:S.year,type:type||'salary',gross:amount,tax,agent,net};f.ledger.push(row);return row;
 }
@@ -1849,21 +1878,42 @@ function compactSeasonGridHTML(st){
   if(S.pos==='P'){const r=st.role||S.role,items=[['出賽',st.G||0],['局數',fmtIP(st.IP||0)],['勝敗',`${st.W||0}-${st.L||0}`]];if(r==='CL')items.push(['救援',st.SV||0],['中繼',st.HLD||0]);else if(r==='MR')items.push(['中繼',st.HLD||0],['後援點',reliefPoints(st,r)],['救援',st.SV||0]);items.push(['三振',st.SO||0],['ERA',(st.era||0).toFixed(2)],['WHIP',(st.WHIP||0).toFixed(2)],['平均球速',veloText(st)]);return `<span class="season-stat-grid">${items.map(x=>cell(x[0],x[1])).join('')}</span>`;}
   const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),items=[['出賽',st.G||0],['打席',st.PA||0],['安打',st.H||0],['全壘打',st.HR||0],['打點',st.RBI||0],['盜壘',st.SB||0],['AVG',pct(st.avg)],['OPS',pct(ops)],['守備',Number.isFinite(st.FPCT)?pct(st.FPCT):'—']];return `<span class="season-stat-grid">${items.map(x=>cell(x[0],x[1])).join('')}</span>`;
 }
-function promotionPerformance(st,lv){
+function promotionPerformance(st,lv,progress){
   if(!st)return {strong:false,elite:false,score:-10,label:'沒有有效樣本'};
+  progress=clamp(Number(progress)||1,.12,1);
   if(S.pos==='P'){
-    const era=st.IP?st.ER*9/st.IP:99,whip=st.IP?(st.H+st.BB)/st.IP:99,k9=st.IP?(st.SO||0)*9/st.IP:0,sample=isSP()?st.IP>=45:st.G>=24&&st.IP>=18,score=(4.25-era)*2.4+(1.42-whip)*4+(k9-7)*.2;
+    const era=st.IP?st.ER*9/st.IP:99,whip=st.IP?(st.H+st.BB)/st.IP:99,k9=st.IP?(st.SO||0)*9/st.IP:0,sample=isSP()?st.IP>=Math.max(16,45*progress):st.G>=Math.max(7,24*progress)&&st.IP>=Math.max(6,18*progress),score=(4.25-era)*2.4+(1.42-whip)*4+(k9-7)*.2;
     return {strong:sample&&(era<=3.60&&whip<=1.38||score>=2.5),elite:sample&&(era<=2.80&&whip<=1.22||score>=5),score:+score.toFixed(1),label:`ERA ${era.toFixed(2)}｜WHIP ${whip.toFixed(2)}｜K/9 ${k9.toFixed(1)}`};
   }
-  const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),sample=st.PA>=130,score=(ops-.690)*30+(st.DEF||0)*.12;
+  const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st),sample=st.PA>=Math.max(42,130*progress),score=(ops-.690)*30+(st.DEF||0)*.12;
   return {strong:sample&&(ops>=.760||score>=2.5),elite:sample&&(ops>=.850||score>=5),score:+score.toFixed(1),label:`${st.PA} PA｜OPS ${ops.toFixed(3).replace(/^0/,'')}｜DEF ${(st.DEF||0)>=0?'+':''}${st.DEF||0}`};
 }
 function simulateAtLevel(lv){const old=S.lv;S.lv=lv;const st=applySeasonAdjustments(simSeason(lv));S.lv=old;return st;}
 function mergeSeasonSegments(parts){
-  const st={...parts[parts.length-1].st},sum=['G','PA','AB','H','HR','RBI','SB','BB','W','L','SV','HLD','HP','SO','ER','TC','E','PO','A','DP','OFA','CS','SBA','DEF','CALL_RUNS','CALL_DEF'];
+  if(!parts||!parts.length)return {G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,avg:0,era:0,WHIP:0,scheduled:0,availability:0,d:0};
+  const st={...parts[parts.length-1].st},sum=['G','PA','AB','H','_1B','_2B','_3B','HR','RBI','SB','BB','W','L','SV','HLD','HP','SO','ER','defG','TC','E','PO','A','DP','OFA','CS','SBA','DEF','CALL_RUNS','CALL_DEF'];
   sum.forEach(k=>st[k]=parts.reduce((n,p)=>n+(p.st[k]||0),0));st.IP=+parts.reduce((n,p)=>n+(p.st.IP||0),0).toFixed(1);st.scheduled=Math.max(...parts.map(p=>p.st.scheduled||0));st.avg=st.AB?st.H/st.AB:0;st.era=st.IP?st.ER*9/st.IP:0;st.WHIP=st.IP?(st.H+st.BB)/st.IP:0;st.FPCT=st.TC?+((st.TC-st.E)/st.TC).toFixed(3):0;
+  st.EXPECTED_E=+parts.reduce((n,p)=>n+(p.st.EXPECTED_E||0),0).toFixed(1);st.calendarShare=+parts.reduce((n,p)=>n+(p.st.calendarShare||0),0).toFixed(4);st.statShare=+parts.reduce((n,p)=>n+(p.st.statShare||0),0).toFixed(4);st.availability=Math.round(clamp(st.statShare,0,1)*100);
   const callG=parts.reduce((n,p)=>n+(p.st.defG||0),0);st.CALL_SCORE=callG?+(parts.reduce((n,p)=>n+(p.st.CALL_SCORE||0)*(p.st.defG||0),0)/callG).toFixed(1):0;st.STAFF_ERA_ADJ=callG?+(parts.reduce((n,p)=>n+(p.st.STAFF_ERA_ADJ||0)*(p.st.defG||0),0)/callG).toFixed(2):0;st.CALL_GRADE=callG?catcherCallingGrade(st.CALL_SCORE,LV[parts[parts.length-1].lv].par):'—';
-  st.avgVelo=st.IP?+(parts.reduce((n,p)=>n+(p.st.avgVelo||0)*(p.st.IP||0),0)/st.IP).toFixed(1):0;st.d=+(parts.reduce((n,p)=>n+(p.st.d||0)*Math.max(1,S.pos==='P'?(p.st.IP||0):(p.st.PA||0)),0)/Math.max(1,parts.reduce((n,p)=>n+Math.max(1,S.pos==='P'?(p.st.IP||0):(p.st.PA||0)),0))).toFixed(1);if(S.pos==='P')normalizeReliefLine(st);return st;
+  const weight=p=>Math.max(1,S.pos==='P'?(p.st.IP||0):(p.st.PA||0)),weightSum=parts.reduce((n,p)=>n+weight(p),0);st.avgVelo=st.IP?+(parts.reduce((n,p)=>n+(p.st.avgVelo||0)*(p.st.IP||0),0)/st.IP).toFixed(1):0;st.d=+(parts.reduce((n,p)=>n+(p.st.d||0)*weight(p),0)/Math.max(1,weightSum)).toFixed(1);
+  const effectKeys=['luck','momentum','choice','environment','chemistry','traits','teammates','transfer','total'];st.effectBreakdown={};effectKeys.forEach(k=>st.effectBreakdown[k]=+(parts.reduce((n,p)=>n+(Number(p.st.effectBreakdown&&p.st.effectBreakdown[k])||0)*weight(p),0)/Math.max(1,weightSum)).toFixed(1));
+  st.variance=+(parts.reduce((n,p)=>n+(Number(p.st.variance)||0)*weight(p),0)/Math.max(1,weightSum)).toFixed(2);st.varianceLabel=parts.map(p=>p.st.varianceLabel).filter(Boolean).slice(-1)[0]||'';st.varianceKind=parts.map(p=>p.st.varianceKind).filter(Boolean).slice(-1)[0]||'';st.outlierLabel=parts.map(p=>p.st.outlierLabel).filter(Boolean).slice(-1)[0]||'';st.outlierKind=parts.map(p=>p.st.outlierKind).filter(Boolean).slice(-1)[0]||'';st.traitImpact=parts.flatMap(p=>p.st.traitImpact||[]);
+  if(S.pos==='P')normalizeReliefLine(st);return st;
+}
+function groupedSeasonSegments(parts){
+  const groups=[];for(const part of parts){const key=`${part.org||S.org}|${part.team||S.orgTeam}|${part.lv||''}`,last=groups[groups.length-1];if(last&&last.key===key)last.parts.push(part);else groups.push({key,org:part.org||S.org,team:part.team||S.orgTeam,lv:part.lv,parts:[part]});}
+  return groups.map(g=>({org:g.org,team:g.team,lv:g.lv,st:mergeSeasonSegments(g.parts)}));
+}
+function monthlyVarianceProfile(base,pulse){
+  const out={...base},axes=['workload','contact','power','discipline','running','stuff','command','leverage','support','defense'];
+  out.shared=clamp((base.shared||0)*.48+normalZ()*.88+(Number(pulse)||0)*.18,-2.9,2.9);axes.forEach(k=>out[k]=clamp((base[k]||0)*.42+normalZ()*.74+(Number(pulse)||0)*.16,-3,3));
+  out.label=out.shared>=1.65?'單月爆發':out.shared<=-1.65?'單月低潮':'';out.kind=out.shared>=1.65?'hot':out.shared<=-1.65?'cold':'';return out;
+}
+function midSeasonPromotionReview(cumulative,startLv,monthIndex,totalMonths){
+  if(S.stage!=='PRO'||S.seasonFactor<.45)return null;const path=PATHS[S.org]||[],idx=path.indexOf(startLv);if(idx<0||idx>=path.length-1)return null;const to=path[idx+1],progress=monthIndex/Math.max(1,totalMonths),perf=promotionPerformance(cumulative,startLv,progress),margin=ratingGap(ovr(),LV[to].min),eligible=margin>=0&&perf.strong||margin>=-3&&perf.elite;
+  const foreignPenalty=S.org==='NPB'&&to==='NPB1'&&npbRosterStatus().foreign?8:0,prior=(S.standingsHistory||[]).slice(-1)[0],mine=prior&&prior.mine,teamNeed=mine?(mine.pct<.47?8:mine.pct>.56?5:0):0,base=clamp(Math.round(43+margin*7+perf.score*7+(perf.elite?15:0)+teamNeed-foreignPenalty+(monthIndex>=4?10:0)),18,94);
+  S._callupReview={year:S.year,from:startLv,to,p:eligible?base:0,perf,margin,foreignPenalty,teamNeed,reason:eligible?'本次名單檢討仍取決於同位置缺額與登錄限制':perf.strong?'實績出色，但目前能力評估仍離下一層級過遠':'截至本次檢討的實績或有效樣本尚未達升格線'};
+  if(!eligible||!chance(base))return null;S._callupReview={...S._callupReview,success:true,monthIndex};return {from:startLv,to,monthIndex,p:base,perf};
 }
 function midSeasonPromotionPlan(lowerFull,startLv){
   if(S.stage!=='PRO'||S.seasonFactor<.8)return null;const path=PATHS[S.org]||[],idx=path.indexOf(startLv);if(idx<0||idx>=path.length-1)return null;const to=path[idx+1],perf=promotionPerformance(lowerFull,startLv),margin=ratingGap(ovr(),LV[to].min),eligible=margin>=0&&perf.strong||margin>=-3&&perf.elite;if(!eligible){S._callupReview={year:S.year,from:startLv,to,p:0,perf,margin,reason:perf.strong?'實績出色，但目前能力評估仍離下一層級過遠':'二軍實績或有效樣本尚未達升格線'};return null;}
@@ -1952,7 +2002,7 @@ function seasonBeatView(beat){
 }
 function runSeasonAnimation(done){
   const pro=S.stage==='PRO',amCfg=pro?null:amateurSeasonConfig(),months=pro?['開季','五月','六月','七月','八月','九月']:['春季','夏季','秋季'];
-  const startLv=S.lv;let totalGames=pro&&S.lv&&LV[S.lv]?LV[S.lv].g:amCfg.games,seasonIdentity=pro?seasonTeamInfo():{name:S.team||stageLabel(),level:amCfg.name};
+  const startLv=S.lv,seasonOrg=S.org,originalSeasonFactor=clamp(Number(S.seasonFactor)||0,0,1);let currentLv=startLv,totalGames=pro&&S.lv&&LV[S.lv]?LV[S.lv].g:amCfg.games,seasonIdentity=pro?seasonTeamInfo():{name:S.team||stageLabel(),level:amCfg.name};
   if(pro)seasonIdentity.level+=S.pos==='P'&&S.role?`・${roleN(S.role)}`:S.dpos?`・${DPN[S.dpos]}`:'';
   const beats=[
     {n:'連勝氣勢',d:'打線與投手群同時進入狀態',m:2},{n:'客場低潮',d:'長途移動讓反應慢了半拍',m:-2},{n:'關鍵系列賽',d:'面對排名競爭對手，壓力與機會同時升高',m:0},
@@ -1963,15 +2013,11 @@ function runSeasonAnimation(done){
     {n:'跨區長征',d:'長途客場讓睡眠與恢復出現落差',m:-1},{n:'戰術重新分工',d:'教練依對戰資料調整角色與使用方式',m:0},{n:'主場長段賽程',d:'熟悉的作息讓日常準備更規律',m:1}];
   const routine=[{n:'正常賽程',d:'沒有額外插曲，表現由能力、對手與日常狀態累積',m:0},{n:'例行調整',d:'訓練、休息與比賽照球隊計畫推進',m:0},{n:'小幅波動',d:'幾場好壞互相抵銷，整體沒有明顯轉折',m:0}];
   const available=beats.slice(),timeline=months.map(()=>{if(chance(38))return {...pick(routine),pulse:ri(-1,1)};const bi=ri(0,available.length-1),b=available.splice(bi,1)[0];return {...b,pulse:clamp(b.m+ri(-1,1),-3,3)};});timeline.forEach(x=>x.personalPulse=seasonBeatPersonalPulse(x));
-  const injured=S.seasonFactor<.9,activeMonths=injured?(S.seasonFactor<=0?0:clamp(Math.round(months.length*S.seasonFactor),1,months.length)):months.length;
-  if(injured)for(let i=activeMonths;i<timeline.length;i++)timeline[i]={n:'傷病名單／復健',d:'本月沒有出賽，個人成績停在受傷前的數字',m:0,pulse:0,personalPulse:0,injured:true};
-  const momentumMonths=timeline.slice(0,activeMonths),momentum=momentumMonths.reduce((n,x)=>n+x.personalPulse,0),teamMomentum=momentumMonths.reduce((n,x)=>n+x.pulse,0);S.seasonMomentum=clamp(+(momentum/Math.max(1,momentumMonths.length)).toFixed(1),-3,3);S.teamSeasonMomentum=clamp(+(teamMomentum/Math.max(1,momentumMonths.length)).toFixed(1),-3,3);
-  /* 同一球季所有層級共用同一組型態；下一年重新生成，避免升格前後像兩個不同的人。 */
-  S._seasonVariance=makeSeasonVarianceProfile();
-  const baseStats=pro?applySeasonAdjustments(simSeason(startLv)):simAmateurSeason(),promotion=pro?midSeasonPromotionPlan(baseStats,startLv):null,finalStats=promotion?promotion.total:baseStats;
-  if(promotion){S._pendingSeasonSegments=promotion.parts;const from=LV[promotion.from].n,to=LV[promotion.to].n,role=S.pos==='P'&&S.role?roleN(S.role):S.dpos?DPN[S.dpos]:'';seasonIdentity={name:S.orgTeam,level:`${from} → ${to}${role?'・'+role:''}`};const old=timeline[promotion.monthIndex];timeline[promotion.monthIndex]={n:'一軍升格通知',d:`${from}實績通過六月／八月名單檢討，球團正式把你升上 ${to}`,m:old.m,pulse:old.pulse,personalPulse:old.personalPulse,callup:true};}
-  if(pro)S._pendingSeasonStats=finalStats;else S._pendingAmateurStats=finalStats;
-  const monthlyStats=monthlySeasonSlices(finalStats,timeline,activeMonths);let idx=0,paused=false,speed=1,skip=false,timer=null,finished=false;
+  const injured=originalSeasonFactor<.9,targetActive=originalSeasonFactor<=0?0:clamp(Math.round(months.length*originalSeasonFactor),1,months.length),activeMask=months.map(()=>true);
+  if(targetActive<months.length){const missed=months.length-targetActive,start=originalSeasonFactor<=.22?targetActive:ri(0,Math.max(0,months.length-missed));for(let i=start;i<start+missed;i++)activeMask[i]=false;}
+  activeMask.forEach((active,i)=>{if(!active)timeline[i]={n:'傷病名單／復健',d:'本月沒有出賽，個人成績停在受傷前的數字',m:0,pulse:0,personalPulse:0,injured:true};});
+  const baseVariance=makeSeasonVarianceProfile(),statShare=targetActive?originalSeasonFactor/targetActive:0,monthParts=[],monthlyStats=[];let finalStats=mergeSeasonSegments([]),promotion=null,idx=0,paused=false,speed=1,skip=false,timer=null,finished=false,eventBusy=false;
+  S._seasonVariance=baseVariance;S._pendingSeasonSegments=null;S._seasonServiceParts=[];
   $('month-feed').innerHTML='<div class="month-table-head"><span>月份</span><span>球隊／個人狀況</span><span>當月數據</span></div>';$('sim-progress').style.width='0%';$('sim-schedule-label').textContent=promotion?'球季進度':'球隊賽程';$('sim-games').textContent=promotion?`0/${months.length} 月`:`0/${totalGames}`;$('sim-player-games').textContent='0 場';$('sim-momentum').textContent='0.0';$('sim-form').textContent='準備開季';$('sim-impact').innerHTML=`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>累積成績會固定顯示在這裡；下方只列各月當月數據，球隊事件與個人影響分開說明。`;
   if($('sim-cumulative'))$('sim-cumulative').innerHTML='<span style="color:#91a79a;font:700 11px var(--sans)">等待第一個月份完成</span>';
   $('season-sim-title').textContent=`${S.year}｜${seasonIdentity.name}｜${seasonIdentity.level}`;
@@ -1982,21 +2028,39 @@ function runSeasonAnimation(done){
   $('season-pause').onclick=()=>{if(finished)return;paused=!paused;$('season-pause').textContent=paused?'繼續':'暫停';if(paused)clearTimeout(timer);else schedule();};
   $('season-speed').onclick=()=>{if(finished)return;speed=speed===1?2:speed===2?4:1;$('season-speed').textContent=`速度 ${speed}×`;if(!paused)schedule();};
   $('season-skip').onclick=()=>{if(finished)return;skip=true;paused=false;$('season-pause').textContent='暫停';$('season-skip').textContent='整理完整月份…';$('season-skip').disabled=true;clearTimeout(timer);schedule();};
+  const zeroMonth=lv=>({G:0,PA:0,AB:0,H:0,_1B:0,_2B:0,_3B:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,avg:0,era:0,WHIP:0,DEF:0,scheduled:pro&&LV[lv]?LV[lv].g:amCfg.games,availability:0,usageRole:'傷病名單',role:S.pos==='P'?S.role:null,effectBreakdown:{luck:0,momentum:0,choice:0,environment:0,chemistry:0,traits:0,teammates:0,transfer:0,total:0}});
+  const simulateMonth=()=>{
+    const beat=timeline[idx],active=activeMask[idx],oldFactor=S.seasonFactor,oldMomentum=S.seasonMomentum,oldVariance=S._seasonVariance,oldLv=S.lv;let st;
+    S.lv=currentLv;S.seasonFactor=active?statShare:0;S.seasonMomentum=active?(Number(beat.personalPulse)||0):0;S._seasonVariance=monthlyVarianceProfile(baseVariance,S.seasonMomentum);
+    st=active?(pro?applySeasonAdjustments(simSeason(currentLv)):simAmateurSeason()):zeroMonth(currentLv);st.monthVelo=st.avgVelo||0;st.calendarShare=1/months.length;st.statShare=active?statShare:0;st.monthIndex=idx;st.team=S.orgTeam;st.lv=currentLv;
+    monthParts.push({org:seasonOrg,team:S.orgTeam,lv:currentLv,st});finalStats=mergeSeasonSegments(monthParts);monthlyStats.push(finalStats);S._seasonServiceParts.push({org:seasonOrg,team:S.orgTeam,lv:currentLv,calendarShare:st.calendarShare,statShare:st.statShare,st});
+    S.seasonFactor=oldFactor;S.seasonMomentum=oldMomentum;S._seasonVariance=oldVariance;S.lv=currentLv||oldLv;return st;
+  };
+  const maybePromotion=()=>{
+    if(!pro||promotion||currentLv!==startLv||![2,4].includes(idx)||!monthParts.length)return;
+    const lower=mergeSeasonSegments(monthParts.filter(p=>p.lv===startLv)),review=midSeasonPromotionReview(lower,startLv,idx,months.length);if(!review)return;
+    promotion=review;currentLv=review.to;S.lv=currentLv;if(currentLv==='MLB')mlbAddToFortyMan('季中升上大聯盟');prepareNpcSeason();const from=LV[review.from].n,to=LV[review.to].n,role=S.pos==='P'&&S.role?roleN(S.role):S.dpos?DPN[S.dpos]:'';seasonIdentity={name:S.orgTeam,level:`${from} → ${to}${role?'・'+role:''}`};const old=timeline[idx];timeline[idx]={n:'一軍升格通知',d:`截至本次檢討的 ${from} 實績通過名單審查，球團正式把你升上 ${to}`,m:old.m,pulse:old.pulse,personalPulse:old.personalPulse,callup:true};$('sim-schedule-label').textContent='球季進度';$('season-sim-title').textContent=`${S.year}｜${seasonIdentity.name}｜${seasonIdentity.level}`;
+  };
+  const maybeScheduledEvent=()=>{
+    const eventMonths=S._seasonEventMonths||[];if(eventBusy||!eventMonths.includes(idx))return false;S._seasonEventMonths=eventMonths.filter(x=>x!==idx);eventBusy=true;paused=true;clearTimeout(timer);closeFx('season-overlay');drawEvents(1,()=>{eventBusy=false;paused=false;openFx('season-overlay');schedule(true);});return true;
+  };
   const tick=()=>{
     if(idx>=months.length){
       finished=true;clearTimeout(timer);['season-pause','season-speed','season-skip'].forEach(id=>{$(id).disabled=true;});
-      const finishState=S.seasonFactor<=0?'整季傷缺':S.seasonFactor<=.25?'重大傷病離場':S.seasonFactor<=.55?'傷病中斷球季':S.seasonFactor<.9?'缺席部分賽程':S.seasonMomentum>=1.2?'火燙收官':S.seasonMomentum<=-1.2?'艱難收官':'穩定完賽';
+      const activeBeats=timeline.filter((x,i)=>activeMask[i]),momentum=activeBeats.reduce((n,x)=>n+(Number(x.personalPulse)||0),0),teamMomentum=activeBeats.reduce((n,x)=>n+(Number(x.pulse)||0),0);S.seasonMomentum=clamp(+(momentum/Math.max(1,activeBeats.length)).toFixed(1),-3,3);S.teamSeasonMomentum=clamp(+(teamMomentum/Math.max(1,activeBeats.length)).toFixed(1),-3,3);S.seasonFactor=originalSeasonFactor;S._seasonVariance=baseVariance;S.lv=currentLv;
+      const grouped=groupedSeasonSegments(monthParts);if(pro){S._pendingSeasonStats=finalStats;S._pendingSeasonSegments=promotion?grouped:null;}else S._pendingAmateurStats=finalStats;
+      const finishState=originalSeasonFactor<=0?'整季傷缺':originalSeasonFactor<=.25?'重大傷病離場':originalSeasonFactor<=.55?'傷病中斷球季':originalSeasonFactor<.9?'缺席部分賽程':S.seasonMomentum>=1.2?'火燙收官':S.seasonMomentum<=-1.2?'艱難收官':'完成例行賽';
       $('sim-form').textContent=finishState;
       $('sim-player-games').textContent=`${finalStats.G||0} 場`;
       $('sim-momentum').textContent=(S.seasonMomentum>0?'+':'')+S.seasonMomentum.toFixed(1);
-      const injuryText=injured?`｜球隊賽程已完成；個人因傷只留下 ${finalStats.G||0} 場出賽，後續月份為傷停與復健。`:Math.abs(S.seasonMomentum)<.05?'｜氣勢互相抵銷。':`｜氣勢 ${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)} 已進入數據公式。`;
+      const injuryText=injured?`｜球隊賽程已完成；個人因傷只留下 ${finalStats.G||0} 場出賽，傷停月份沒有虛構成績。`:Math.abs(S.seasonMomentum)<.05?'｜各月狀態互相抵銷。':`｜各月狀態平均 ${S.seasonMomentum>0?'+':''}${S.seasonMomentum.toFixed(1)}。`;
       if($('sim-cumulative'))$('sim-cumulative').innerHTML=compactSeasonGridHTML(finalStats);
       $('sim-impact').innerHTML=`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>${pro?'例行賽':amCfg.name}已完成${finalStats.varianceLabel?`｜${finalStats.varianceLabel}`:''}${finalStats.outlierLabel?`｜${finalStats.outlierLabel}`:''}${injuryText}`;
       $('season-accept').style.display='block';$('season-accept').onclick=()=>{closeFx('season-overlay');done();};return;
     }
-    const beat=timeline[idx],pulse=Number.isFinite(beat.personalPulse)?beat.personalPulse:beat.pulse,inactive=!!beat.injured,games=Math.round(totalGames*(idx+1)/months.length),current=monthlyStats[idx],previous=idx?monthlyStats[idx-1]:null,seen=timeline.slice(0,Math.min(idx+1,activeMonths)),avg=seen.length?seen.reduce((n,x)=>n+(Number.isFinite(x.personalPulse)?x.personalPulse:x.pulse),0)/seen.length:0,view=seasonBeatView(beat);
+    if(maybeScheduledEvent())return;maybePromotion();const beat=timeline[idx],pulse=Number.isFinite(beat.personalPulse)?beat.personalPulse:beat.pulse,inactive=!activeMask[idx],games=Math.round(totalGames*(idx+1)/months.length);simulateMonth();const current=monthlyStats[idx],previous=idx?monthlyStats[idx-1]:null,seen=timeline.slice(0,idx+1).filter((x,i)=>activeMask[i]),avg=seen.length?seen.reduce((n,x)=>n+(Number.isFinite(x.personalPulse)?x.personalPulse:x.pulse),0)/seen.length:0,view=seasonBeatView(beat);
     const row=document.createElement('div'),monthLine=inactive?'0 場出賽｜傷病名單':monthlyDeltaLine(current,previous);row.className='month-row';row.innerHTML=`<span class="month-label">${months[idx]}</span><div class="month-event"><span class="event-scope">${view.scope}</span><b>${beat.n}</b><small>${beat.d}</small><small class="event-impact"><b>對你的影響：</b>${view.impact}</small></div><code class="month-current">${monthLine}</code>`;
-    $('month-feed').appendChild(row);$('sim-progress').style.width=((idx+1)/months.length*100)+'%';$('sim-games').textContent=promotion?`${idx+1}/${months.length} 月`:`${games}/${totalGames}`;
+    $('month-feed').appendChild(row);$('month-feed').scrollTop=$('month-feed').scrollHeight;$('sim-progress').style.width=((idx+1)/months.length*100)+'%';$('sim-games').textContent=promotion?`${idx+1}/${months.length} 月`:`${games}/${totalGames}`;
     $('sim-player-games').textContent=`${current.G||0} 場`;$('sim-momentum').textContent=(avg>0?'+':'')+avg.toFixed(1);if($('sim-cumulative'))$('sim-cumulative').innerHTML=compactSeasonGridHTML(current);$('sim-impact').innerHTML=inactive?`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>${months[idx]}｜傷病名單與復健中，當月沒有出賽。`:`<span class="season-club">${seasonIdentity.name}<small>${seasonIdentity.level}</small></span>${months[idx]}｜${beat.n}｜氣勢 ${(avg>0?'+':'')+avg.toFixed(1)} 已套入本季公式。`;$('sim-form').textContent=inactive?'傷停復健':pulse>=2?'狀態火燙':pulse<=-2?'陷入低潮':'正常推進';idx++;
     schedule();
   };
@@ -2298,7 +2362,7 @@ function agingCheck(done){
 }
 function phasePre(){
   S.prevSeasonD=Number.isFinite(S.lastD)?S.lastD:0;
-  S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.lastD=0;S.lastMarketD=0;S.lastMarketBreakdown=null;S.seasonLuck=10;S.seasonMomentum=0;S.teamSeasonMomentum=0;S._seasonVariance=null;S._pendingSeasonStats=null;S._pendingAmateurStats=null;S._seasonTrainingPlan=null;S._seasonAgeGains={};S._seasonInjuryDecline=null;S.drawnEvents=S.drawnEvents||[];S.hsCupBonus=0;S.hsTrainingDiceMod=0;S.hsUsageBonus=0;S.hsPlan=null;S.hsPlanEffect=null;
+  S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.lastD=0;S.lastMarketD=0;S.lastMarketBreakdown=null;S.seasonLuck=10;S.seasonMomentum=0;S.teamSeasonMomentum=0;S._seasonVariance=null;S._pendingSeasonStats=null;S._pendingSeasonSegments=null;S._seasonServiceParts=[];S._seasonEventMonths=[];S._callupReview=null;S._pendingAmateurStats=null;S._seasonTrainingPlan=null;S._seasonAgeGains={};S._seasonInjuryDecline=null;S.drawnEvents=S.drawnEvents||[];S.hsCupBonus=0;S.hsTrainingDiceMod=0;S.hsUsageBonus=0;S.hsPlan=null;S.hsPlanEffect=null;
   S.npcSeasonContext=null;if(S.stage==='PRO')prepareNpcSeason();S.seasonPlan=makeSeasonPlan();S.seasonContext=makeSeasonContext();board(0);
   const poach=activePoachEffect(),poachRow=poach?`<div class="reality-row"><b>${poach.cross?'跨聯盟加盟':'交易後角色安排'}｜${poach.label}</b><p>${poach.rolePromise}</p><small>出賽競爭 +${poach.usageAdj}%｜球隊勝場環境 ${poach.teamWins>=0?'+':''}${poach.teamWins}｜表現壓力 ${poach.perfAdj>=0?'+':''}${poach.perfAdj}</small></div>`:'';
   card('info','本季現實環境',`<div class="reality-grid">${poachRow}${S.seasonContext.items.map(x=>`<div class="reality-row"><b>${x.n}</b><p>${x.d}</p><small>${x.impact}</small></div>`).join('')}</div>`+
@@ -2376,11 +2440,11 @@ function phasePreContinue(){
     choose(`大${['一','二','三','四'][S.stageYr-1]}季前 · 升學與職棒的十字路口`,opts);
     return;
   }
-  if(S.stage==='PRO'&&S.age>=36&&S.rehab===0){
+  if(S.stage==='PRO'&&(S.age>=30||(S.proYears||0)>=10||(S.bigInj||0)>0)&&S.rehab===0){
     const review=agingDecisionSummary();
     choose(`續戰評估｜${S.age} 歲・綜合 ${ovr()}/99`,[
       {t:'再戰一年',main:true,s:review,f:afterAsk},
-      {t:'召開引退記者會',warn:true,s:'結束選手生涯',f:()=>{buyoutRemaining();daibaFarewell(()=>endGame('功成身退，於 '+S.year+' 年宣布引退。'));}}]);
+      {t:'召開引退記者會',warn:true,s:'自願退休會放棄尚未履行的合約保障',f:()=>{voluntaryRetirementSettlement();daibaFarewell(()=>endGame('功成身退，於 '+S.year+' 年宣布引退。'));}}]);
     return;
   }
   if(S.stage==='HS'&&!S.skipMid){highSchoolSeasonChoice(afterAsk);return;}
@@ -2391,7 +2455,7 @@ function phasePreContinue(){
 function phaseMid(){
   board(1);
   if(S.skipMid){ S.ironStreak=0; nextStep(); return; }
-  const nEv=S.seasonPlan?S.seasonPlan.events:(S.stage==='PRO'?3:2),startSeason=()=>{if(S.stage==='PRO')proSeason();else runSeasonAnimation(()=>amateurSeason());},runEvents=()=>drawEvents(nEv,()=>rollInjury(startSeason));
+  const nEv=S.seasonPlan?S.seasonPlan.events:(S.stage==='PRO'?3:2),scheduled=S.stage==='PRO'?Math.min(2,nEv):0,preEvents=Math.max(0,nEv-scheduled),startSeason=()=>{if(S.stage==='PRO')proSeason();else runSeasonAnimation(()=>amateurSeason());},runEvents=()=>{S._seasonEventMonths=scheduled===2?[2,4]:scheduled===1?[ri(2,4)]:[];drawEvents(preEvents,()=>rollInjury(startSeason));};
   if(S.seasonPlan&&S.seasonPlan.family)loveEvent(runEvents);else runEvents();
 }
 function drawEvents(n,done,total){
@@ -2874,6 +2938,9 @@ function faYears(d,cap){ /* FA 年限:成績穩定+傷病少→年限長;上限 
   yrs=Math.min(yrs,ageCap);
   return Math.max(1,Math.min(cap,yrs));
 }
+function contractTermCap(lv){
+  const top=lv&&LV[lv]&&LV[lv].top,positionCap=S.pos==='P'?7:10,levelCap=top?positionCap:3,careerCap=Math.max(1,41-S.age);return Math.max(1,Math.min(levelCap,careerCap));
+}
 function demotionAudit(cont){
   if(!S.demotionRefused){ cont(); return; }
   S.demotionRefused=false;
@@ -2910,7 +2977,7 @@ function leagueTradeProbability(){
   return {p:+clamp(p,.5,58).toFixed(1),base,star,record:rec};
 }
 function tradeCheck(cont){
-  if(S.stage!=='PRO'||!LV[S.lv]||S.seasonFactor<=0){ cont(); return; }
+  if(S.stage!=='PRO'||!LV[S.lv]||S.seasonFactor<=0||!S.ct||S.ct.yrs<=1){ cont(); return; }
   if(S._poachedYear===S.year){cont();return;}
   const market=leagueTradeProbability(),p=market.p,star=market.star,rec=market.record;
   if(!chance(p)){ cont(); return; }
@@ -2923,12 +2990,15 @@ function tradeCheck(cont){
       {t:'行使不可交易權，留在原隊',warn:true,modal:true,s:'交易取消｜團隊關係 −1；合約與球隊不變',f:()=>{S.chemistry=clamp((S.chemistry||0)-1,-5,5);S.tradeHeat=0;card('info','交易遭球員否決',`你依合約或年資權利否決交易。${offer.team} 撤回報價，你仍留在 ${S.orgTeam}；球團尊重白紙黑字，但團隊關係 −1。`);board(1);cont();}}
     ]);return;
   }
-  executeLeagueTrade(offer,S.traits.cancer?'bad':'gold',S.traits.cancer?'球團為處理更衣室問題完成交易':'球團在交易大限前完成正式交易');cont();
+  executeLeagueTrade(offer,S.traits.cancer?'bad':'gold',S.traits.cancer?'球團在季後為處理更衣室問題完成交易':'球團在季後名單會議完成正式交易');cont();
 }
 function executeLeagueTrade(offer,tone,reason){
   const old=S.orgTeam,oldRecord=S.currentStandings&&S.currentStandings.mine?`${S.currentStandings.mine.W}-${S.currentStandings.mine.L}`:'未建立',contract=S.ct?`剩餘 ${S.ct.yrs} 年、年薪 ${fmtContractMoney(S.ct.annual||0,S.org)}、保障 ${Math.round((S.ct.guaranteed==null?1:S.ct.guaranteed)*100)}% 由新球隊承接`:'季末另談新約';
-  S._tradedYear=S.year;S.orgTeam=offer.team;if(S.currentStandings)S.currentStandings.mine={...offer.record,team:offer.team};const effect=activatePoachAgreement(offer,old);S.tradeHeat=0;S.tradeHistory=S.tradeHistory||[];S.tradeHistory.push({year:S.year,from:old,to:offer.team,reason,type:offer.marketType});
-  card(tone||'gold',`正式交易｜${old} → ${offer.team}`,`${reason}。這不是挖角，也不是自由球員簽約；兩支球團完成球員與資產交換，你的現有合約跟著轉移。<div class="statline">交易方向｜${offer.label}<br>原隊戰績｜${oldRecord}<br>新隊戰績｜${offer.record.W}-${offer.record.L}<br>合約｜${contract}<br>${poachEffectLine(effect)}<br>新隊戰力基準｜${offer.strengthBefore.toFixed(1)} → ${offer.strengthTarget.toFixed(1)}</div>`);board(1);
+  S.pendingTrade={year:S.year,from:old,to:offer.team,offer:{...offer},reason,tone:tone||'gold'};S.tradeHeat=0;
+  card(tone||'gold',`休賽季交易達成｜${old} → ${offer.team}`,`${reason}。本季戰績、季後賽與薪資仍歸在 ${old}；交易會在年度結算後生效，不會回頭改寫已完成的球季。<div class="statline">交易方向｜${offer.label}<br>原隊戰績｜${oldRecord}<br>新隊戰績｜${offer.record.W}-${offer.record.L}<br>合約｜${contract}<br>新隊角色｜${offer.rolePromise}<br>新隊戰力基準｜${offer.strengthBefore.toFixed(1)} → ${offer.strengthTarget.toFixed(1)}</div>`);board(1);
+}
+function applyPendingTrade(){
+  const p=S.pendingTrade;if(!p)return null;S.pendingTrade=null;S._tradedYear=S.year;S.orgTeam=p.to;const effect=activatePoachAgreement(p.offer,p.from),contractAdmin=S.org==='CPBL'?'新球團依交易程序重新簽發標準球員契約，年薪與剩餘年限沿用交易約定。':'新隊承接剩餘合約。';S.tradeHistory=S.tradeHistory||[];S.tradeHistory.push({year:S.year,from:p.from,to:p.to,reason:p.reason,type:p.offer.marketType});card(p.tone,'交易正式生效',`${S.name} 完成本季所有結算後向 <b class="hl">${p.to}</b> 報到。原球隊的年度戰績與冠軍紀錄沒有被改寫；${contractAdmin}<div class="statline">${poachEffectLine(effect)}</div>`);board(2);return effect;
 }
 function crossLeaguePoachOffers(d,major){
   const o=ovr(),out=[],add=(org,lv,n,bonus,lo,hi)=>makeFaOffers(org,n,bonus,lo,hi,lv,null,d).forEach(of=>out.push({...of,org,cross:true}));
@@ -3141,19 +3211,12 @@ function proSeason(){
   S._seasonPrepared=false;
   const seasonAll=S._pendingSeasonStats||applySeasonAdjustments(simSeason(S.lv)),segments=S._pendingSeasonSegments||null;S._pendingSeasonStats=null;S._pendingSeasonSegments=null;const st=segments?segments[segments.length-1].st:seasonAll;S.lastSeasonSegments=segments;S.lastCombinedSt=seasonAll;S.lastSt=st;S.lastD=st.d;S.lastMarketBreakdown=seasonMarketEvaluation(st);S.lastMarketD=S.lastMarketBreakdown.total;
   S.pendStat=0;
-  const bucket=bucketOf(S.lv);if(segments)segments.forEach((x,i)=>accStat(bucketOf(x.lv),x.st,x.lv,i===segments.length-1));else accStat(bucket,st);simulateLeagueStandings(st);const promiseReview=evaluateRolePromise(st);
+  const bucket=bucketOf(S.lv);if(segments)accSeasonSegments(segments);else accStat(bucket,st);simulateLeagueStandings(st);const promiseReview=evaluateRolePromise(st);
   if(S.seasonFactor===0){ card('bad','球季數據','（傷缺，本季無出賽紀錄）'); }
   else if(segments){
     const review=S._callupReview,month=review&&review.monthIndex===2?'六月':'八月',from=LV[segments[0].lv].n,to=LV[segments[segments.length-1].lv].n,isMLB=segments[segments.length-1].lv==='MLB';
     card('gold','球季數據（季中升格）',segments.map((x,i)=>`<div class="season-team-head"><b>${x.lv==='NPB2'||x.lv==='CPBL2'?S.orgTeam+'二軍':S.orgTeam}</b><span>${LV[x.lv].n}${S.pos==='P'?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}</span></div><div class="statline">${statLine(x.st)}</div>`).join('')+`<div class="statline"><b>跨層級合計</b>｜${statLine(seasonAll)}<br>一軍獎項、季後名單與下一季角色只採升格後的一軍成績；二軍數據已獨立計入發展聯盟生涯。</div>`);
     queueAchievement({kind:isMLB?'mlb':'promotion',kicker:isMLB?'生涯最高舞台':'球團正式升格',title:isMLB?'升上大聯盟！':`升上${to}！`,subtitle:`${S.orgTeam}｜${month}｜${from} → ${to}`,detail:`升格前實績：${review&&review.perf?review.perf.label:statLine(segments[0].st)}｜名單通過機會 ${review&&review.p?review.p:'—'}%`,result:isMLB?'MLB 名單正式登錄':`${to} 名單正式登錄`,note:`升格後成績將獨立列入 ${to} 生涯紀錄。`});
-  }
-  else if(S.tradeFrom){ /* 季中轉隊:列出兩段+合計 */
-    const r=0.35+R()*0.3, p1=portionOf(st,r), p2=portionOf(st,1-r);
-    card('','球季數據（季中轉隊）',
-      `<span class="tag">${S.tradeFrom}</span><div class="statline">${statLine(p1)}</div>`+
-      `<span class="tag">${S.teamName()}</span><div class="statline">${statLine(p2)}</div>`+
-      `<span class="tag">合計</span><div class="statline">${statLine(st)}</div>`);
   }
   else {const ti=seasonTeamInfo(),tone=st.outlierKind||st.varianceKind;card(tone==='hot'?'gold':tone==='cold'?'bad':'','球季數據',`<div class="season-team-head"><b>${ti.name}</b><span>${ti.level}${S.pos==='P'?'・'+roleN(S.role):S.dpos?'・'+DPN[S.dpos]:''}</span></div>${st.varianceLabel?`<span class="tag">單季型態：${st.varianceLabel}</span>`:''}${st.outlierLabel?`<span class="tag">極端紀錄：${st.outlierLabel}</span>`:''}<div class="stat-dashboard">${statDashboard(st)}</div>`);}
   if(!segments&&S._callupReview&&S._callupReview.year===S.year&&(S._callupReview.p>0||S._callupReview.perf&&S._callupReview.perf.strong)){
@@ -3164,8 +3227,7 @@ function proSeason(){
       `<span class="tag">${st.usageRole}</span><span class="tag">健康 ${st.availability}%</span><span class="tag">出賽 ${st.G}/${st.scheduled}</span><span class="tag">狀態 ${S.seasonLuck}/20・${luckText}</span>${st.varianceLabel?`<span class="tag">單季型態：${st.varianceLabel}</span>`:''}${st.outlierLabel?`<span class="tag">極端紀錄：${st.outlierLabel}</span>`:''}<div class="statline">最終表現評價 <b>${signed(st.d)}</b>｜年度共同波動 <b class="${(st.variance||0)>=0?'up':'dn'}">${signed(st.variance)}</b><br>手感 ${signed(b.luck)}｜事件氣勢 ${signed(b.momentum)}｜選擇狀態 ${signed(b.choice)}｜環境 ${signed(b.environment)}｜更衣室 ${signed(b.chemistry)}｜具名隊友 ${signed(b.teammates)}｜特性 ${signed(b.traits)}${b.transfer?`｜轉隊 ${signed(b.transfer)}`:''}</div>${seasonEffectHTML(st)}<small>這裡使用模擬當下已鎖定的數值，不會因季末清空狀態而改寫。打擊、長打、選球、跑壘、守備或投球品質仍各自獨立波動。</small>${S.pos!=='P'?contractMarketResume():''}`); }
   if(promiseReview)card(promiseReview.fulfilled?'good':promiseReview.injuryExcused?'info':'bad',`球團角色承諾｜${promiseReview.status}`,`${promiseReview.label}：${st.poachRole||'名單競爭安排'}<div class="statline">承諾出賽目標 ${promiseReview.target} 場｜實際 ${promiseReview.actual} 場<br>${promiseReview.consequence}</div>`);
   const isInj = S.seasonFactor <= 0.45; /* 判斷是否為大傷報廢年 */
-  S.log.push({y:S.year,age:S.age,tm:S.tradeFrom?`${S.tradeFrom}→${S.teamName()}`:segments?`${S.orgTeam}二軍→${S.orgTeam}`:S.teamName(),p:S.dpos||'',line:S.seasonFactor===0?'傷缺全季':statLine(seasonAll), inj: isInj, st: seasonAll});
-  S.tradeFrom=null;
+  S.log.push({y:S.year,age:S.age,tm:segments?segments.map(x=>`${x.team||S.orgTeam}・${LV[x.lv].n}`).join('→'):S.teamName(),p:S.dpos||'',line:S.seasonFactor===0?'傷缺全季':statLine(seasonAll), inj: isInj, st: seasonAll});
   /* 鐵人累計 */
   const ironIP=S.lv==='MLB'?120:S.lv==='NPB1'?100:S.lv==='CPBL1'?85:80;
   const healthy=S.seasonFactor>=0.95&&(S.pos==='P'?(isSP()?seasonAll.IP>=ironIP:seasonAll.G>=42):seasonAll.G>=LV[S.lv].g*0.8);
@@ -3198,18 +3260,29 @@ function proSeason(){
 }
 function winsStatTitle(qualified,value,line,lower){return !!qualified&&(lower?value<=line:value>=line);}
 function clearVoteLead(value,line,margin){return value>=line+(margin||0);}
+function npcAwardCompetition(bucket){
+  S.npcAwardCompetitions=S.npcAwardCompetitions||{};const key=`${S.year}|${bucket}`;if(S.npcAwardCompetitions[key])return S.npcAwardCompetitions[key];
+  const org={CPBL:'CPBL',NPB:'NPB',MLB:'MiLB'}[bucket],lv={CPBL:'CPBL1',NPB:'NPB1',MLB:'MLB'}[bucket],L=LV[lv],env=leagueRunEnv(lv),hitters=[],pitchers=[];evolveNpcLeague(org,lv);
+  npcTeamsForOrg(org).forEach(team=>ensureNpcRoster(org,team,lv).forEach(p=>{
+    const gap=ratingGap(p.overall,L.par),starNoise=normalZ(),role=p.role;
+    if(role==='SP'||role==='RP'){
+      const starter=role==='SP',G=starter?clamp(Math.round((L.g/(bucket==='MLB'?5.1:5.5))*(.82+R()*.22)),12,bucket==='MLB'?34:28):clamp(Math.round(L.g*.40*(.76+R()*.42)),20,bucket==='MLB'?75:65),IP=starter?G*clamp(5.0+gap*.045+normalZ()*.28,4.1,6.6):G*clamp(.94+normalZ()*.11,.65,1.35),era=clamp(env.era-gap*.12-starNoise*.38,.65,8.5),k9=clamp(env.k9+gap*.075+normalZ()*.62,3,15.5),winP=clamp(.5+gap*.012+normalZ()*.045,.2,.8),dec=Math.round(G*(starter?.68:.10)),W=Math.round(dec*winP),SO=Math.round(IP/9*k9),SV=starter?0:Math.round(clamp(8+gap*1.5+normalZ()*8,0,48)),HLD=starter?0:Math.round(clamp(11+gap*1.35+normalZ()*7,0,42));const row={name:p.name,team,role,G,IP,W,SO,era,sv:SV,hld:HLD,hp:HLD+Math.round(dec*winP)};p.season={year:S.year,lv,...row};pitchers.push(row);
+    }else{
+      const share=clamp(.64+gap*.025+normalZ()*.08,.20,.98),G=Math.round(L.g*share),PA=Math.max(60,Math.round(G*clamp(3.75+gap*.018+normalZ()*.16,2.2,4.55))),AB=Math.round(PA*.91),avg=clamp(env.avg+gap*.0042+starNoise*.017,.145,.390),H=Math.round(AB*avg),HR=Math.min(H,Math.max(0,Math.round(AB*clamp(env.hr+gap*.00165+.002+normalZ()*.0035,.001,.095)))),BB=PA-AB,obp=(H+BB)/PA,powerGap=gap+normalZ()*2.5,doubles=Math.round(Math.max(0,H-HR)*clamp(.21+powerGap*.003,.12,.36)),triples=Math.round(Math.max(0,H-HR-doubles)*clamp(.018+normalZ()*.008,.002,.065)),slg=(Math.max(0,H-HR-doubles-triples)+doubles*2+triples*3+HR*4)/AB,ops=obp+slg,RBI=Math.round(HR*2.05+(H-HR)*.31),SB=Math.round(clamp((8+gap*1.3+normalZ()*9)*share,0,bucket==='MLB'?75:65)),def=Math.round(clamp(gap*.55+normalZ()*4,-15,24)),cs=Math.round(clamp(29+gap*.7+normalZ()*5,12,52));const row={name:p.name,team,role,G,PA,AB,H,HR,RBI,SB,avg,obp,ops,def,cs};p.season={year:S.year,lv,...row};hitters.push(row);
+    }
+  }));
+  const max=(rows,k)=>rows.slice().sort((a,b)=>(b[k]||0)-(a[k]||0))[0],min=(rows,k)=>rows.slice().sort((a,b)=>(a[k]||99)-(b[k]||99))[0],qualifiedH=hitters.filter(x=>x.PA>=L.g*3.1),qualifiedP=pitchers.filter(x=>x.role==='SP'&&x.IP>=L.g*.72),relievers=pitchers.filter(x=>x.role==='RP');
+  const leaders={avg:max(qualifiedH,'avg'),h:max(qualifiedH,'H'),hr:max(hitters,'HR'),rbi:max(hitters,'RBI'),sb:max(hitters,'SB'),obp:max(qualifiedH,'obp'),ops:max(qualifiedH,'ops'),def:max(hitters,'def'),cs:max(hitters.filter(x=>x.role==='C'),'cs'),era:min(qualifiedP,'era'),w:max(pitchers,'W'),so:max(pitchers,'SO'),sv:max(relievers,'sv'),hld:max(relievers,'hld'),hp:max(relievers,'hp')},fallback=(k,v)=>leaders[k]||{name:'聯盟領先者',[k]:v};
+  const comp={avg:fallback('avg',.310).avg,h:fallback('h',150).H||150,hr:fallback('hr',25).HR||25,rbi:fallback('rbi',90).RBI||90,sb:fallback('sb',28).SB||28,obp:fallback('obp',.390).obp,ops:fallback('ops',.800).ops,def:fallback('def',8).def||8,cs:fallback('cs',31).cs||31,era:fallback('era',3).era,w:fallback('w',12).W||12,so:fallback('so',150).SO||150,sv:fallback('sv',28).sv||28,hld:fallback('hld',25).hld||25,hp:fallback('hp',32).hp||32,_leaders:leaders};S.npcAwardCompetitions[key]=comp;return comp;
+}
 function awards(bucket,st,competitionOverride){
   S.awardWatch=[];
   if(!LV[S.lv].top||S.seasonFactor===0)return;
   const y=S.year,h=S.honors,lgN={CPBL:'中職',NPB:'日職',MLB:'大聯盟'}[bucket],add=n=>{const row=`${y} ${n}`;if(!h.includes(row))h.push(row);};
   const P_RULE={CPBL:{ip:100,w:11,so:120,era:3.05,sv:25,hld:22,hp:28},NPB:{ip:125,w:12,so:150,era:2.75,sv:30,hld:28,hp:35},MLB:{ip:155,w:14,so:190,era:3.20,sv:34,hld:30,hp:36}}[bucket];
   const H_RULE={CPBL:{pa:390,h:125,avg:.310,hr:22,rbi:82,sb:25,obp:.385},NPB:{pa:470,h:145,avg:.310,hr:28,rbi:92,sb:28,obp:.390},MLB:{pa:520,h:165,avg:.310,hr:34,rbi:102,sb:30,obp:.395}}[bucket];
-  const COMP=competitionOverride||{
-    avg:clamp(H_RULE.avg+N0(.011),.285,.335),h:Math.max(90,Math.round(H_RULE.h+N0(bucket==='MLB'?10:7))),hr:Math.max(12,Math.round(H_RULE.hr+N0(bucket==='MLB'?4.5:3.5))),
-    rbi:Math.max(55,Math.round(H_RULE.rbi+N0(bucket==='MLB'?9:7))),sb:Math.max(15,Math.round(H_RULE.sb+N0(5))),obp:clamp(H_RULE.obp+N0(.012),.350,.425),
-    era:clamp(P_RULE.era+N0(.18),2.15,3.75),w:Math.max(8,Math.round(P_RULE.w+N0(2))),so:Math.max(85,Math.round(P_RULE.so+N0(bucket==='MLB'?15:11))),
-    sv:Math.max(18,Math.round(P_RULE.sv+N0(4))),hld:Math.max(15,Math.round(P_RULE.hld+N0(4))),hp:Math.max(20,Math.round(P_RULE.hp+N0(4))),
-    ops:clamp(({CPBL:.785,NPB:.775,MLB:.800}[bucket]||.790)+N0(.025),.730,.865),def:clamp(Math.round(7+N0(2)),4,12),cs:clamp(Math.round(31+N0(5)),22,43)};
+  const COMP=competitionOverride||npcAwardCompetition(bucket);
+  const lead=k=>COMP._leaders&&COMP._leaders[k]?`（${COMP._leaders[k].name}）`:'';
   st._awardCompetition={...COMP};
   const AN={
     CPBL:{rookie:'中職年度新人王',month:'中職單月MVP',progress:'中職年度最佳進步獎',pitcher:null,first:'中職最佳十人',second:null,defense:'中職金手套',defPlayer:null,bat:'中職最佳十人',relief:'中職年度後援貢獻獎',comeback:'中職東山再起獎'},
@@ -3288,17 +3361,17 @@ function awards(bucket,st,competitionOverride){
     const needed=S.pos==='P'?(isSP()?`${Math.ceil(P_RULE.ip*.72)} 局`:`38 場／28 局`):`${Math.ceil(H_RULE.pa*.78)} 打席`;
     S.awardWatch.push(`未達主要個人獎競爭樣本｜目前 ${current}・參考線 ${needed}`);
   }else if(S.pos==='P'){
-    if(isSP()&&!h.includes(`${y} ${lgN}防禦率王`))S.awardWatch.push(`防禦率榜 ${st.era.toFixed(2)}｜本季領先線 ${COMP.era.toFixed(2)}`);
-    else if(S.role==='CL'&&!h.includes(`${y} ${lgN}救援王`))S.awardWatch.push(`救援榜 ${st.SV||0}｜本季領先線 ${COMP.sv}`);
-    else if(bucket==='NPB'&&!h.includes(`${y} 日職最優秀中繼投手`))S.awardWatch.push(`中繼點榜 ${reliefPoints(st)} HP｜本季領先線 ${COMP.hp}`);
-    else if(bucket==='CPBL'&&!h.includes(`${y} 中職中繼王`))S.awardWatch.push(`中繼榜 ${st.HLD||0} HLD｜${reliefPoints(st)} HP｜本季領先線 ${COMP.hld}`);
+    if(isSP()&&!h.includes(`${y} ${lgN}防禦率王`))S.awardWatch.push(`防禦率榜 ${st.era.toFixed(2)}｜聯盟領先 ${COMP.era.toFixed(2)} ${lead('era')}`);
+    else if(S.role==='CL'&&!h.includes(`${y} ${lgN}救援王`))S.awardWatch.push(`救援榜 ${st.SV||0}｜聯盟領先 ${COMP.sv} ${lead('sv')}`);
+    else if(bucket==='NPB'&&!h.includes(`${y} 日職最優秀中繼投手`))S.awardWatch.push(`中繼點榜 ${reliefPoints(st)} HP｜聯盟領先 ${COMP.hp} ${lead('hp')}`);
+    else if(bucket==='CPBL'&&!h.includes(`${y} 中職中繼王`))S.awardWatch.push(`中繼榜 ${st.HLD||0} HLD｜${reliefPoints(st)} HP｜聯盟領先 ${COMP.hld} ${lead('hld')}`);
     else S.awardWatch.push(`後援表現｜${st.HLD||0} HLD｜${reliefPoints(st)} HP`);
-    if(!h.includes(`${y} ${lgN}三振王`))S.awardWatch.push(`三振榜 ${st.SO||0}｜本季領先線 ${COMP.so}`);
+    if(!h.includes(`${y} ${lgN}三振王`))S.awardWatch.push(`三振榜 ${st.SO||0}｜聯盟領先 ${COMP.so} ${lead('so')}`);
     if(isSP())S.awardWatch.push(`年度最佳投手票選｜球季評價 ${st.d>=0?'+':''}${st.d.toFixed(1)}`);
   }else{
     const obp=st.PA?(st.H+st.BB)/st.PA:0,ops=obp+slgOf(st);
-    if(!h.includes(`${y} ${lgN}打擊王`)&&st.avg>=COMP.avg-.035)S.awardWatch.push(st.PA>=H_RULE.pa?`打擊王競爭｜目前 ${st.avg.toFixed(3).replace(/^0/,'')}・本季領先線 ${COMP.avg.toFixed(3).replace(/^0/,'')}`:`打擊率 ${st.avg.toFixed(3).replace(/^0/,'')}｜尚未取得打擊王資格・目前 ${st.PA} PA／規定 ${H_RULE.pa} PA`);
-    if(!h.includes(`${y} ${lgN}全壘打王`)&&(st.HR||0)>=Math.max(5,COMP.hr*.55))S.awardWatch.push(`全壘打王競爭｜目前 ${st.HR||0}・本季領先線 ${COMP.hr}`);
+    if(!h.includes(`${y} ${lgN}打擊王`)&&st.avg>=COMP.avg-.035)S.awardWatch.push(st.PA>=H_RULE.pa?`打擊王競爭｜目前 ${st.avg.toFixed(3).replace(/^0/,'')}・聯盟領先 ${COMP.avg.toFixed(3).replace(/^0/,'')} ${lead('avg')}`:`打擊率 ${st.avg.toFixed(3).replace(/^0/,'')}｜尚未取得打擊王資格・目前 ${st.PA} PA／規定 ${H_RULE.pa} PA`);
+    if(!h.includes(`${y} ${lgN}全壘打王`)&&(st.HR||0)>=Math.max(5,COMP.hr*.55))S.awardWatch.push(`全壘打王競爭｜目前 ${st.HR||0}・聯盟領先 ${COMP.hr} ${lead('hr')}`);
     if(S.dpos==='C'){
       const cs=st.SBA?Math.round((st.CS||0)/st.SBA*100):0,era=Number(st.STAFF_ERA_ADJ)||0;
       S.awardWatch.push(`最佳捕手競爭｜OPS ${ops.toFixed(3).replace(/^0/,'')}・本季票選線約 ${COMP.ops.toFixed(3).replace(/^0/,'')}・守備貢獻 ${(st.DEF||0)>=0?'+':''}${st.DEF||0}`);
@@ -3401,18 +3474,34 @@ function faServiceRequirement(org,overseas){
   if(org==='NPB')return overseas?9:(college?7:8);
   return 6;
 }
-/* NPB 官方以一軍「出場選手登錄日數」折算 FA 年資；遊戲以完整一軍登錄球季近似，二軍球季不累積。 */
+function cpblFaMarketRule(){
+  S.cpblFaMarketByYear=S.cpblFaMarketByYear||{};
+  if(!S.cpblFaMarketByYear[S.year]){
+    const declared=ri(5,18),teamLimit=declared<=10?2:declared<=15?3:4;
+    S.cpblFaSignings=S.cpblFaSignings||{};S.cpblFaSignings[S.year]=S.cpblFaSignings[S.year]||{};
+    const occupied=S.cpblFaSignings[S.year],npcSigned=Math.min(declared-1,ri(Math.max(1,Math.floor(declared*.35)),Math.max(2,Math.floor(declared*.65))));
+    for(let i=0;i<npcSigned;i++){
+      const available=CPBL_TEAMS.filter(t=>(occupied[t]||0)<teamLimit);if(!available.length)break;
+      const team=pick(available);occupied[team]=(occupied[team]||0)+1;
+    }
+    S.cpblFaMarketByYear[S.year]={declared,teamLimit,npcSigned};
+  }
+  return S.cpblFaMarketByYear[S.year];
+}
+function serviceDayLine(org){const target=SERVICE_DAY_TARGET[org]||1,days=Math.max(0,Math.round((S.serviceDays&&S.serviceDays[org])||((S.service&&S.service[org])||0)*target)),years=Math.floor(days/target),rem=days%target;return `${days} 日（${years} 年＋${rem} 日）`;}
+/* NPB 以一軍「出場選手登錄日數」折算 FA 年資；遊戲逐月累積登錄日，二軍月份不計入。 */
 function npbRosterStatus(){
   if(!S||S.org!=='NPB')return {foreign:false,years:0,need:8,label:''};
-  const years=(S.service&&S.service.NPB)||0,need=8,foreign=years<need;
-  return {foreign,years,need,label:foreign?'外籍球員':'視同本土球員'};
+  const years=(S.service&&S.service.NPB)||0,days=Math.max(0,Math.round((S.serviceDays&&S.serviceDays.NPB)||years*SERVICE_DAY_TARGET.NPB)),need=8,foreign=days<need*SERVICE_DAY_TARGET.NPB;
+  return {foreign,years,days,need,label:foreign?'外籍球員':'視同本土球員'};
 }
-function npbStatusText(lv){const rs=npbRosterStatus();if(!S||S.org!=='NPB')return '';return rs.foreign?`外籍球員・${lv==='NPB2'?'目前不占一軍外籍登錄席次':'占用一軍外籍登錄席次'}・一軍登錄年資 ${rs.years} 季`:`視同本土球員・已取得國內 FA 資格`;}
+function npbStatusText(lv){const rs=npbRosterStatus();if(!S||S.org!=='NPB')return '';return rs.foreign?`外籍球員・${lv==='NPB2'?'目前不占一軍外籍登錄席次':'占用一軍外籍登錄席次'}・一軍登錄 ${serviceDayLine('NPB')}`:`視同本土球員・一軍登錄 ${serviceDayLine('NPB')}`;}
 function faRuleSummary(org){
   const req=faServiceRequirement(org,false),svc=(S.service&&S.service[org])||S.svc||0;
-  if(org==='CPBL')return `中職 ${req} 個一軍球季取得資格；行使後可與其他中職球團談約`;
-  if(org==='NPB'){const rs=npbRosterStatus();return `日職國內 FA 以一軍出場選手登錄日數折算；遊戲目前累積 ${svc} 季｜${npbStatusText(S.lv)}`;}
-  return `大聯盟 6 年服務時間取得自由球員資格；目前 ${svc} 年`;
+  if(org==='CPBL'){const market=cpblFaMarketRule(),signed=Object.values((S.cpblFaSignings&&S.cpblFaSignings[S.year])||{}).reduce((n,v)=>n+(Number(v)||0),0);return `中職 ${req} 個一軍球季取得資格；目前 ${serviceDayLine('CPBL')}。本年 ${market.declared} 人宣告 FA，市場已有 ${signed} 人簽約，每隊最多簽 ${market.teamLimit} 人`;
+  }
+  if(org==='NPB')return `日職國內 FA 依一軍登錄日折算；${npbStatusText(S.lv)}`;
+  return `大聯盟 6 年服務時間取得自由球員資格；目前 ${serviceDayLine('MiLB')}`;
 }
 /* ---------- 升降級與去向 ---------- */
 function cpbl2RetentionProfile(o){
@@ -3519,6 +3608,14 @@ function postSeasonRosterMeeting(done){
   if(!p.finalChance&&!p.severe)opts.splice(1,0,{t:'要求保留原層級，明年春訓再競爭',risk:true,modal:true,s:'本次暫緩下放｜下季成為最後觀察年；傷病風險 +2%',f:()=>{S.lastChanceYear=S.year+1;S.injNext+=2;finish('compete',-40,'info','季後約談｜取得最後觀察期','球團同意把最終決定延到明年春訓。你暫時守住層級，但下一季若再度低迷，名單壓力會大幅提高。');}});
   choose(`季後球團約談｜${seasonTeamInfo().name}｜${p.team.record}`,opts);
 }
+const SERVICE_DAY_TARGET={CPBL:125,NPB:145,MiLB:172};
+function professionalServiceCredits(){
+  const parts=(S._seasonServiceParts||[]).filter(p=>p&&p.lv&&LV[p.lv]&&LV[p.lv].top),credits={};
+  parts.forEach(p=>{const org=p.org||S.org;credits[org]=(credits[org]||0)+clamp(Number(p.calendarShare)||0,0,1);});
+  if(!parts.length&&S.stage==='PRO'&&S.lv&&LV[S.lv]&&LV[S.lv].top)credits[S.org]=1; /* 傷兵名單／復健年仍隨一軍合約累積登錄時間。 */
+  if(credits.CPBL&&S.lastSt){const st=S.lastSt,games=(LV[S.lv]&&LV[S.lv].g)||120,full=S.pos==='P'?(st.IP||0)>=games*2/3:(st.G||0)>=games*2/3;if(full)credits.CPBL=1;}
+  return credits;
+}
 function settleProfessionalSeasonClock(){
   if(S.stage!=='PRO'||S._proClockYear===S.year)return;
   S._proClockYear=S.year;
@@ -3527,12 +3624,12 @@ function settleProfessionalSeasonClock(){
   S.overseasDepth=S.overseasDepth||{npb2:0,milb:0};
   S.overseasDepth.npb2=S.org==='NPB'&&S.lv==='NPB2'?(S.overseasDepth.npb2||0)+1:0;
   S.overseasDepth.milb=S.org==='MiLB'&&S.lv!=='MLB'?(S.overseasDepth.milb||0)+1:0;
-  if(LV[S.lv]&&LV[S.lv].top){
-    S.service=S.service||{CPBL:0,NPB:0,MiLB:0};S.svcOrg=S.org;
-    S.service[S.org]=(S.service[S.org]||0)+1;S.svc=S.service[S.org];
-    if(S.svc>=faServiceRequirement(S.org,false))S.faElig=true;
-    if(S.org==='NPB'&&S.service.NPB>=8&&!S.npbLocalNotified){S.npbLocalNotified=true;card('gold','日職登錄身分改變','一軍登錄年資達到 8 季。從下一次名單競爭開始，你不再占用洋將名額，正式以 <b class="hl">視同本土球員</b> 身分接受球團評估。');board(1);}
-    S.teamYears=(S.teamYears||0)+1;
+  const credits=professionalServiceCredits();S.service=S.service||{CPBL:0,NPB:0,MiLB:0};S.serviceDays=S.serviceDays||{};Object.keys(SERVICE_DAY_TARGET).forEach(org=>{const target=SERVICE_DAY_TARGET[org];if(!Number.isFinite(S.serviceDays[org]))S.serviceDays[org]=Math.round((Number(S.service[org])||0)*target);const add=Math.round((credits[org]||0)*target);S.serviceDays[org]+=add;S.service[org]=+(S.serviceDays[org]/target).toFixed(2);});S.svcOrg=S.org;S.svc=S.service[S.org]||0;
+  if(S.svc>=faServiceRequirement(S.org,false))S.faElig=true;
+  const topShare=credits[S.org]||0;
+  if(topShare>0){
+    if(S.org==='NPB'&&S.service.NPB>=8&&!S.npbLocalNotified){S.npbLocalNotified=true;card('gold','日職登錄身分改變','一軍登錄年資折算達到 8 季。從下一次名單競爭開始，你不再占用洋將名額，正式以 <b class="hl">視同本土球員</b> 身分接受球團評估。');board(1);}
+    S.teamYears=+((S.teamYears||0)+topShare).toFixed(2);
     if(!S.traits.goldcloth&&S.orgTeam==='台中猛瑪'&&(S.teamTally.CPBL&&S.teamTally.CPBL['台中猛瑪']>=10)){S.traits.goldcloth=true;card('gold','隱藏屬性解鎖：黃金聖衣','效力 台中猛瑪 滿十年，你已是這支球隊的象徵。披上那件黃金戰袍，你就是主場的信仰。');board(1);}
     if(!S.traits.franchise&&S.teamYears>=7&&S.champThisTeam&&S.champTeam===S.orgTeam){S.traits.franchise=true;card('gold','隱藏屬性解鎖：神主牌','這座城市的球迷看著你長大。球團高層很清楚，放你走球迷會把主場拆了——<b class="hl">母隊續約年薪係數固定 ≥×1.2，引退評價加成</b>。');}
     if(!S.traits.mrteam&&S.teamYears>=15&&(S.lastD||0)>=0){S.traits.mrteam=true;S.mrTeamName=S.orgTeam;const nick=teamNick(S.orgTeam);card('gold','隱藏稱號：'+nick+'先生',`十五個年頭，同一件球衣。球迷不再喊你的名字，他們喊你「<b class="hl">${nick}先生</b>」——你就是這支球隊的代名詞。`);board(1);}
@@ -3580,6 +3677,7 @@ function movement(){
   }
   /* 職業：先結算服務年資與合約年，傷病／二軍觀察都不能讓合約時鐘暫停。 */
   settleProfessionalSeasonClock();
+  if(S.pendingTrade){applyPendingTrade();advance();return;}
   if(S.skipMid){const afterRehab=()=>S.ct&&S.ct.yrs<=0?resolveContractExpiry(o):advance();if(maybeTaiwanReturnInquiry(o,afterRehab))return;afterRehab();return;} /* 復健年不做升降，但合約與年資已正常結算 */
   if(cpbl2RetentionAudit(o))return;
   if(S.ct&&S.ct.yrs<=0){if(maybeTaiwanReturnInquiry(o,()=>resolveContractExpiry(o)))return;resolveContractExpiry(o);return;}
@@ -3696,17 +3794,26 @@ function contractContinuation(o){
   }
   crossOffers(o);
 }
-function buyoutRemaining(){ /* 合約尚有剩餘年數：依白紙黑字的保障比例結清。 */
-  if(!S.ct||!LV[S.lv].top)return 0;
+function buyoutRemaining(){ /* 球團主動終止合約；各聯盟依合約與解約規章結清。 */
+  if(!S.ct)return 0;
   const remain=Math.max(0,S._proClockYear===S.year?S.ct.yrs:S.ct.yrs-1); /* movement 已扣當年時不可再扣一次 */
   if(remain<=0)return 0;
   const yearly=Math.round(S.ct.annual||salaryFor(S.lv,S.lastD||0)*(S.ct.mult||1)*dpMult());
+  if(S.org==='CPBL'){
+    const total=Math.max(0,Math.round(yearly/24)); /* 季後至春訓期間由球團終止，遊戲折算 15 日薪資。 */
+    if(total>0){const pay=bookIncome(total,'buyout',S.org,S.orgTeam);card('info','中職合約終止結算',`<b class="hl">${S.name}</b> 的合約原剩 ${remain} 年；球團依季後／春訓解約規則支付 <b class="hl">15 日薪資</b>，稅前 ${fmtContractMoney(total,S.org)}、估算稅費後 ${fmtLocalMoney(pay.net,S.org)}。未履行的剩餘年薪不會自動全額買斷。`);}
+    S.ct={...S.ct,yrs:0,guaranteed:0};return total;
+  }
+  if(!LV[S.lv].top)return 0;
   const full=yearly*remain,guaranteed=clamp(S.ct.guaranteed==null?1:S.ct.guaranteed,0,1);
   const total=Math.round(full*guaranteed);
   if(total>0){ const pay=bookIncome(total,'buyout',S.org,S.orgTeam);
     card('gold','合約保障結清',`<b class="hl">${S.name}</b> 的合約仍剩 ${remain} 年。球團依保障比例 <b class="hl">${Math.round(guaranteed*100)}%</b> 結清：原合約剩餘 ${fmtContractMoney(full,S.org)}，稅前入帳 ${fmtContractMoney(total,S.org)}，估算稅費後 <b class="hl">${fmtLocalMoney(pay.net,S.org)}</b>。`); }
-  S.ct={yrs:1,mult:S.ct.mult,annual:yearly,guaranteed:0}; /* 買斷後合約結清 */
+  S.ct={...S.ct,yrs:0,annual:yearly,guaranteed:0}; /* 買斷後合約結清 */
   return total;
+}
+function voluntaryRetirementSettlement(){
+  if(!S.ct||!(S.ct.yrs>0))return 0;const years=S.ct.yrs,value=Math.round((S.ct.annual||0)*years*(S.ct.guaranteed==null?1:S.ct.guaranteed));S.ct={...S.ct,yrs:0,guaranteed:0};card('info','自願退休合約結算',`${S.name} 主動結束球員合約，因此放棄尚未履行的 ${years} 年保障薪資 ${fmtContractMoney(value,S.org)}；這不是球團買斷，不會把剩餘合約全額變成退休獎金。`);return value;
 }
 function taiwanReturnInquiryThreshold(kind,age){
   age=Number(age)||18;
@@ -3871,11 +3978,11 @@ function handleDemotion(o,path,idx){
           card('bad','隱藏屬性解鎖：更衣室毒瘤','你搬出合約條款拒絕下放。教練搖頭，隊友私下議論——你保住了位置，卻失去了更衣室。'); }
         else card('info','拒絕下放','你搬出合約條款留在一軍。球團記住了這件事。');
         board(1); advance(); }},
-      {t:'就此引退',warn:true,s:'以現役身分光榮退場',f:()=>{buyoutRemaining();daibaFarewell(()=>endGame('不願下放，'+S.year+' 年宣布引退。'));}}]);
+      {t:'就此引退',warn:true,s:'自願退休並放棄未履行的保障薪資',f:()=>{voluntaryRetirementSettlement();daibaFarewell(()=>endGame('不願下放，'+S.year+' 年宣布引退。'));}}]);
   } else if(S.age>=33){
     choose('球團約談：成績未達當前層級的最低要求',[
       {t:'接受下放，繼續奮鬥',f:doDemote},
-      {t:'選擇引退',warn:true,s:'以現役身分光榮退場',f:()=>{buyoutRemaining();daibaFarewell(()=>endGame('不願下放低階聯盟，'+S.year+' 年宣布引退。'));}}]);
+      {t:'選擇引退',warn:true,s:'自願退休並放棄未履行的保障薪資',f:()=>{voluntaryRetirementSettlement();daibaFarewell(()=>endGame('不願下放低階聯盟，'+S.year+' 年宣布引退。'));}}]);
   } else doDemote();
 }
 function youthDevelopmentGrant(){
@@ -3911,7 +4018,8 @@ function outOfOrg(o,context){
   choose('新東家的邀請',offers.map(x=>({...x,f:()=>{x.f();advance();}})));
 }
 function teamListOf(org){ return org==='CPBL'?CPBL_TEAMS:org==='NPB'?NPB_TEAMS:MLB_TEAMS; }
-function signTo(org,lv,team,yrs,mult,dealOption){
+function signTo(org,lv,team,yrs,mult,dealOption,terms){
+  terms=terms||{};
   const oldOrg=S.org,oldTeam=S.orgTeam;S.org=org; S.lv=lv;
   S.service=S.service||{CPBL:0,NPB:0,MiLB:0};
   if(oldOrg&&oldOrg!==org){S.faElig=false;S.svc=S.service[org]||0;}
@@ -3923,11 +4031,13 @@ function signTo(org,lv,team,yrs,mult,dealOption){
     if(lv==='MLB')mlbAddToFortyMan(oldOrg==='MiLB'&&oldTeam===newTeam?'大聯盟合約續留':'大聯盟合約選入 40 人名單');
     else if(oldOrg!=='MiLB'||oldTeam!==newTeam)mlbRosterState().forty=false;
   }else if(oldOrg==='MiLB')mlbRosterState().forty=false;
-  const years=yrs||2,m=mult||1,annual=Math.round(salaryFor(lv,contractPerformanceD())*m*dpMult());
+  const years=Math.min(yrs||2,contractTermCap(lv)),m=mult||1,calculatedAnnual=Math.round(salaryFor(lv,contractPerformanceD())*m*dpMult()),annual=terms.annualCap?Math.min(calculatedAnnual,terms.annualCap):calculatedAnnual;
   S.ct={yrs:years,signedYears:years,mult:m,annual,guaranteed:LV[lv]&&LV[lv].top?1:.65,option:dealOption||(years>=4&&chance(35)?'第 3 年後球員跳脫權':years>=3&&chance(30)?'球隊選擇權':null)};
+  if(terms.cpblFaFrom){S.cpblFaSignings=S.cpblFaSignings||{};S.cpblFaSignings[S.year]=S.cpblFaSignings[S.year]||{};S.cpblFaSignings[S.year][newTeam]=(S.cpblFaSignings[S.year][newTeam]||0)+1;S.ct.cpblFaFrom=terms.cpblFaFrom;S.ct.firstYearSalaryCap=terms.annualCap;}
   if(org!=='NPB')S.npbYears=0;
   const div=org==='MiLB'&&MLB_TEAM_META[newTeam]?`｜${MLB_TEAM_META[newTeam][0]}`:'';
-  card('info','簽約',`與 <b class="hl">${S.teamName()}</b> 簽下 <b class="hl">${S.ct.yrs} 年</b>合約${div}｜年薪 ${fmtContractMoney(annual,org)}｜總值 ${fmtContractMoney(annual*years,org)}｜保障 ${Math.round(S.ct.guaranteed*100)}%${S.ct.option?`｜${S.ct.option}`:''}。`); board(2);
+  const faRule=terms.cpblFaFrom?`｜中職首次行使 FA 首年薪資上限已套用（原年薪 ×1.5）；${terms.cpblFaFrom} 的補償程序由兩球團另行辦理；本年每隊簽約上限 ${cpblFaMarketRule().teamLimit} 人`:'';
+  card('info','簽約',`與 <b class="hl">${S.teamName()}</b> 簽下 <b class="hl">${S.ct.yrs} 年</b>合約${div}｜年薪 ${fmtContractMoney(annual,org)}｜總值 ${fmtContractMoney(annual*years,org)}｜保障 ${Math.round(S.ct.guaranteed*100)}%${S.ct.option?`｜${S.ct.option}`:''}${faRule}。`); board(2);
 }
 /* 多隊報價選擇:opts=[{team,bonus,yrs,mult,lv}] */
 function pickOfferUI(title,org,offers,after){
@@ -3962,7 +4072,8 @@ function teamMarketProfile(team,org,d){
   return {record:rec,budget,need,direction,roleNeed,fit:`${rec.W}-${rec.L}・${direction}・${roleNeed}`,score,interest};
 }
 function makeFaOffers(org,n,bonusBase,yrsLo,yrsHi,lv,exclude,d){
-  const ranked=teamListOf(org).filter(t=>t!==exclude).map(team=>({team,profile:teamMarketProfile(team,org,d||0)})).sort((a,b)=>b.profile.score-a.profile.score);
+  const cpblLimit=org==='CPBL'?cpblFaMarketRule().teamLimit:Infinity;
+  const ranked=teamListOf(org).filter(t=>t!==exclude).filter(t=>org!=='CPBL'||!S.cpblFaSignings||((S.cpblFaSignings[S.year]||{})[t]||0)<cpblLimit).map(team=>({team,profile:teamMarketProfile(team,org,d||0)})).sort((a,b)=>b.profile.score-a.profile.score);
   const selected=[],pool=ranked.slice(0,Math.max(n*3,Math.min(8,ranked.length)));
   while(selected.length<n&&pool.length){
     /* 偏向最需要你的球隊，但每輪仍可能由意外球團搶先出價。 */
@@ -3973,8 +4084,8 @@ function makeFaOffers(org,n,bonusBase,yrsLo,yrsHi,lv,exclude,d){
 }
 /* ---------- 長約/短約 選擇器 ---------- */
 function termParams(d,lv){ /* 長約 >2 年、短約 1-2 年;年齡大或成績爛 → 不夠格長約 */
-  const cap=S.pos==='P'?7:15;
-  const maxY=faYears(d,cap);              /* 已含年齡上限 */
+  const offeredYears=arguments.length>2?arguments[2]:null,cap=contractTermCap(lv);
+  const maxY=offeredYears==null?faYears(d,cap):clamp(Math.round(offeredYears),1,cap); /* 多隊市場保留各隊自己的年限。 */
   const longEligible = maxY>2 && d>=0;    /* 值得長約:年限>2 且成績不差(d>=0) */
   const longY=Math.max(3,maxY);           /* 長約至少 3 年 */
   const shortY=Math.min(2,Math.max(1,maxY)); /* 短約 1-2 年 */
@@ -3985,8 +4096,8 @@ function termParams(d,lv){ /* 長約 >2 年、短約 1-2 年;年齡大或成績�
   if(S.tradeRefuse>0)baseM*=0.67;
   return {longEligible,longY,shortY,longM:+(baseM*0.92).toFixed(2),shortM:+(baseM*1.12).toFixed(2)};
 }
-function termChoice(o,d,baseTitle,onPick,onReject,offerMultiplier){
-  const tp=termParams(d,S.lv);
+function termChoice(o,d,baseTitle,onPick,onReject,offerMultiplier,offeredYears){
+  const tp=termParams(d,S.lv,offeredYears);
   const offerM=offerMultiplier||1;
   const annual=(m)=>Math.round(salaryFor(S.lv,d)*m*offerM*dpMult()),deal=(y,m)=>{
     const a=annual(m),gross=a*y,tax=estimatedTax(a,S.org,S.orgTeam),agent=a*.045,take=a-tax-agent;
@@ -4037,7 +4148,7 @@ function extensionOffer(o){
 /* ---------- FA 自由球員 ---------- */
 function faFlow(o){
   const d=contractPerformanceD();
-  const cap=S.pos==='P'?7:15; /* 投手上限7、野手上限15 */
+  const cap=contractTermCap(S.lv);
   let stayY=faYears(d,cap);
   let stayM=d>=3?1.2:d>=0?1:0.8;
   const injHist=(S.bigInj||0)+(S.tjCount||0);
@@ -4062,13 +4173,13 @@ const FA_MARKETS=[
   {n:'同位置供給過剩',d:'市場上同類型球員太多，球團有得挑',heat:-8,offers:-1,pay:.94},
   {n:'爭冠窗口',d:'幾支強隊急著補最後一塊拼圖',heat:10,offers:1,pay:1.08}];
 function faMarket(o,d,round){
-  round=round||1;const org=S.org,lv=S.lv,offers=[],market=pick(FA_MARKETS);S.marketHeat=market.heat;
+  round=round||1;const org=S.org,lv=S.lv,offers=[],marketKey=`${S.year}|${org}|${lv}`;if(!S.faMarketState||S.faMarketState.key!==marketKey)S.faMarketState={key:marketKey,market:pick(FA_MARKETS)};const market=S.faMarketState.market;S.marketHeat=market.heat;
   card(market.heat>=8?'good':market.heat<=-8?'bad':'info',`自由市場｜第 ${round} 輪 · ${market.n}`,`${market.d}<div class="statline">${faRuleSummary(org)}｜市場修正 ${market.heat>=0?'+':''}${market.heat}%｜行情係數 ×${market.pay.toFixed(2)}</div>${contractMarketResume()}`);
   let n=(d>=3?ri(2,4):d>=1?ri(1,3):d>=-1?(chance(60)?ri(1,2):0):(chance(30)?1:0))+market.offers;
   if(S.traits.cancer)n--;n=Math.max(d>=3?2:0,n);
-  const cap=S.pos==='P'?7:15;
+  const cap=contractTermCap(lv);
   makeFaOffers(org,n,({CPBL1:200,NPB1:800,MLB:2000})[lv]||100,1,cap,lv,S.orgTeam,d)
-    .forEach(of=>{of.yrs=faYears(d,cap);of.mult=+((1+Math.max(0,d)*.05+R()*.12)*market.pay*(of.market||1)*(of.interest||1)).toFixed(2);
+    .forEach(of=>{of.yrs=clamp(of.yrs,1,cap);of.mult=+((1+Math.max(0,d)*.05+R()*.12)*market.pay*(of.market||1)*(of.interest||1)).toFixed(2);
       if(((S.bigInj||0)+(S.tjCount||0))>=2&&of.yrs<=3)of.mult=+(of.mult+.15).toFixed(2);offers.push({...of,org});});
   if(lv==='CPBL1'&&o>=r99(53))makeFaOffers('NPB',1,1000,2,3,o>=r99(51)?'NPB1':'NPB2',null,d).forEach(of=>offers.push({...of,org:'NPB',mult:+(market.pay*(of.interest||1)).toFixed(2)}));
   if(lv==='NPB1'&&o>=r99(60)&&((S.service&&S.service.NPB)||0)>=faServiceRequirement('NPB',true)&&chance(50))makeFaOffers('MiLB',1,3000,3,5,'MLB',null,d).forEach(of=>offers.push({...of,org:'MiLB',mult:+(market.pay*(of.market||1)*(of.interest||1)).toFixed(2)}));
@@ -4077,12 +4188,12 @@ function faMarket(o,d,round){
     const none=[{t:`回 ${S.teamName()} 減薪簽約`,main:true,s:'1 年｜年薪係數 ×0.70',f:()=>{S.ct={yrs:1,mult:.7,annual:Math.round(salaryFor(S.lv,d)*.7*dpMult()),guaranteed:1};card('bad','減薪合約',`回到 <b class="hl">${S.teamName()}</b>，簽下 1 年固定年薪 ${fmtContractMoney(S.ct.annual,S.org)} 的證明合約。`);advance();}},{t:'就此引退',warn:true,f:()=>endGame('FA 市場乏人問津，'+S.year+' 年黯然引退。')}];
     if(round<3)none.unshift({t:'再等一輪市場',s:'可能出現新需求，也可能繼續降溫',f:()=>faMarket(o,d,round+1)});choose('市場下一步',none);return;
   }
-  const opts=offers.map(of=>{const a=Math.round(salaryFor(of.lv,d)*(of.mult||1)),yrs=faYears(d,cap),div=of.org==='MiLB'&&MLB_TEAM_META[of.team]?MLB_TEAM_META[of.team][0]:'跨聯盟報價';return{
+  const opts=offers.map(of=>{const a=Math.round(salaryFor(of.lv,d)*(of.mult||1)),yrs=clamp(of.yrs||1,1,contractTermCap(of.lv)),div=of.org==='MiLB'&&MLB_TEAM_META[of.team]?MLB_TEAM_META[of.team][0]:'跨聯盟報價';return{
     t:`${of.team}（${LV[of.lv].n}）`,
     s:`${div}｜${of.fit||'球團主動接觸'}｜預估 ${yrs} 年｜年薪 ${fmtContractMoney(a,of.org)}｜總值約 ${fmtContractMoney(a*yrs,of.org)}｜簽約金 ${fmtLocalMoney(of.bonus,of.org)}`,
     f:()=>{const savedLv=S.lv,savedOrg=S.org,savedTeam=S.orgTeam;S.lv=of.lv;S.org=of.org;S.orgTeam=of.team;
-      termChoice(o,d,`${of.team} · 正式合約談判`,(y,m,option)=>{S.lv=savedLv;S.org=savedOrg;S.orgTeam=savedTeam;bookIncome(of.bonus,'bonus',of.org,of.team);signTo(of.org,of.lv,of.team,y,+(m*(of.mult||1)).toFixed(2),option);S.marketHeat=0;advance();},
-        ()=>{S.lv=savedLv;S.org=savedOrg;S.orgTeam=savedTeam;faMarket(o,d,round+1);},of.mult||1);}
+      termChoice(o,d,`${of.team} · 正式合約談判`,(y,m,option)=>{S.lv=savedLv;S.org=savedOrg;S.orgTeam=savedTeam;bookIncome(of.bonus,'bonus',of.org,of.team);const cpblFa=of.org==='CPBL'&&savedOrg==='CPBL'&&savedTeam!==of.team,annualCap=cpblFa&&S.ct?Math.round((S.ct.annual||0)*1.5):null;signTo(of.org,of.lv,of.team,y,+(m*(of.mult||1)).toFixed(2),option,{annualCap,cpblFaFrom:cpblFa?savedTeam:null});S.marketHeat=0;S.faMarketState=null;advance();},
+        ()=>{S.lv=savedLv;S.org=savedOrg;S.orgTeam=savedTeam;faMarket(o,d,round+1);},of.mult||1,yrs);}
   };});
   if(round<3)opts.push({t:'暫不簽約，等待下一輪',warn:true,s:'新需求可能出現；現有報價將全部失效',f:()=>faMarket(o,d,round+1)});
   opts.push({t:`回原隊（${S.teamName()}）1 年約`,s:'年薪係數 ×0.90',f:()=>{S.ct={yrs:1,mult:.9,annual:Math.round(salaryFor(S.lv,d)*.9*dpMult()),guaranteed:1};S.marketHeat=0;card('info','回歸',`重回 <b class="hl">${S.teamName()}</b>，1 年固定年薪 ${fmtContractMoney(S.ct.annual,S.org)}。`);advance();}});
@@ -5172,6 +5283,7 @@ function runLogicAudit(samples){
   const mean=(a,k)=>+(a.reduce((n,x)=>n+(x[k]||0),0)/Math.max(1,a.length)).toFixed(2);
   const sd=(a,k)=>{const m=a.reduce((n,x)=>n+(Number(x[k])||0),0)/Math.max(1,a.length);return +Math.sqrt(a.reduce((n,x)=>n+Math.pow((Number(x[k])||0)-m,2),0)/Math.max(1,a.length)).toFixed(3);};
   const spread=(a,keys)=>Object.fromEntries(keys.map(k=>[k,{mean:mean(a,k),sd:sd(a,k),min:+Math.min(...a.map(x=>Number(x[k])||0)).toFixed(3),max:+Math.max(...a.map(x=>Number(x[k])||0)).toFixed(3)}]));
+  seedInit('audit-independent-training-dice');const diePairs=60000,faceCounts=Array(6).fill(0),jointCounts=Array(36).fill(0);let sameFace=0,sixCount=0;for(let i=0;i<diePairs;i++){const a=trainingRoll(1),b=trainingRoll(1);faceCounts[a-1]++;faceCounts[b-1]++;jointCounts[(a-1)*6+b-1]++;if(a===b)sameFace++;if(a===6)sixCount++;if(b===6)sixCount++;}const faceExpected=diePairs*2/6,jointExpected=diePairs/36,maxFaceDeviation=Math.max(...faceCounts.map(n=>Math.abs(n-faceExpected)/faceExpected)),maxJointDeviation=Math.max(...jointCounts.map(n=>Math.abs(n-jointExpected)/jointExpected));result.trainingDiceFairness={pairs:diePairs,faces:Object.fromEntries(faceCounts.map((n,i)=>[i+1,n])),sixRate:+(sixCount/(diePairs*2)).toFixed(4),sameFaceRate:+(sameFace/diePairs).toFixed(4),maxFaceDeviation:+maxFaceDeviation.toFixed(4),maxJointDeviation:+maxJointDeviation.toFixed(4),allFacesNearOneSixth:maxFaceDeviation<.025,pairsBehaveIndependently:Math.abs(sameFace/diePairs-1/6)<.015&&maxJointDeviation<.10};
   const yearly=(pos,lv,role,dpos,abilities,seed)=>{setup(pos,lv,role,dpos);Object.assign(S.ab,abilities);seedInit(seed);return Array.from({length:samples},()=>{S.seasonLuck=ri(1,20);S._seasonVariance=null;const st=simSeason(lv);if(pos!=='P')st.OPS=(st.PA?(st.H+st.BB)/st.PA:0)+slgOf(st);return st;});};
   const regular=yearly('IF','MLB',null,'SS',{con:78,pow:78,eye:78,spd:70,sta:76,rng:78,fld:78,arm:78},'audit-year-regular'),catcher=yearly('C','CPBL1',null,'C',{con:72,pow:64,eye:72,spd:42,sta:75,rng:75,fld:82,arm:80,cat:84},'audit-year-catcher'),starter=yearly('P','MLB','SP',null,{vel:78,ctl:78,brk:78,sta:80},'audit-year-sp'),reliever=yearly('P','MLB','MR',null,{vel:78,ctl:78,brk:78,sta:64},'audit-year-rp'),bench=yearly('OF','MLB',null,'LF',{con:55,pow:55,eye:55,spd:60,sta:62,rng:58,fld:58,arm:58},'audit-year-bench');
   result.seasonVariance={regular:spread(regular,['G','PA','avg','OPS','HR','RBI','SB']),catcher:spread(catcher,['G','PA','avg','OPS','HR','E','DEF']),starter:spread(starter,['G','IP','era','WHIP','SO','W']),reliever:spread(reliever,['G','IP','era','WHIP','SO','HLD','HP']),bench:spread(bench,['G','PA','avg','OPS','HR']),roleSpecificAndVisible:sd(regular,'OPS')>=.055&&sd(catcher,'OPS')>=.06&&sd(starter,'era')>=.65&&sd(reliever,'era')>=.82&&sd(bench,'PA')>=18};
@@ -5239,6 +5351,14 @@ function runLogicAudit(samples){
   setup('P','MLB','SP');S.ct={yrs:3,signedYears:3,annual:1000,mult:1,guaranteed:1};S.skipMid=true;S.rehab=1;S._proClockYear=null;settleProfessionalSeasonClock();const once={yrs:S.ct.yrs,service:S.service.MiLB};settleProfessionalSeasonClock();result.contractClock={afterRehabSeason:once,idempotent:S.ct.yrs===once.yrs&&S.service.MiLB===once.service};
   setup('P','NPB2','MR');S.name='存檔驗證員';S.year=2034;S.age=24;S.stage='PRO';S.finance.cash=4321;S.ct={yrs:2,signedYears:3,annual:1800,mult:1.1,guaranteed:.7};S.promiseHistory=[{year:2033,status:'fulfilled'}];S.leagueWorld.history=[{year:2033,type:'trade',players:['甲','乙']}];seedInit('audit-save-system');const saveCursor=_s,savePkg=buildSavePackage(S,'<div class="yr-block">存檔測試</div>'),loaded=normalizeSavePackage(JSON.parse(JSON.stringify(savePkg)));result.saveSystem={schema:loaded.schema,namePreserved:loaded.state.name===S.name,yearPreserved:loaded.state.year===S.year,contractPreserved:loaded.state.ct.annual===1800,moneyPreserved:loaded.state.finance.cash===4321,npcHistoryPreserved:loaded.state.leagueWorld.history.length===1,promisePreserved:loaded.state.promiseHistory.length===1,logPreserved:loaded.logHTML.includes('存檔測試'),rngCursorPreserved:loaded.rngCursor===saveCursor,methodRestored:typeof loaded.state.teamName==='function'&&loaded.state.teamName().includes('二軍')};
   setup('IF','CPBL1',null,'SS');S.name='玩家本人';S.year=2032;S.age=22;S.stage='PRO';Object.assign(S.ab,{con:62,pow:58,eye:61,spd:64,sta:68,rng:64,fld:65,arm:63});seedInit('audit-npc-world');const npcFirst=prepareNpcSeason(),world=npcWorld(),rosters=Object.values(world.rosters),allNpc=rosters.flat(),beforeAges=Object.fromEntries(allNpc.map(p=>[p.id,p.age])),lowUsage=npcFirst.usageAdj;Object.keys(S.ab).forEach(k=>S.ab[k]=99);const highUsage=prepareNpcSeason().usageAdj;S.year++;const npcSecond=prepareNpcSeason(),allNpcNext=Object.values(world.rosters).flat(),continued=allNpcNext.filter(p=>beforeAges[p.id]!==undefined);result.npcWorld={teamCount:rosters.length,rosterSizesValid:rosters.every(r=>r.length===NPC_ROSTER_ROLES.length),uniqueNames:new Set(allNpc.map(p=>p.name)).size===allNpc.length,playerNameExcluded:allNpc.every(p=>p.name!==S.name),namedRival:!!(npcFirst.rival&&npcFirst.rival.name),competitionResponds:highUsage>lowUsage,yearAdvances:continued.length>0&&continued.every(p=>p.age===beforeAges[p.id]+1),secondYearContext:npcSecond.year===S.year,tradeHistoryRecorded:world.history.some(x=>x.type==='trade')};
+  setup('IF','CPBL1',null,'SS');seedInit('audit-npc-levels');const topRoster=ensureNpcRoster('CPBL',S.orgTeam,'CPBL1'),farmRoster=ensureNpcRoster('CPBL',S.orgTeam,'CPBL2');result.npcLevelSeparation={topSize:topRoster.length,farmSize:farmRoster.length,separateObjects:topRoster!==farmRoster,noSharedIds:topRoster.every(p=>!farmRoster.some(q=>q.id===p.id)),noSharedNames:topRoster.every(p=>!farmRoster.some(q=>q.name===p.name))};
+  setup('IF','CPBL1',null,'SS');Object.assign(S.ab,{con:72,pow:65,eye:70,spd:68,sta:74,rng:70,fld:72,arm:69});seedInit('audit-balanced-standings');const standingsLine=simSeason('CPBL1'),standings=simulateLeagueStandings(standingsLine),standingsChecks=standings.groups.map(g=>({group:g.name,wins:g.rows.reduce((n,r)=>n+r.W,0),losses:g.rows.reduce((n,r)=>n+r.L,0),allFullSchedule:g.rows.every(r=>r.W+r.L===standings.games)}));result.standingsBalance={groups:standingsChecks,balanced:standingsChecks.every(g=>g.wins===g.losses&&g.allFullSchedule),playerTeamPresent:!!standings.mine,postseasonHasChampion:!!standings.champion};
+  setup('P','NPB2','MR');S.year=2035;S.ct={yrs:2,signedYears:2,annual:1200,mult:1,guaranteed:.7};S._seasonServiceParts=Array.from({length:6},(_,i)=>({org:'NPB',team:S.orgTeam,lv:i<3?'NPB2':'NPB1',calendarShare:1/6,statShare:1/6}));S._proClockYear=null;settleProfessionalSeasonClock();const partialDays=S.serviceDays.NPB,partialYears=S.service.NPB,contractAfterPartial=S.ct.yrs;settleProfessionalSeasonClock();result.partialServiceTime={days:partialDays,years:partialYears,expectedDays:Math.round(SERVICE_DAY_TARGET.NPB*.5),onlyTopMonthsCounted:partialDays===Math.round(SERVICE_DAY_TARGET.NPB*.5),contractTickedOnce:contractAfterPartial===1&&S.ct.yrs===1,idempotent:S.serviceDays.NPB===partialDays};
+  setup('IF','NPB1',null,'SS');S.year=2036;S.finance={...newState('稅務稽核','IF').finance};const inc1=bookIncome(1000,'salary','NPB',S.orgTeam),inc2=bookIncome(1000,'bonus','NPB',S.orgTeam),expectedTax=estimatedTax(2000,'NPB',S.orgTeam);result.annualTaxAggregation={firstTax:+inc1.tax.toFixed(2),secondTax:+inc2.tax.toFixed(2),totalTax:+S.finance.tax.toFixed(2),expectedTax:+expectedTax.toFixed(2),matchesAnnualBracket:Math.abs(S.finance.tax-expectedTax)<.01,secondPaymentUsesMarginalBracket:inc2.tax>inc1.tax};
+  setup('IF','CPBL1',null,'SS');S.year=2037;S.finance={...newState('解約稽核','IF').finance};S.ct={yrs:2,signedYears:3,annual:240,mult:1,guaranteed:1};S._proClockYear=S.year;const cpblTerminationPay=buyoutRemaining();result.cpblTerminationRule={annualSalary:240,terminationPay:cpblTerminationPay,expectedFifteenDayPay:10,notFullRemainingGuarantee:cpblTerminationPay<480,contractClosed:S.ct.yrs===0};
+  setup('IF','CPBL1',null,'SS');S.year=2038;S.cpblFaMarketByYear[S.year]={declared:13,teamLimit:3};S.cpblFaSignings[S.year]=Object.fromEntries(CPBL_TEAMS.map(t=>[t,3]));const openCpblTeam=CPBL_TEAMS[0];S.cpblFaSignings[S.year][openCpblTeam]=2;const cpblMarketOffers=makeFaOffers('CPBL',3,200,1,3,'CPBL1',null,2);result.cpblFaMarketRule={declared:cpblFaMarketRule().declared,teamLimit:cpblFaMarketRule().teamLimit,fullTeamsFiltered:cpblMarketOffers.length===1&&cpblMarketOffers[0].team===openCpblTeam,offerTeams:cpblMarketOffers.map(x=>x.team)};
+  setup('OF','MLB',null,'LF');Object.assign(S.ab,{con:55,pow:55,eye:55,spd:60,sta:62,rng:58,fld:58,arm:58});seedInit('audit-bench-home-runs');const benchHr=Array.from({length:600},()=>simSeason('MLB'));result.benchHomeRunRandomness={zeroSeasons:benchHr.filter(x=>x.HR===0).length,homeRunSeasons:benchHr.filter(x=>x.HR>0).length,max:Math.max(...benchHr.map(x=>x.HR)),notDeterministicallyZero:benchHr.some(x=>x.HR===0)&&benchHr.some(x=>x.HR>0)};
+  setup('IF','A1',null,'SS');seedInit('audit-monthly-causal-merge');const monthlyParts=[];for(let i=0;i<6;i++){S.seasonFactor=1/6;S.seasonLuck=i===2?18:i===4?3:10;S.seasonMomentum=i===2?2:i===4?-2:0;S._seasonVariance=monthlyVarianceProfile(makeSeasonVarianceProfile(),S.seasonMomentum);const month=applySeasonAdjustments(simSeason('A1'));month.calendarShare=1/6;month.statShare=1/6;monthlyParts.push({org:'MiLB',team:S.orgTeam,lv:'A1',st:month});}const mergedMonths=mergeSeasonSegments(monthlyParts);S.stats.MINOR=null;accSeasonSegments([{org:'MiLB',team:S.orgTeam,lv:'A1',st:mergeSeasonSegments(monthlyParts.slice(0,3))},{org:'MiLB',team:S.orgTeam,lv:'A2',st:mergeSeasonSegments(monthlyParts.slice(3))}]);result.monthlyCausalMerge={months:monthlyParts.length,scheduled:mergedMonths.scheduled,games:mergedMonths.G,withinSchedule:mergedMonths.G<=mergedMonths.scheduled,monthlyLinesDiffer:new Set(monthlyParts.map(p=>`${p.st.G}|${p.st.H}|${p.st.HR}|${p.st.avg.toFixed(3)}`)).size>1,sameLeagueCareerYearCountedOnce:S.stats.MINOR.yr===1,careerGamesMatch:S.stats.MINOR.G===mergedMonths.G};
   result.careerMonteCarlo=runCareerMonteCarlo(samples);
   S=saved.S;RNG_MODE=saved.RNG_MODE;SEED=saved.SEED;return result;
 }
