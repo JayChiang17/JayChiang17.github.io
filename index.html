@@ -17,14 +17,14 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=5.0.0">
+<link rel="stylesheet" href="styles.css?v=5.0.1">
 </head>
 <body>
 <div id="start">
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">棒球人生<br><em>CAREER SIM</em></h1>
-    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v5.0.0</div>
+    <div id="ver-badge" style="position:fixed;top:8px;right:10px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.65;font-family:monospace;z-index:50;pointer-events:none">v5.0.1</div>
     <p class="sub">做出選擇，再親手停下拉霸。從高中、選秀、旅外、傷病到引退，每次人生都不一樣。</p>
     <div class="start-grid">
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
@@ -46,7 +46,7 @@
           · <a href="#" id="seed-re" style="color:var(--blue)">換一個</a><br>相同種子＋相同選擇＝相同宇宙，可與朋友比較不同決策。</p>
       </div>
     </div>
-    <section class="save-entry" aria-label="繼續既有生涯"><strong>繼續既有生涯</strong><p>每年開季前自動存檔；手動存檔也會使用安全檢查點，避免重複結算。</p><div id="start-save-list" class="save-entry-grid"></div></section>
+    <section class="save-entry" aria-label="繼續既有生涯"><strong>繼續既有生涯</strong><div id="start-save-list" class="save-entry-grid"></div><div id="start-save-status" class="save-entry-status" aria-live="polite"></div></section>
     <button class="btn main" style="margin-top:28px" id="btn-start">開始生涯 ▸ 高一春天</button>
   </div>
 </div>
@@ -192,9 +192,9 @@
 <div id="save-overlay" aria-hidden="true">
   <div class="fx-backdrop"></div>
   <section class="save-machine" role="dialog" aria-modal="true" aria-labelledby="save-title">
-    <header class="save-head"><div><small>CAREER SAVE</small><h2 id="save-title">生涯存檔</h2><p>自動存檔、三個手動欄位與跨裝置匯入／匯出</p></div><button id="save-close" class="save-close" type="button" aria-label="關閉存檔">×</button></header>
+    <header class="save-head"><div><small>CAREER SAVE</small><h2 id="save-title">生涯存檔</h2></div><button id="save-close" class="save-close" type="button" aria-label="關閉存檔">×</button></header>
     <div id="save-list" class="save-list"></div>
-    <footer class="save-actions"><button class="btn main" id="save-export" type="button">匯出目前檢查點</button><button class="btn" id="save-import" type="button">匯入存檔檔案</button><input id="save-file" type="file" accept="application/json,.json" hidden><div id="save-status" class="save-status" aria-live="polite"></div></footer>
+    <footer class="save-actions"><button class="btn main" id="save-export" type="button">匯出目前存檔</button><button class="btn" id="save-import" type="button">匯入存檔檔案</button><input id="save-file" type="file" accept="application/json,.json" hidden><div id="save-status" class="save-status" aria-live="polite"></div></footer>
   </section>
 </div>
 
@@ -221,7 +221,7 @@
     </div>
   </section>
 </div>
-<script src="app.js?v=5.0.0"></script>
-<script type="module" src="fx.js?v=5.0.0"></script>
+<script src="app.js?v=5.0.1"></script>
+<script type="module" src="fx.js?v=5.0.1"></script>
 </body>
 </html>
