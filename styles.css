@@ -646,6 +646,74 @@ body::before{display:none}
   .season-stat-grid strong{font-size:13px}
 }
 
+/* ---------- v5.3 生涯回顧：單一焦點，不再用 3D 物件重複文字 ---------- */
+#legacy-overlay .legacy-backdrop{background:rgba(0,5,3,.94);backdrop-filter:blur(9px)}
+#legacy-overlay .legacy-machine{width:min(1120px,calc(100vw - 36px));height:min(800px,calc(100dvh - 30px));grid-template-rows:auto minmax(0,1fr) auto auto;border:1px solid #426050;background:#030a07;box-shadow:0 32px 100px #000}
+#legacy-overlay .legacy-head{min-height:82px;padding:13px 20px;border-bottom:1px solid #2f4c3d;background:#06110c}
+#legacy-overlay .legacy-head small{color:#83a691;font-size:9px;letter-spacing:.2em}
+#legacy-overlay .legacy-head h2{margin-top:2px;font-size:25px;line-height:1.2}
+#legacy-overlay .legacy-head p{margin-top:4px;color:#879b90;font-size:11px}
+#legacy-overlay .legacy-close{width:44px;height:44px;border-color:#496554;background:#091710;font-size:22px}
+#legacy-overlay #legacy-three-stage{min-height:0;background:linear-gradient(90deg,#020806 0%,#06130e 48%,#020806 100%)}
+#legacy-overlay #legacy-three-stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#020806cc 0%,transparent 32%,transparent 68%,#020806bb 100%),linear-gradient(0deg,#020806c7 0%,transparent 42%)}
+#legacy-overlay .legacy-story{position:absolute;z-index:5;inset:83px 0 102px;width:auto;display:grid;grid-template-columns:minmax(220px,.82fr) minmax(380px,1.18fr);align-items:center;gap:clamp(32px,6vw,86px);padding:clamp(28px,5vw,72px);border:0;background:transparent;box-shadow:none;transform:none;backdrop-filter:none;pointer-events:none}
+#legacy-overlay .legacy-mark{position:relative;justify-self:end;width:clamp(220px,24vw,286px);aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;padding:24px;border:1px solid color-mix(in srgb,var(--legacy-color) 78%,#dbe6df);border-left:8px solid var(--legacy-color);background:linear-gradient(145deg,color-mix(in srgb,var(--legacy-color) 20%,#07130e),#030906 68%);box-shadow:24px 24px 0 #02060499}
+#legacy-overlay .legacy-mark::before,#legacy-overlay .legacy-mark::after{content:'';position:absolute;background:var(--legacy-color)}
+#legacy-overlay .legacy-mark::before{top:-1px;right:-1px;width:38%;height:6px}
+#legacy-overlay .legacy-mark::after{right:-1px;bottom:-1px;width:6px;height:38%}
+#legacy-overlay .legacy-mark small{color:#a7bbb0;font:900 10px var(--mono);letter-spacing:.19em}
+#legacy-overlay .legacy-mark strong{max-width:100%;overflow:hidden;color:#f3f6f4;font:900 clamp(46px,6vw,76px)/.9 var(--mono);letter-spacing:-.07em;text-overflow:clip;text-shadow:0 5px 24px #000}
+#legacy-overlay .legacy-copy{align-self:center;max-width:560px;padding:28px 30px;border-left:1px solid var(--legacy-color);background:linear-gradient(90deg,#030a07e8,#030a0794 72%,transparent)}
+#legacy-overlay .legacy-meta{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:13px;border-bottom:1px solid #29473a}
+#legacy-overlay .legacy-year{color:var(--legacy-color);font:900 13px var(--mono);letter-spacing:.12em}
+#legacy-overlay .legacy-index{float:none;color:#8da196;font:800 11px var(--mono);letter-spacing:.08em}
+#legacy-overlay .legacy-story h3{margin-top:18px;color:#f2f5f3;font-size:clamp(31px,4vw,48px);line-height:1.14;letter-spacing:-.035em}
+#legacy-overlay .legacy-story p{margin-top:12px;color:#c0cec6;font:700 14px/1.65 var(--mono)}
+#legacy-overlay .legacy-story p:empty{display:none}
+#legacy-overlay .legacy-cast-line{display:inline-block;margin-top:18px;padding:7px 9px;border:0;border-left:4px solid var(--legacy-color);background:#0a1812;color:#aabbb1;font:900 9px var(--mono);letter-spacing:.18em}
+#legacy-overlay .legacy-story.story-enter{animation:legacyFocusEnter .48s cubic-bezier(.2,.75,.2,1) both}
+#legacy-overlay .legacy-story[data-kind="榮譽"] .legacy-mark{background:linear-gradient(145deg,#342913,#0b0c08 68%)}
+#legacy-overlay .legacy-story[data-kind="榮譽"] .legacy-mark strong{font-size:clamp(39px,5vw,64px);letter-spacing:.01em}
+#legacy-overlay .legacy-dots{z-index:7;justify-content:flex-start;gap:6px;min-height:31px;padding:10px 20px 8px;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;scrollbar-width:none;background:#05100b;border-top:1px solid #1e392c}
+#legacy-overlay .legacy-dots::-webkit-scrollbar{display:none}
+#legacy-overlay .legacy-dots button{flex:0 0 30px;width:30px;height:5px;padding:0;border:0;background:#2f463a;box-shadow:none;transition:flex-basis .24s ease,background .24s ease}
+#legacy-overlay .legacy-dots button.honor{background:#594c2c}
+#legacy-overlay .legacy-dots button.on{flex-basis:58px;background:#79ad90;box-shadow:none}
+#legacy-overlay .legacy-dots button.on.honor{background:#d3ad59;box-shadow:none}
+#legacy-overlay .legacy-controls{z-index:7;grid-template-columns:minmax(120px,1fr) minmax(170px,1.25fr) minmax(120px,1fr);gap:6px;padding:0 20px 18px;background:#05100b}
+#legacy-overlay .legacy-controls button{min-width:0;min-height:52px;border:1px solid #3b5949;background:#081710;color:#dce6e0;font-size:13px;touch-action:manipulation}
+#legacy-overlay .legacy-controls button:hover,#legacy-overlay .legacy-controls button:focus-visible{outline:2px solid #71937f;background:#11261b}
+#legacy-overlay .legacy-controls button:disabled{border-color:#243b30;background:#06100c;color:#50655a;opacity:1}
+#legacy-overlay .legacy-controls #legacy-play{border-color:#8c7541;color:#ead79d}
+#legacy-overlay .legacy-controls #legacy-play.playing{box-shadow:inset 0 -4px 0 #d3ad59;background:#171b10}
+@keyframes legacyFocusEnter{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+
+@media(max-width:760px){
+  #legacy-overlay .legacy-machine{width:100%;height:100dvh;max-height:none;border:0;grid-template-rows:auto minmax(0,1fr) auto auto}
+  #legacy-overlay .legacy-head{min-height:82px;padding:max(10px,env(safe-area-inset-top)) 14px 10px}
+  #legacy-overlay .legacy-head h2{font-size:21px}
+  #legacy-overlay .legacy-head p{font-size:10.5px}
+  #legacy-overlay .legacy-close{width:42px;height:42px}
+  #legacy-overlay .legacy-story{inset:82px 0 103px;grid-template-columns:1fr;grid-template-rows:auto auto;align-content:center;gap:20px;padding:22px 18px 20px}
+  #legacy-overlay .legacy-mark{justify-self:start;width:148px;height:128px;aspect-ratio:auto;padding:15px;border-left-width:6px;box-shadow:12px 12px 0 #02060499}
+  #legacy-overlay .legacy-mark small{font-size:8px}
+  #legacy-overlay .legacy-mark strong{font-size:42px}
+  #legacy-overlay .legacy-story[data-kind="榮譽"] .legacy-mark strong{font-size:35px}
+  #legacy-overlay .legacy-copy{width:100%;max-width:none;padding:18px 18px 19px;background:#030a07e8}
+  #legacy-overlay .legacy-meta{padding-bottom:10px}
+  #legacy-overlay .legacy-story h3{margin-top:13px;font-size:29px;line-height:1.18}
+  #legacy-overlay .legacy-story p{margin-top:8px;font-size:12px;line-height:1.6}
+  #legacy-overlay .legacy-cast-line{margin-top:12px}
+  #legacy-overlay .legacy-dots{min-height:30px;padding:9px 10px 7px}
+  #legacy-overlay .legacy-dots button{flex-basis:20px;width:20px}
+  #legacy-overlay .legacy-dots button.on{flex-basis:38px}
+  #legacy-overlay .legacy-controls{grid-template-columns:92px minmax(0,1fr) 92px;gap:5px;width:100%;padding:0 8px max(9px,env(safe-area-inset-bottom));overflow:visible}
+  #legacy-overlay .legacy-controls button{min-height:54px;padding:7px 3px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #legacy-overlay .legacy-story.story-enter{animation:legacyFocusEnterMobile .4s ease both}
+  @keyframes legacyFocusEnterMobile{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+@media(prefers-reduced-motion:reduce){#legacy-overlay .legacy-story.story-enter{animation:none}#legacy-overlay .legacy-dots{scroll-behavior:auto}}
+
 /* ---------- v6.0 生涯志向、人物線與遺產 ---------- */
 .purpose-picker{margin-top:18px;border:1px solid #365947;background:#071710}.purpose-picker-head{display:flex;align-items:center;gap:12px;padding:11px 13px;border-bottom:1px solid #29483a}.purpose-picker-head span{color:var(--clay);font:900 10px var(--mono);letter-spacing:.16em}.purpose-picker-head b{font-size:15px}.purpose-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#29483a}.purpose-options button{min-width:0;min-height:66px;padding:10px 11px;border:0;background:#0a1b14;color:#a9bab0;text-align:left;cursor:pointer;touch-action:manipulation}.purpose-options button:hover,.purpose-options button:focus-visible{position:relative;z-index:1;outline:2px solid #6c927d;background:#10271d}.purpose-options button.on{position:relative;z-index:1;box-shadow:inset 0 -4px 0 var(--amber);background:#183024;color:#f0f5f2}.purpose-options b,.purpose-options small{display:block}.purpose-options b{font-size:14px}.purpose-options small{margin-top:2px;color:#83988b;font-size:10.5px}.purpose-options button.on small{color:#b8c9bf}.meta-legacy{padding:7px 12px;border-top:1px solid #29483a;color:#81968a;font:700 10px var(--mono)}
 .rail-purpose{border-top:3px solid var(--clay)!important}.purpose-rail-head{display:flex;align-items:end;justify-content:space-between;gap:8px}.purpose-rail-head b{color:#eef4f0;font-size:16px}.purpose-rail-head span{color:#dce7e0;font:900 18px var(--mono)}.purpose-track{height:6px;margin-top:8px;background:#020906;overflow:hidden}.purpose-track i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--clay),var(--amber),var(--good));transition:width .35s ease}.purpose-next{margin-top:7px;color:#9db0a5;font-size:11px;line-height:1.45}.purpose-path{display:none;margin-top:7px;padding:5px 7px;border-left:3px solid #55705f;background:#091a13;color:#c6d4cc;font:700 10px var(--mono)}.purpose-path.show{display:block}

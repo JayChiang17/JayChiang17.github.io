@@ -247,7 +247,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v5.2.2';
+const APP_VER='v5.3.0';
 const SAVE_SCHEMA=7,SAVE_PREFIX='baseball-career-save-v4',SAVE_AUTO=`${SAVE_PREFIX}:auto`;
 let _yearStartSnapshot=null;
 function stateTeamName(){
@@ -665,9 +665,12 @@ function careerHonorSummaryItems(){
   const map=new Map();(S.honors||[]).forEach(raw=>{const m=String(raw).match(/^(\d{4})\s+(.+)$/),year=m?Number(m[1]):S.year,title=m?m[2]:String(raw),item=map.get(title)||{title,years:[],count:0,first:year,last:year};item.years.push(year);item.count++;item.first=Math.min(item.first,year);item.last=Math.max(item.last,year);map.set(title,item);});
   return [...map.values()].sort((a,b)=>a.first-b.first||a.title.localeCompare(b.title));
 }
+function careerHonorCode(title){
+  const t=String(title||'');if(/新人王/.test(t))return 'ROY';if(/MVP/.test(t))return 'MVP';if(/賽揚/.test(t))return 'CY';if(/澤村/.test(t))return 'SAW';if(/全壘打王/.test(t))return 'HR';if(/打擊王/.test(t))return 'AVG';if(/盜壘王/.test(t))return 'SB';if(/防禦率王/.test(t))return 'ERA';if(/勝投王/.test(t))return 'WIN';if(/三振王/.test(t))return 'K';if(/救援王/.test(t))return 'SV';if(/中繼王|最優秀中繼/.test(t))return 'HLD';if(/金手套/.test(t))return 'GG';if(/銀棒/.test(t))return 'SS';if(/最佳九人/.test(t))return 'BEST9';if(/最佳十人/.test(t))return 'BEST10';if(/世界大賽/.test(t))return 'WS';if(/日本一|總冠軍/.test(t))return 'CHAMP';if(/明星賽/.test(t))return 'AS';return 'HONOR';
+}
 function legacyItems(){
   const teams=careerTeamSummaryItems().map(x=>({year:x.first,kind:'球隊',title:x.team,text:`${x.range}｜${x.seasons} 季${x.games?`・${x.games.toLocaleString()} 場`:''}`}));
-  const honors=careerHonorSummaryItems().map(x=>({year:x.first,kind:'榮譽',title:x.title,text:`${x.years.join('、')}${x.count>1?`｜共 ${x.count} 次`:''}`}));
+  const honors=careerHonorSummaryItems().map(x=>({year:x.first,kind:'榮譽',title:x.title,text:x.count>1?`獲獎年份｜${x.years.join('、')}・共 ${x.count} 次`:''}));
   return [...teams,...honors].sort((a,b)=>a.year-b.year||(a.kind==='球隊'?-1:1));
 }
 function careerLegacyHTML(){
@@ -682,10 +685,31 @@ function readLegacyMeta(){try{return JSON.parse(localStorage.getItem(LEGACY_META
 function syncMetaLegacy(){if(!S)return;const m=readLegacyMeta(),st=purposeStatus();m.badges=m.badges||{};if(st.score>=100)m.badges[st.key]={year:S.year,name:S.name};try{localStorage.setItem(LEGACY_META_KEY,JSON.stringify(m));}catch(_){}renderMetaLegacy();}
 function renderMetaLegacy(){const el=$('meta-legacy');if(!el)return;const b=readLegacyMeta().badges||{},names=Object.keys(b).map(k=>CAREER_ASPIRATIONS[k]&&CAREER_ASPIRATIONS[k].name).filter(Boolean);el.textContent=names.length?`傳承收藏 ${names.length}/6｜${names.join('・')}`:'傳承收藏 0/6｜完成一種人生志向後永久收藏';}
 let legacyHallIndex=0,legacyHallTimer=null,legacyHallDone=null;
-function renderLegacyHallMoment(){const items=legacyItems(),x=items[legacyHallIndex]||items[0];if(!x)return;const story=$('legacy-moment-title').closest('.legacy-story');story.dataset.kind=x.kind;story.classList.remove('story-enter');void story.offsetWidth;story.classList.add('story-enter');$('legacy-index').textContent=`${String(legacyHallIndex+1).padStart(2,'0')} / ${String(items.length).padStart(2,'0')}`;$('legacy-year').textContent=x.year||'生涯';$('legacy-moment-title').textContent=x.title;$('legacy-moment-text').textContent=x.text;$('legacy-cast-line').textContent=x.kind==='球隊'?'TEAM HISTORY':'TROPHY CABINET';$('legacy-dots').innerHTML=items.map((item,i)=>`<button class="${i===legacyHallIndex?'on':''} ${item.kind==='榮譽'?'honor':''}" data-i="${i}" aria-label="${escapeHTML(item.kind)} ${i+1}"></button>`).join('');$('legacy-dots').querySelectorAll('button').forEach(b=>b.onclick=()=>{legacyHallIndex=+b.dataset.i;renderLegacyHallMoment();});if(window.LegacyFX)window.LegacyFX.set(legacyHallIndex);}
-function closeLegacyHall(){clearInterval(legacyHallTimer);legacyHallTimer=null;const el=$('legacy-overlay');el.classList.remove('open');el.setAttribute('aria-hidden','true');document.body.classList.remove('legacy-open');if(window.LegacyFX)window.LegacyFX.close();const done=legacyHallDone;legacyHallDone=null;if(done)done();}
-function toggleLegacyAutoplay(){const btn=$('legacy-play');if(legacyHallTimer){clearInterval(legacyHallTimer);legacyHallTimer=null;btn.textContent='▶ 自動播放';return;}btn.textContent='Ⅱ 暫停';legacyHallTimer=setInterval(()=>{const n=legacyItems().length;legacyHallIndex=(legacyHallIndex+1)%n;renderLegacyHallMoment();},3200);}
-function openLegacyHall(finale,onClose){const items=legacyItems();if(!items.length)return;if(legacyHallTimer){clearInterval(legacyHallTimer);legacyHallTimer=null;}legacyHallDone=onClose||null;legacyHallIndex=0;const teams=careerTeamSummaryItems(),honors=(S.honors||[]).length;$('legacy-title').textContent=`${S.name}｜生涯總結`;$('legacy-subtitle').textContent=`${teams.length} 支球隊・${honors} 項獎項`;$('legacy-prev').textContent='← 上一頁';$('legacy-next').textContent='下一頁 →';const el=$('legacy-overlay');el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.classList.add('legacy-open');if(window.LegacyFX)window.LegacyFX.open(items);renderLegacyHallMoment();if(finale)toggleLegacyAutoplay();}
+function stopLegacyAutoplay(label){
+  if(legacyHallTimer)clearInterval(legacyHallTimer);legacyHallTimer=null;
+  const btn=$('legacy-play');if(btn){btn.textContent=label||'自動回顧';btn.classList.remove('playing');}
+}
+function renderLegacyHallMoment(){
+  const items=legacyItems(),x=items[legacyHallIndex]||items[0];if(!x)return;
+  const honor=x.kind==='榮譽',story=$('legacy-moment-title').closest('.legacy-story'),color=honor?'#d3ad59':TEAM_COLOR[x.title]||'#79ad90';
+  story.dataset.kind=x.kind;story.style.setProperty('--legacy-color',color);story.classList.remove('story-enter');void story.offsetWidth;story.classList.add('story-enter');
+  $('legacy-index').textContent=`${String(legacyHallIndex+1).padStart(2,'0')} / ${String(items.length).padStart(2,'0')}`;$('legacy-year').textContent=x.year||'生涯';$('legacy-moment-title').textContent=x.title;$('legacy-moment-text').textContent=x.text;
+  $('legacy-mark-kicker').textContent=honor?'CAREER HONOR':'BALL CLUB';$('legacy-mark-code').textContent=honor?careerHonorCode(x.title):teamBroadcastCode(x.title);$('legacy-cast-line').textContent=honor?'AWARD ARCHIVE':'TEAM HISTORY';
+  const dots=$('legacy-dots');dots.innerHTML=items.map((item,i)=>`<button class="${i===legacyHallIndex?'on':''} ${item.kind==='榮譽'?'honor':''}" data-i="${i}" aria-label="${escapeHTML(item.kind)} ${i+1}：${escapeHTML(item.title)}" title="${escapeHTML(item.title)}"></button>`).join('');
+  dots.querySelectorAll('button').forEach(b=>b.onclick=()=>{stopLegacyAutoplay();legacyHallIndex=+b.dataset.i;renderLegacyHallMoment();});const active=dots.querySelector('.on');if(active)requestAnimationFrame(()=>{dots.scrollLeft=active.offsetLeft-dots.clientWidth/2+active.offsetWidth/2;});
+  $('legacy-prev').disabled=legacyHallIndex===0;$('legacy-next').disabled=legacyHallIndex===items.length-1;
+  if(window.LegacyFX)window.LegacyFX.set(legacyHallIndex,{kind:x.kind,color});
+}
+function closeLegacyHall(){stopLegacyAutoplay();const el=$('legacy-overlay');el.classList.remove('open');el.setAttribute('aria-hidden','true');document.body.classList.remove('legacy-open');if(window.LegacyFX)window.LegacyFX.close();const done=legacyHallDone;legacyHallDone=null;if(done)done();}
+function toggleLegacyAutoplay(){
+  if(legacyHallTimer){stopLegacyAutoplay();return;}const items=legacyItems();if(legacyHallIndex>=items.length-1){legacyHallIndex=0;renderLegacyHallMoment();}
+  const btn=$('legacy-play');btn.textContent='暫停';btn.classList.add('playing');legacyHallTimer=setInterval(()=>{if(legacyHallIndex>=items.length-1){stopLegacyAutoplay('重新播放');return;}legacyHallIndex++;renderLegacyHallMoment();if(legacyHallIndex>=items.length-1)stopLegacyAutoplay('重新播放');},3000);
+}
+function openLegacyHall(finale,onClose){
+  const items=legacyItems();if(!items.length)return;stopLegacyAutoplay();legacyHallDone=onClose||null;legacyHallIndex=0;const teams=careerTeamSummaryItems(),honors=(S.honors||[]).length;
+  $('legacy-title').textContent=`${S.name}｜生涯總結`;$('legacy-subtitle').textContent=`球隊旅程 ${teams.length} 站・生涯獎項 ${honors} 項`;$('legacy-prev').textContent='← 上一筆';$('legacy-next').textContent='下一筆 →';
+  const el=$('legacy-overlay');el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.classList.add('legacy-open');if(window.LegacyFX)window.LegacyFX.open(items);renderLegacyHallMoment();if(finale)setTimeout(()=>{if(el.classList.contains('open'))toggleLegacyAutoplay();},700);
+}
 function chooseCareerAspiration(done){choose('這輩子想成為誰？',Object.entries(CAREER_ASPIRATIONS).map(([key,a])=>({t:a.name,s:a.short,major:true,f:()=>{S.aspiration=key;addLegacyMoment('志向',`選擇 ${a.name}`,a.short,S.year,`aspiration-${key}`);card('gold','生涯志向確立',`你選擇了 <b class="hl">${a.name}</b>。往後每一季都會顯示距離，但不保證你一定完成。`);continueAction('踏上這段人生 ▸',done);}})));}
 function blankStat(){return {yr:0,qualYrs:0,eliteYrs:0,G:0,PA:0,AB:0,H:0,_1B:0,_2B:0,_3B:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,OUTS:0,SO:0,ER:0,AS:0,DEF:0,TC:0,E:0,PO:0,A:0,DP:0,OFA:0,CS:0,SBA:0,CALL_RUNS:0,CALL_DEF:0,CALL_SCORE_G:0,CALL_G:0,VeloIP:0,avgVelo:0};}
 function bucketOf(lv){ const l=lv&&LV[lv]; return l&&l.top?l.top:'MINOR'; } /* 業餘引退時 lv 為空,歸類 MINOR */
@@ -5619,14 +5643,15 @@ $('btn-career-report').onclick=()=>openCareerReport();
 $('career-report-close').onclick=()=>closeFx('career-overlay');
 document.querySelectorAll('.career-tab').forEach(b=>b.onclick=()=>renderCareerReport(b.dataset.tab));
 $('career-overlay').querySelector('.fx-backdrop').onclick=()=>closeFx('career-overlay');
-$('legacy-close').onclick=closeLegacyHall;$('legacy-overlay').querySelector('.legacy-backdrop').onclick=closeLegacyHall;$('legacy-prev').onclick=()=>{const n=legacyItems().length;legacyHallIndex=(legacyHallIndex-1+n)%n;renderLegacyHallMoment();};$('legacy-next').onclick=()=>{const n=legacyItems().length;legacyHallIndex=(legacyHallIndex+1)%n;renderLegacyHallMoment();};$('legacy-play').onclick=toggleLegacyAutoplay;
+$('legacy-close').onclick=closeLegacyHall;$('legacy-overlay').querySelector('.legacy-backdrop').onclick=closeLegacyHall;$('legacy-prev').onclick=()=>{stopLegacyAutoplay();if(legacyHallIndex>0){legacyHallIndex--;renderLegacyHallMoment();}};$('legacy-next').onclick=()=>{stopLegacyAutoplay();if(legacyHallIndex<legacyItems().length-1){legacyHallIndex++;renderLegacyHallMoment();}};$('legacy-play').onclick=toggleLegacyAutoplay;
+document.addEventListener('keydown',e=>{if(!$('legacy-overlay').classList.contains('open'))return;if(e.key==='ArrowLeft')$('legacy-prev').click();else if(e.key==='ArrowRight')$('legacy-next').click();});
 $('settlement-close').onclick=closeSettlementViewer;
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('legacy-overlay').classList.contains('open'))closeLegacyHall();else if($('settlement-overlay').classList.contains('open'))closeSettlementViewer();else if($('save-overlay').classList.contains('open'))closeFx('save-overlay');else if($('career-overlay').classList.contains('open'))closeFx('career-overlay');else if($('decision-backdrop').classList.contains('open')){const dock=$('act').querySelector('.decision-dock');if(dock)dock.click();}});
 (function(){ const vb=document.getElementById('ver-badge'); if(vb)vb.textContent=APP_VER; })();
 renderStartSaveList();
 renderMetaLegacy();
 if(new URLSearchParams(location.search).get('visual-audit')==='legacy-hall'){
-  RNG_MODE='destiny';seedInit('visual-audit-legacy-hall');S=attachStateMethods(newState('蔣孟杰','IF',null));S.aspiration='records';S.stage='PRO';S.lv='MLB';S.org='MiLB';S.orgTeam='紐約大都會';S.dpos='SS';S.age=36;S.year=2046;S.proYears=16;S.legacy.path='ceiling';S.teamYears=7;S.finance.netWorth=48200;S.stats.MLB=blankStat();Object.assign(S.stats.MLB,{yr:9,G:1260,PA:5340,AB:4780,H:1518,HR:312,RBI:890,SB:146});S.log=[{y:2028,age:18,tm:'台中猛瑪',line:'中職一軍',st:{G:96}},{y:2029,age:19,tm:'台中猛瑪',line:'中職一軍',st:{G:112}},{y:2030,age:20,tm:'西雅圖水手',line:'2A',st:{G:124}},{y:2031,age:21,tm:'西雅圖水手',line:'3A',st:{G:131}},{y:2032,age:22,tm:'紐約大都會',line:'3A',st:{G:118}},{y:2033,age:23,tm:'紐約大都會',line:'MLB',st:{G:142}}];S.honors=['2034 大聯盟年度新人王','2038 大聯盟全壘打王','2039 世界大賽冠軍','2041 大聯盟年度MVP','2043 大聯盟銀棒獎・游擊手'];$('start').style.display='none';document.body.classList.add('game-started');openLegacyHall(false);setTimeout(()=>{const m=document.querySelector('.legacy-machine').getBoundingClientRect(),c=document.querySelector('.legacy-controls').getBoundingClientRect();document.documentElement.dataset.legacyLayout=`${innerWidth}|${m.left}|${m.width}|${c.left}|${c.width}|${document.documentElement.scrollWidth}`;},500);
+  RNG_MODE='destiny';seedInit('visual-audit-legacy-hall');S=attachStateMethods(newState('蔣孟杰','IF',null));S.aspiration='records';S.stage='PRO';S.lv='MLB';S.org='MiLB';S.orgTeam='紐約大都會';S.dpos='SS';S.age=36;S.year=2046;S.proYears=16;S.legacy.path='ceiling';S.teamYears=7;S.finance.netWorth=48200;S.stats.MLB=blankStat();Object.assign(S.stats.MLB,{yr:9,G:1260,PA:5340,AB:4780,H:1518,HR:312,RBI:890,SB:146});S.log=[{y:2028,age:18,tm:'台中猛瑪',line:'中職一軍',st:{G:96}},{y:2029,age:19,tm:'台中猛瑪',line:'中職一軍',st:{G:112}},{y:2030,age:20,tm:'西雅圖水手',line:'2A',st:{G:124}},{y:2031,age:21,tm:'西雅圖水手',line:'3A',st:{G:131}},{y:2032,age:22,tm:'紐約大都會',line:'3A',st:{G:118}},{y:2033,age:23,tm:'紐約大都會',line:'MLB',st:{G:142}}];S.honors=['2034 大聯盟年度新人王','2038 大聯盟全壘打王','2039 世界大賽冠軍','2041 大聯盟年度MVP','2043 大聯盟銀棒獎・游擊手'];$('start').style.display='none';document.body.classList.add('game-started');openLegacyHall(false);const auditSlide=clamp(Number(new URLSearchParams(location.search).get('legacy-slide'))||0,0,legacyItems().length-1);if(auditSlide){legacyHallIndex=auditSlide;renderLegacyHallMoment();}setTimeout(()=>{const m=document.querySelector('.legacy-machine').getBoundingClientRect(),c=document.querySelector('.legacy-controls').getBoundingClientRect(),buttons=[...c.querySelectorAll('button')].map(b=>{const r=b.getBoundingClientRect();return [Math.round(r.left),Math.round(r.right),Math.round(r.width)];});document.documentElement.dataset.legacyLayout=`${innerWidth}|${m.left}|${m.width}|${c.left}|${c.width}|${document.documentElement.scrollWidth}|${buttons.map(x=>x.join(':')).join(',')}`;},500);
 }
 if(new URLSearchParams(location.search).get('visual-audit')==='career-summary'){
   RNG_MODE='destiny';seedInit('visual-audit-career-summary');S=attachStateMethods(newState('蔣孟杰','IF',null));S.stage='PRO';S.lv='MLB';S.org='MiLB';S.orgTeam='紐約大都會';S.dpos='SS';S.age=36;S.year=2046;S.log=[{y:2028,age:18,tm:'台中猛瑪',line:'中職一軍',st:{G:96}},{y:2029,age:19,tm:'台中猛瑪',line:'中職一軍',st:{G:112}},{y:2030,age:20,tm:'西雅圖水手',line:'2A',st:{G:124}},{y:2031,age:21,tm:'西雅圖水手',line:'3A',st:{G:131}},{y:2032,age:22,tm:'紐約大都會',line:'3A',st:{G:118}},{y:2033,age:23,tm:'紐約大都會',line:'MLB',st:{G:142}}];S.honors=['2034 大聯盟年度新人王','2038 大聯盟全壘打王','2039 世界大賽冠軍','2041 大聯盟年度MVP','2043 大聯盟銀棒獎・游擊手','2044 大聯盟銀棒獎・游擊手'];showGameShell();board(0);openCareerReport('legacy');
