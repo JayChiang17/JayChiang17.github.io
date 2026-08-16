@@ -247,7 +247,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v5.2.1';
+const APP_VER='v5.2.2';
 const SAVE_SCHEMA=7,SAVE_PREFIX='baseball-career-save-v4',SAVE_AUTO=`${SAVE_PREFIX}:auto`;
 let _yearStartSnapshot=null;
 function stateTeamName(){
@@ -1036,6 +1036,17 @@ function seasonOutlierProfile(lv){
   }
   return out;
 }
+/* 盜壘不是固定配額：先要實際上壘，速度決定球隊願不願放行與成功率，
+   聯盟風格和當季跑壘狀態再製造波動。99 速全勤明星通常能挑戰 50+，
+   但低上壘率、板凳角色或低速球員不會憑空累積盜壘。 */
+function stolenBaseTotal(timesOnBase,speed,lv,variance,tail){
+  const onBase=Math.max(0,Math.round(timesOnBase||0)),spd=clamp(Number(speed)||1,1,RATING_MAX);
+  if(!onBase)return 0;
+  const runCurve=clamp((spd-30)/69,0,1),attemptRate=.005+.225*Math.pow(runCurve,2),successRate=clamp(.58+spd*.0032,.55,.90);
+  const leagueFactor={MLB:1,NPB1:.96,CPBL1:1.02,A3:1.01,A2:1.02,A1:1.03,R:1.04,NPB2:.98,CPBL2:1.03}[lv]||(S.stage==='HS'?1.08:1.03);
+  const running=Number(variance&&variance.running)||0,greenLight=clamp(.82+R()*.36+running*.15,.55,1.48),outlier=clamp(Number(tail)||1,.45,1.55);
+  return Math.min(Math.floor(onBase*.52),Math.round(onBase*attemptRate*successRate*leagueFactor*greenLight*outlier));
+}
 function simAmateurSeason(){
   const C=amateurSeasonConfig(),a=S.ab,par=C.par,scheduleF=(S.seasonContext&&S.seasonContext.scheduleF)||1,f=clamp(S.seasonFactor*scheduleF,0,1),swing=seasonSwing(),variance=currentSeasonVariance();
   const st={G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,HP:0,IP:0,SO:0,ER:0,avg:0,era:0,WHIP:0,DEF:0,d:0,luck:swing.luck,swing:+swing.total.toFixed(1),variance:+variance.shared.toFixed(2),varianceLabel:variance.label,varianceKind:variance.kind,scheduled:C.games,availability:Math.round(f*100),usageRole:'未定'};
@@ -1061,8 +1072,8 @@ function simAmateurSeason(){
     const roleVol=talent>=6?.82:talent>=1?1:talent>=-4?1.18:1.38,usageVol=S.dpos==='C'?.78:1;
     share=clamp(share+swing.total*.014+roleShare+variance.workload*.072*roleVol*usageVol-ratingGap(r99(45),a.sta)*.006,.12,1);st.G=clamp(Math.round(C.games*f*share*(.91+R()*.18)),1,Math.round(C.games*f));st.PA=Math.round(st.G*paG*clamp(1+variance.workload*.025,.90,1.08));st.BB=Math.round(st.PA*clamp(.065+ratingGap(a.eye,par)*.0035+variance.discipline*.010*roleVol,.025,.21));st.AB=Math.max(1,st.PA-st.BB);
     st.avg=clamp(.258+d*.0062+ratingGap(a.spd,par)*.0006+variance.contact*.020*roleVol+N0(.019),.095,.445);st.H=Math.round(st.AB*st.avg);st.avg=st.H/st.AB;st.HR=Math.min(st.H,binomialCount(st.AB,clamp(.009+ratingGap(a.pow,par)*.0024,.001,.09)*clamp(1+variance.power*.20*roleVol,.40,1.80)));st.RBI=Math.round((st.HR*2.05+(st.H-st.HR)*.31)*clamp(1+variance.support*.12,.68,1.38));
-    const timesOnBase=st.H+st.BB,speedGap=ratingGap(a.spd,par),attemptRate=clamp(.05+speedGap*.006,.012,.30),successRate=clamp(.68+speedGap*.007,.48,.93);
-    st.SB=Math.min(Math.floor(timesOnBase*.42),Math.round(timesOnBase*attemptRate*successRate*(.78+R()*.44)*clamp(1+variance.running*.20,.42,1.72)));
+    const timesOnBase=st.H+st.BB;
+    st.SB=stolenBaseTotal(timesOnBase,a.spd,null,variance,1);
     st._varianceDefense=variance.defense;applyDefenseStats(st,par);applyCatcherCalling(st,par);st.DEF=Math.round(defRunsAmateur(par,f)*Math.min(1,(st.defG||0)/Math.max(1,C.games*.9)))+(st.CALL_DEF||0)+Math.round(variance.defense*1.25*Math.sqrt((st.defG||0)/Math.max(1,C.games)));
   }
   if(S.pos==='P'){setPitchingOuts(st,pitchingOuts(st));st.era=st.IP?st.ER*9/st.IP:0;st.WHIP=st.IP?(st.H+st.BB)/st.IP:0;}
@@ -1213,8 +1224,8 @@ function simSeason(lv){
     st.H=Math.round(st.AB*st.avg); st.avg=st.AB?st.H/st.AB:0;
     const hrCap={MLB:75,NPB1:62,CPBL1:45,A3:48,A2:45,A1:42,R:25}[lv]||40,sbCap={MLB:95,NPB1:110,CPBL1:75,A3:80,A2:75,A1:70,R:45}[lv]||70;
     st.HR=clamp(binomialCount(st.AB,clamp(env.hr+ratingGap(a.pow,par)*0.0022,0.001,0.085)*clamp(1+variance.power*.17*roleVol,.42,1.72)*tail.power),0,Math.min(st.H,hrCap));
-    const timesOnBase=st.H+st.BB,speedGap=ratingGap(a.spd,par),attemptRate=clamp(.055+speedGap*.0065,.012,.32),successRate=clamp(.69+speedGap*.0065,.48,.94);
-    st.SB=Math.min(sbCap,Math.floor(timesOnBase*.45),Math.round(timesOnBase*attemptRate*successRate*(.78+R()*.44)*clamp(1+variance.running*.18*roleVol,.45,1.65)*tail.speed));
+    const timesOnBase=st.H+st.BB;
+    st.SB=Math.min(sbCap,stolenBaseTotal(timesOnBase,a.spd,lv,variance,tail.speed));
     st.RBI=Math.round((st.HR*2.1+(st.H-st.HR)*0.30)*clamp(1+variance.support*.11,.68,1.38));
   }
   /* 主場只占約半季：把公開球場指數折半套進整季，並直接改變 H／HR／ERA／WHIP。 */
@@ -5743,6 +5754,7 @@ function runLogicAudit(samples){
   const hsResumeTest=(pos,delta,cupRanks)=>{setup(pos,'CPBL1',pos==='P'?'SP':null,pos==='P'?null:'SS');S.stage='HS';S.lv=null;S.year=2028;S.stageYr=3;const par=amateurSeasonConfig().par;Object.keys(S.ab).forEach(k=>S.ab[k]=clamp(par+delta,1,99));if(pos==='P')S.ab.sta=clamp(par+delta+6,1,99);seedInit(`hs-resume-${pos}-${delta}`);const ls=Array.from({length:48},()=>{S.seasonLuck=ri(1,20);S._seasonVariance=null;return simAmateurSeason();}),avgLine={};['G','PA','AB','H','HR','RBI','SB','BB','IP','SO','ER','H','DEF','avgVelo'].forEach(k=>avgLine[k]=mean(ls,k));if(pos==='P'){avgLine.era=mean(ls,'era');avgLine.WHIP=mean(ls,'WHIP');}else avgLine.avg=mean(ls,'avg');S.hsCupHistory=[{year:S.year,results:cupRanks.map((rank,i)=>({cup:HS_CUPS[i],rank,tier:['冠軍','亞軍','四強','八強','十六強','預賽出局'].indexOf(rank),pts:[5,4,3,2,1,0][['冠軍','亞軍','四強','八強','十六強','預賽出局'].indexOf(rank)]}))}];S.lastAmateurSt=avgLine;return amateurRecruitingResume(avgLine);};const eliteHsHitter=hsResumeTest('IF',15,['四強','八強','十六強']),poorHsHitter=hsResumeTest('IF',-9,['預賽出局','十六強','預賽出局']),eliteHsPitcher=hsResumeTest('P',15,['亞軍','四強','八強']);result.highSchoolRecruiting={eliteHitter:eliteHsHitter,poorHitter:poorHsHitter,elitePitcher:eliteHsPitcher,eliteCanDrawOverseas:eliteHsHitter.jpDirect||eliteHsHitter.usDirect||eliteHsPitcher.jpDirect||eliteHsPitcher.usDirect,poorIsNotAutoOffered:!poorHsHitter.jpDirect&&!poorHsHitter.usDirect};
   setup('IF','MLB',null,'DH');Object.assign(S.ab,{con:30,pow:30,eye:30,spd:99,sta:55,rng:30,fld:30,arm:30});seedInit('audit-speed');const speed=Array.from({length:samples},()=>simSeason('MLB'));result.speedBench={avgG:mean(speed,'G'),avgPA:mean(speed,'PA'),avgSB:mean(speed,'SB'),sbOverGames:speed.filter(x=>x.SB>x.G).length,sbOverTimesOnBase:speed.filter(x=>x.SB>x.H+x.BB).length};
   setup('IF','MLB',null,'DH');Object.assign(S.ab,{con:95,pow:45,eye:95,spd:99,sta:80,rng:30,fld:30,arm:30});seedInit('audit-speed-star');const speedStar=Array.from({length:samples},()=>simSeason('MLB'));result.speedStar={avgG:mean(speedStar,'G'),avgPA:mean(speedStar,'PA'),avgSB:mean(speedStar,'SB'),maxSB:Math.max(...speedStar.map(x=>x.SB))};
+  const speedCurve={};for(const spd of [35,50,65,80,90,99]){setup('IF','MLB',null,'DH');Object.assign(S.ab,{con:92,pow:58,eye:90,spd,sta:84,rng:45,fld:45,arm:45});seedInit(`audit-speed-curve-${spd}`);const rows=Array.from({length:Math.max(160,samples)},()=>{S._seasonVariance=null;S.seasonLuck=ri(1,20);return simSeason('MLB');});speedCurve[spd]={avgG:mean(rows,'G'),avgPA:mean(rows,'PA'),avgSB:mean(rows,'SB'),maxSB:Math.max(...rows.map(x=>x.SB))};}const speedAverages=Object.values(speedCurve).map(x=>x.avgSB);result.stolenBaseCurve={ratings:speedCurve,strictlyRises:speedAverages.every((v,i)=>i===0||v>speedAverages[i-1]),eliteHasFiftyUpside:speedCurve[99].avgSB>=45&&speedCurve[99].maxSB>=60,averageNotElite:speedCurve[65].avgSB<speedCurve[90].avgSB*.55};
   const defenseRun=off=>{setup('IF','MLB',null,'SS');Object.assign(S.ab,{con:off,pow:off,eye:off,spd:60,sta:70,rng:90,fld:90,arm:90});return Array.from({length:samples},()=>simSeason('MLB'));};seedInit('audit-defense-bench');const db=defenseRun(30);seedInit('audit-defense-star');const ds=defenseRun(95);result.defensePlayingTime={bench:{avgG:mean(db,'G'),avgDEF:mean(db,'DEF'),avgDefG:mean(db,'defG')},star:{avgG:mean(ds,'G'),avgDEF:mean(ds,'DEF'),avgDefG:mean(ds,'defG')}};
   const catcherRun=value=>{setup('C','CPBL1',null,'C');Object.assign(S.ab,{con:62,pow:45,eye:58,spd:38,sta:68,rng:value,fld:value,arm:value,cat:value});return Array.from({length:samples},()=>simSeason('CPBL1'));};seedInit('audit-catcher-low');const catcherLow=catcherRun(45);seedInit('audit-catcher-high');const catcherHigh=catcherRun(85);result.catcherDefense={low:{avgE:mean(catcherLow,'E'),avgExpectedE:mean(catcherLow,'EXPECTED_E'),avgCallRuns:mean(catcherLow,'CALL_RUNS'),avgStaffEraAdj:mean(catcherLow,'STAFF_ERA_ADJ'),avgDEF:mean(catcherLow,'DEF')},high:{avgE:mean(catcherHigh,'E'),avgExpectedE:mean(catcherHigh,'EXPECTED_E'),avgCallRuns:mean(catcherHigh,'CALL_RUNS'),avgStaffEraAdj:mean(catcherHigh,'STAFF_ERA_ADJ'),avgDEF:mean(catcherHigh,'DEF')}};
   setup('C','CPBL1',null,'C');Object.assign(S.ab,{con:85,pow:42,eye:80,spd:38,sta:75,rng:72,fld:84,arm:80,cat:88});S.stats.CPBL=blankStat();S.stats.CPBL.yr=5;const awardLine={G:104,PA:456,AB:405,H:160,HR:0,RBI:38,SB:1,BB:51,avg:160/405,d:10,scheduled:120,defG:96,TC:810,E:5,EXPECTED_E:4.3,CS:34,SBA:78,DEF:18,CALL_RUNS:14,CALL_GRADE:'S',STAFF_ERA_ADJ:-.22};seedInit('audit-catcher-awards-1');awards('CPBL',awardLine);const awardWatch1=S.awardWatch.slice();S.year++;S.awardWatch=[];seedInit('audit-catcher-awards-2');awards('CPBL',awardLine);const awardWatch2=S.awardWatch.slice();result.catcherAwardWatch={first:awardWatch1,second:awardWatch2,variesBySeason:JSON.stringify(awardWatch1)!==JSON.stringify(awardWatch2),irrelevantHomeRunLine:awardWatch1.some(x=>x.includes('全壘打'))};
